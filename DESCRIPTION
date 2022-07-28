@@ -1,0 +1,13 @@
+Package: QualidadosModulos
+Title: Qualidados com Modulos e Golem
+Version: 0.0.0.9000
+Authors@R: person('Samuel', 'Medeiros', email = 'samuel.martins7@hotmail.com', role = c('cre', 'aut'))
+Description: Tentativa de organizacao para mais eficiencia do shiny app qualidados.
+License: What license is it under?
+Imports: 
+    config (>= 0.3.1),
+    golem (>= 0.3.3),
+    shiny (>= 1.7.2)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1

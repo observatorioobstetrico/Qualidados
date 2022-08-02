@@ -2,17 +2,85 @@
 #'
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
-#' @import shiny
 #' @noRd
+#'
+library(shiny)
+library(shinydashboard)
+library(DT)
+library(shinyjs)
+library(dplyr)
+library(magrittr)
+library(readxl)
+library(shinydashboard)
+library(questionr)
+library(kableExtra)
+library(ggplot2)
+library(highcharter)
+library(summarytools)
+library(modelsummary)
+library(abjData)
+library(leaflet)
+library(leaflet.extras)
+library(stringr)
+library(reactable)
+library(htmltools)
+library(rjson)
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      h1("QualidadosModulos")
-    )
-  )
+    useShinyjs(),
+            dashboardPage(
+              dashboardHeader(title = "Qualidados", titleWidth = 160),
+              dashboardSidebar(
+                width = 160,
+                sidebarMenu(
+                  style = "position: fixed; overflow: visible;",
+                  menuItem(
+                    "SIVEP-GRIPE" ,
+                    tabname = "sivep",
+                    icon = icon("table"),
+                    startExpanded = TRUE,
+                    menuSubItem("Incompletude",
+                                tabName = "incom_sivep"),
+                    menuSubItem("Implausibilidade",
+                                tabName = "implau_sivep"),
+                    menuSubItem("Inconsistência",
+                                tabName = "incons_sivep")
+                  ),
+                  menuItem(
+                    "SINASC" ,
+                    tabname = "sinasc",
+                    icon = icon("table"),
+                    menuSubItem("Incompletude",
+                                tabName = "incom_sinasc"),
+                    menuSubItem("Implausibilidade",
+                                tabName = "implau_sinasc"),
+                    menuSubItem("Inconsistência",
+                                tabName = "incons_sinasc")
+                  ),
+                  menuItem(
+                    "SIM" ,
+                    tabname = "sim",
+                    icon = icon("table"),
+                    menuSubItem("Incompletude",
+                                tabName = "incom_sim"),
+
+                    menuSubItem("Implausibilidade",
+                                tabName = "implau_sim"),
+                    menuSubItem("Inconsistência",
+                                tabName = "incons_sim")
+                  )
+                )
+              ),
+              dashboardBody(
+              mod_SIVEP_incompletude_ui("SIVEP_incompletude_1","incom_sivep",c("CS_SEXO", "NU_IDADE_N"),
+                                        c('ES','RJ','SP','MJ'))
+                  )
+                )
+              )
+
 }
 
 #' Add external Resources to the Application
@@ -28,14 +96,52 @@ golem_add_external_resources <- function() {
     "www",
     app_sys("app/www")
   )
+  includeCSS("inst/app/www/estilo1.css")
+  tags$script(HTML("$('body').addClass('fixed');"))
+  tags$head(tags$style(
+    HTML(
+      '
+        /* logo */
+        .skin-blue .main-header .logo {
+                              background-color: #0A1E3C;
+                              }
 
-  tags$head(
-    favicon(),
-    bundle_resources(
-      path = app_sys("app/www"),
-      app_title = "QualidadosModulos"
-    )
-    # Add here other external resources
-    # for example, you can add shinyalert::useShinyalert()
-  )
-}
+        /* logo when hovered */
+        .skin-blue .main-header .logo:hover {
+                              background-color: #0A1E3C;
+                              }
+
+        /* navbar (rest of the header) */
+        .skin-blue .main-header .navbar {
+                              background-color: #0A1E3C;
+                              }
+
+        /* main sidebar */
+        .skin-blue .main-sidebar {
+                              background-color: #0A1E3C;
+                              }
+
+        /* active selected tab in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+                              background-color: #32A0FF;
+                              }
+
+        /* other links in the sidebarmenu */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu a{
+                              background-color: #0A1E3C;
+                              color: #FFFFFF;
+                              }
+
+        /* other links in the sidebarmenu when hovered */
+         .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+                              background-color: #32A0FF;
+                              }
+        /* toggle button when hovered  */
+         .skin-blue .main-header .navbar .sidebar-toggle:hover{
+                              background-color: #32A0FF;
+                              }
+                              '
+    ),
+    HTML("hr {border-top: 1px solid #0A1E3C;}")
+  ))
+  }

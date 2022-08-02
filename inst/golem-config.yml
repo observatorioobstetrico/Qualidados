@@ -5,4 +5,4 @@ default:
 production:
   app_prod: yes
 dev:
-  golem_wd: C:/Users/SAMUNEL/Documents/observatorio/qualidados com modulos/QualidadosModulos
+  golem_wd: !expr here::here()

@@ -1,0 +1,114 @@
+
+.small-box.bg-yellow {
+  background-color: #ffffff !important; color: #000000 !important;
+  }
+
+ 
+  /* aqui eu defini o tipo e tamanho da fonte no box */
+  .box-header h3.box-title {
+   font-weight: bold;
+   font-size: 40px;
+}
+  
+
+
+.box.box-solid.box-primary>.box-header {
+  color:#fff;
+  background:#666666
+  }
+  
+.box.box-solid.box-primary{
+  border-bottom-color:#666666;
+  border-left-color:#666666;
+  border-right-color:#666666;
+  border-top-color:#666666;
+  }
+  
+  
+.box.box-solid.box-danger>.box-header {
+  color:#fff;
+  background:#9966ff
+                    }
+
+.box.box-solid.box-danger{
+border-bottom-color:#9966ff;
+border-left-color:#9966ff;
+border-right-color:#9966ff;
+border-top-color:#9966ff;
+}
+
+.box.box-danger>.box-header {
+  color:#000000;
+  background:#fff
+                    }
+
+.box.box-danger{
+border-bottom-color:#9966ff;
+border-left-color:#9966ff;
+border-right-color:#9966ff;
+border-top-color:#9966ff;
+}
+          
+          
+          
+          
+          
+          
+          
+          
+          
+      
+      
+      /*Cor do fundo*/
+      .content-wrapper {
+      background-color: #ffcccc;
+      }
+      
+        
+      /* tamanho da bordar de um box*/
+      .box{
+        border-top: 0;
+      }
+      
+      
+      /*Onde fica o nome do painel (primeira barrinha) */
+      
+      .skin-blue .main-header .logo {
+        background-color: #00020a;
+      }
+      
+      /* COR DA BARRINHA QUANDO CLICA EM CIMA*/
+      .skin-blue .main-header .logo:hover {
+        background-color: #fca9e3;
+      }
+      
+      /* COR RESTANTE DO NAVBAT*/
+      .skin-blue .main-header .navbar {
+        background-color: #ff00e1;
+      }
+      
+      /* Parte inferior da barra da esquerda */
+      .skin-blue .main-sidebar {
+        background-color: #ff006f;
+      }
+      
+      /* active selected tab in the sidebarmenu */
+      .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{
+        background-color: #6e88ff;
+      }
+      
+      /* barrinhas onde tem as abas na barra */
+      .skin-blue .main-sidebar .sidebar .sidebar-menu a{
+        background-color: #ff6eb1;
+        color: #000000;
+      }
+      
+      /* PASSAR O MOUSE EM CIMA DAS BARRAS*/
+      .skin-blue .main-sidebar .sidebar .sidebar-menu a:hover{
+        background-color: #000000;
+      }
+      
+      /* Botao de altenar abas (COR QUANDO SELECIONA)  */
+      .skin-blue .main-header .navbar .sidebar-toggle:hover{
+        background-color: #e46eff;
+      }

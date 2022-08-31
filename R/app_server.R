@@ -5,5 +5,5 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-
+  mod_SIVEP_incompletude_server("SIVEP_incompletude_1")
 }

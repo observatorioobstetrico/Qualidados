@@ -4,27 +4,8 @@
 #'     DO NOT REMOVE.
 #' @noRd
 #'
-library(shiny)
-library(shinydashboard)
-library(DT)
-library(shinyjs)
-library(dplyr)
-library(magrittr)
-library(readxl)
-library(shinydashboard)
-library(questionr)
-library(kableExtra)
-library(ggplot2)
-library(highcharter)
-library(summarytools)
-library(modelsummary)
-library(abjData)
-library(leaflet)
-library(leaflet.extras)
-library(stringr)
-library(reactable)
-library(htmltools)
-library(rjson)
+
+descricao_incon <- c('O medo é a principal arma da virtude, pois o desejo engana a juventude')
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -75,8 +56,7 @@ app_ui <- function(request) {
                 )
               ),
               dashboardBody(
-              mod_SIVEP_incompletude_ui("SIVEP_incompletude_1","incom_sivep",c("CS_SEXO", "NU_IDADE_N"),
-                                        c('ES','RJ','SP','MJ'))
+              mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude_1",tabname ="incom_sivep",descricao =  descricao_incon)
                   )
                 )
               )

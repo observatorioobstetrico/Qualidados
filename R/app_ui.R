@@ -11,7 +11,7 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    useShinyjs(),
+    useShinyjs(),useShinyalert(),
             dashboardPage(
               dashboardHeader(title = "Qualidados", titleWidth = 160),
               dashboardSidebar(
@@ -52,11 +52,25 @@ app_ui <- function(request) {
                                 tabName = "implau_sim"),
                     menuSubItem("Inconsistência",
                                 tabName = "incons_sim")
-                  )
+                  ),
+                  actionButton('help','Ajuda',icon('question',lib="font-awesome"),
+                    style =  "color: #0A1E3;
+                              background-color: white;
+                              border-color: #0A1E3")
                 )
               ),
-              dashboardBody(
-              mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude_1",tabname ="incom_sivep",descricao =  descricao_incon)
+              dashboardBody(tabItems(
+              mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude",
+                                        tabname ="incom_sivep",
+                                        descricao =  'incompletude',indicador = 'incom'),
+
+              mod_SIVEP_incompletude_ui(id = "SIVEP_implausibilidade", vars_incon = var_dados_implau,
+                                        tabname ="implau_sivep",
+                                        descricao = 'implausibilidade',indicador = 'implau'),
+
+              mod_SIVEP_incompletude_ui(id = "SIVEP_inconsistencia",
+                                        tabname ="incons_sivep",
+                                        descricao = 'Inconsistência',indicador = 'incom')),
                   )
                 )
               )

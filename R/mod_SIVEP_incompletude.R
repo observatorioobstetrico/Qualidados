@@ -804,7 +804,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
            output[[paste('print',i,sep='')]] <- renderText({
              if(var_dados_implau[my_i] %in% input$Graf_Variaveis_Incon){
                dados <- selectData2()
-               dados <- database[database$variaveis == var_dados_implau[my_i],]
+               dados <- dados[dados$variaveis == var_dados_implau[my_i],]
                kableExtra::kable(
                  questionr::freq(
                    dados[['imps']],

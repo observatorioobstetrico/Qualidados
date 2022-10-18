@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon = variaveis_incon_nomes, descricao,
+mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                                       indicador){
   ns <- NS(id)
   library(shiny)
@@ -95,10 +95,17 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon = variaveis_incon_
                      checkboxGroupInput(
                       inputId = ns("Exib_Dados2"),
                       label = "Exibir dados:",
-                      choices = c("Improvável",
-                                    "Impossível"),
-                      selected = c("Improvável",
-                                "Impossível"))},
+                      choices = c("Dado Improvável",
+                                    "Dado Impossível", 'Dado Plausível'),
+                      selected = c("Dado Improvável",
+                                "Dado Impossível", 'Dado Plausível'))},
+                    if(indicador =='implau'){
+                      tippy::tippy_this(
+                        elementId = ns('Exib_Dados2'),
+                        tooltip = 'Tipos de implausibilidades, a opção Dado Plausível so pode ser utilizada na sessão de tabelas',
+                        placement = 'right'
+                      )
+                    },
                     #FILTRO POR LOCALIDADE
                     selectInput(
                       ns("Graf_OpcaoLocalidade"),
@@ -224,8 +231,10 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon = variaveis_incon_
 mod_SIVEP_incompletude_server <- function(id, indicador){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    #INCOMPLETUDE ------------
+    #GRAFICO INCOMPLETUDE ------------
     if(indicador == 'incom'){
+
+
       output$graficoCompleteness <- renderPlotly({
     #FILTRAGEM PELOS FILTROS SELECIONADOS ------------
         #VARIAVEIS SELECIONADAS NO FILTRO
@@ -371,7 +380,8 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
         ggplotly(g, height=length(variaveis)*125) %>% layout(legend = list(orientation = "h", y = 20))
     })
-      #DADOS
+
+
       selectData <- reactive({
         df <- dados_incom %>%
           dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon) %>%
@@ -395,7 +405,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
       })
 
-      #TABELAS Incompletude
+
       for(i in 1:35){
         local({
           my_i <- i
@@ -416,6 +426,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           })
         })
       }
+
 
       output$table_incom <- reactable::renderReactable({
         variaveis <- NA
@@ -501,9 +512,13 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
                                style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
                                searchInputStyle = list(width = "100%")))
       })
+
+
     }
-    #GRAFICO IMPLAUSIBILIDADE -----------
+    #GRAFICO IMPLAUSIBILIDADE --------
     if(indicador == 'implau'){
+
+
       output$graficoCompleteness <- renderPlotly({
            variaveis <- vector()
 
@@ -545,8 +560,8 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
            Dados_GraficoImplauIniciais <- Dados_GraficoImplauIniciais %>%
              mutate(imps = case_when(
-               stringr::str_detect(variable, "IMPOSSIVEL") ~ "Impossível",
-               stringr::str_detect(variable, "IMPROVAVEL") ~ "Improvável",
+               stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
+               stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
                TRUE ~ as.character(variable)
              ),
              variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1])
@@ -648,9 +663,11 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         ))
 
       ggplotly(g, height = length(variaveis) * 125) %>% layout(legend = list(orientation = "h", y = 20))})
-      selectData <- reactive({
-        variaveis_tab <- vector()
 
+
+      selectDataAux <- reactive({
+        variaveis_tab <- vector()
+        var_valida <- vector()
         for(var_tab in input$Graf_Variaveis_Incon) {
           if (var_tab == "NU_IDADE_N") {
             variaveis_tab <-
@@ -664,9 +681,9 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
               union(variaveis_tab,
                     paste0(var_tab, "_IMPOSSIVEL"))
           }
+          var_valida <- union(var_tab,var_valida)
         }
 
-        variaveis_tab <- sort(variaveis_tab)
 
         Dados_TabelaImplau <- dados_implau %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
@@ -686,6 +703,30 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         } else if(input$Graf_OpcaoLocalidade == 'muni'){
           Dados_TabelaImplau <- Dados_TabelaImplau[Dados_TabelaImplau$muni_nm_clean == input$Graf_muni,]
         }
+        Dados_TabelaImplau
+      })
+
+
+      selectData <- reactive({
+        variaveis_tab <- vector()
+        var_valida <- vector()
+        for(var_tab in input$Graf_Variaveis_Incon) {
+          if (var_tab == "NU_IDADE_N") {
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPROVAVEL"))
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPOSSIVEL"))
+          } else{
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPOSSIVEL"))
+          }
+          var_valida <- union(var_tab,var_valida)
+        }
+
+        variaveis_tab <- sort(variaveis_tab)
 
         #Filtra os casos finalizados
         # if ("cf" %in% input$Exib_Finalizados)
@@ -694,7 +735,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         #     Dados_GraficoIncompletudeIniciais %>%
         #     filter(f_evolucao == 'Dados válidos')
         # }
-
+        Dados_TabelaImplau <- selectDataAux()
         Dados_TabelaImplau <-
           Dados_TabelaImplau %>%
           tidyr::pivot_longer(cols = all_of(variaveis_tab),
@@ -706,8 +747,8 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
           mutate(imps = case_when(
-            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Impossível",
-            stringr::str_detect(variable, "IMPROVAVEL") ~ "Improvável",
+            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
+            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
             TRUE ~ as.character(variable)
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
@@ -723,8 +764,11 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
         Dados_TabelaImplau <- Dados_TabelaImplau[, columns]
       })
-      selectData2 <- reactive({variaveis_tab <- vector()
 
+
+      selectData2 <- reactive({
+        variaveis_tab <- vector()
+        var_valida <- vector()
       for(var_tab in input$Graf_Variaveis_Incon) {
         if (var_tab == "NU_IDADE_N") {
           variaveis_tab <-
@@ -738,29 +782,17 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
             union(variaveis_tab,
                   paste0(var_tab, "_IMPOSSIVEL"))
         }
+        var_valida <- union(var_tab,var_valida)
       }
 
-      variaveis_tab <- sort(variaveis_tab)
-
-      Dados_TabelaImplau <- dados_implau %>%
-        dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-        dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
-
-      # cria coluna de ano data para o grafico
-      Dados_TabelaImplau$data <-
-        with(
-          Dados_TabelaImplau,
-          format(Dados_TabelaImplau$dt_sint, "%Y-%m")
-        )
-
-      Dados_TabelaImplau <- Dados_TabelaImplau %>%
-        filter(as.character(data) >= '2020-03')
-      if(input$Graf_OpcaoLocalidade == 'est'){
-        Dados_TabelaImplau <- Dados_TabelaImplau[Dados_TabelaImplau$SG_UF == input$Graf_Estado,]
-      } else if(input$Graf_OpcaoLocalidade == 'muni'){
-        Dados_TabelaImplau <- Dados_TabelaImplau[Dados_TabelaImplau$muni_nm_clean == input$Graf_muni,]
+      Dados_TabelaImplau <- selectDataAux()
+      for(var in var_valida){
+        Dados_TabelaImplau[[paste0(var,'_IMPLAUSIVEL')]] <- TRUE
+        Dados_TabelaImplau[Dados_TabelaImplau[[paste0(var,'_IMPOSSIVEL')]] == TRUE,paste0(var,'_IMPLAUSIVEL')] <- FALSE
+        if(var == 'NU_IDADE_N'){
+          Dados_TabelaImplau[Dados_TabelaImplau[[paste0(var,'_IMPROVAVEL')]] == TRUE,paste0(var,'_IMPLAUSIVEL')] <- FALSE
+        }
       }
-
       #Filtra os casos finalizados
       # if ("cf" %in% input$Exib_Finalizados)
       # {
@@ -768,7 +800,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
       #     Dados_GraficoIncompletudeIniciais %>%
       #     filter(f_evolucao == 'Dados válidos')
       # }
-
+      variaveis_tab <- union(variaveis_tab,paste0(var_valida,'_IMPLAUSIVEL')) %>% sort()
       Dados_TabelaImplau <-
         Dados_TabelaImplau %>%
         tidyr::pivot_longer(cols = all_of(variaveis_tab),
@@ -778,43 +810,39 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
       Dados_TabelaImplau <- Dados_TabelaImplau %>%
         filter(value)
       Dados_TabelaImplau <- Dados_TabelaImplau %>%
-        mutate(imps = case_when(
-          stringr::str_detect(variable, "IMPOSSIVEL") ~ "Impossível",
-          stringr::str_detect(variable, "IMPROVAVEL") ~ "Improvável",
+        mutate(Dado = case_when(
+          stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
+          stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
+          stringr::str_detect(variable, "PLAUSIVEL") ~ "Dado Plausível",
           TRUE ~ as.character(variable)
         ),
-        variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
-        motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
+        variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1])#,
         ) %>%
-        filter(imps %in% input$Exib_Dados2)
+        filter(Dado %in% input$Exib_Dados2)
+
         Dados_TabelaImplau  <- Dados_TabelaImplau %>%
-               count(variavel,imps)
-        teste <- NA
-        for(i in 1:nrow(Dados_TabelaImplau)){
-          for(j in 1:as.numeric(Dados_TabelaImplau[i,3]))
-          teste <- rbind(teste,c(unname(Dados_TabelaImplau[i,c(1,2)])))
+               count(variavel,Dado)
+        Dados_TabelaImplau[['%']] <- NA
+        for(var in var_valida){
+          Dados_TabelaImplau[Dados_TabelaImplau$variavel == var, 4] <- 100 *
+            Dados_TabelaImplau[Dados_TabelaImplau$variavel == var,3]/sum(Dados_TabelaImplau[Dados_TabelaImplau$variavel == var,3])
         }
-        teste <- teste[!is.na(teste[,1]) ,]
-        database <- data.frame(variaveis = unlist(teste[,1]),
-                               imps = unlist(teste[,2]))
+        Dados_TabelaImplau[['%']] <-Dados_TabelaImplau[['%']] %>%  round(2)
+        Dados_TabelaImplau
       })
+
        for(i in 1:35){
          local({
            my_i <- i
            output[[paste('print',i,sep='')]] <- renderText({
              if(var_dados_implau[my_i] %in% input$Graf_Variaveis_Incon){
-               dados <- selectData2()
-               dados <- dados[dados$variaveis == var_dados_implau[my_i],]
-               kableExtra::kable(
-                 questionr::freq(
-                   dados[['imps']],
-                   cum = FALSE,
-                   total = TRUE,
-                   na.last = FALSE,
-                   valid = FALSE
-                 ),
-                 caption = paste0(var_dados_implau[my_i] ),
-                 digits = 2
+               dados <-  selectData2()
+               dados <- dados[dados$variavel == var_dados_implau[my_i],]
+               total <- c('Total', 'Total',sum(dados$n),sum(dados[['%']]))
+               dados <- rbind(dados,total)
+               kableExtra::kable(dados[,c(2:4)],
+                 caption = paste0(var_dados_implau[my_i]),
+                digits  = 2
                ) %>%
                  kableExtra::kable_styling()}
            })
@@ -842,6 +870,10 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
                              style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
                              searchInputStyle = list(width = "100%")))
     })
+    }
+    #GRAFICO INCONSISTENCIA ----------
+    if(indicador == 'incon'){
+
     }
   })
 }

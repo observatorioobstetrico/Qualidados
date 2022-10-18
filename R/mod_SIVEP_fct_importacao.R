@@ -13,11 +13,6 @@ library(rjson)
 library(kableExtra)
 library(shinyalert)
 #PRIMEIRA IMPORTAÇÃO -----------------------------
-#ESTADOS DISPONIVEIS PARA FILTRAGEM
-estadosChoices <- c(
-    "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA",
-    "MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN",
-    "RO","RR","RS","SC","SE","SP","TO")
 jsonfile <- c(fromJSON(file = "data1/data_values.json"))
 fields <- jsonfile$fields
 #MOSTRAR NOME MAIS DESCRICAO
@@ -49,23 +44,9 @@ for (variavel in jsonfile$variaveis_tabela) {
 
 dados_incom[['ID_MUNICIP']] <- dados_incom$muni_nm_clean %>%
   purrr::map_chr(function(x) stringr::str_split(x, " -")[[1]][1])
-#VARIAVEIS DISPONIVEIS
-variaveis_incon <- names(dados_incom)[stringr::str_detect(names(dados_incom), "^f_")]
-variaveis_incon_nomes <- c('Raça','Escolaridade',"Zona de Residência","Histórico de Viagem",
-                           "SG","Infecção Hospitalar","Contato com aves ou suínos","Vacina",
-                           "Antiviral","Febre","Tosse","Garganta","Dispneia","Desc. Resp.",
-                           "Saturação","Diarreia","Vômito","Dor Abdominal","Fadiga","Perda de Olfato",
-                           "Perda paladar","Cardiopatia","Hematologia","Hepática","Asma","Diabetes",
-                           "Neuro","Pneumopatia","Imunodepressores","Renal","Obesidade","UTI",
-                           "Hospitalização","Suporte\nVentilatório","Evolução")
-#RELACAO ENTRE OS NOMES CERTOS E OS NOMES NO BD
-variaveis_relacao <- variaveis_incon_nomes
-names(variaveis_relacao) <- variaveis_incon
-#tem que mudar esse nome aqui, por algum motivo nao tava gerando a variavel dentro
-#do render plot
-variaveis <- NA
-var_names <- NA
+
 #DADOS DE IMPLAUSIBILIDADE ------------
+
 jsonfile_gest <- c(fromJSON(file = "data1/implausibilidade_puerperas.json"))
 jsonfile_puerp <- c(fromJSON(file = "data1/implausibilidade_gestantes.json"))
 implau_gest <- readRDS("data1/implausibilidade_gestantes.rds") %>%
@@ -100,3 +81,8 @@ dados_implau[, var_dados_implau] <- apply(dados_implau[, var_dados_implau], 2, f
 var_dados_implau <- purrr::map_chr(var_dados_implau, function(x) stringr::str_split(x, "_IMP")[[1]][1]) %>%
   unique()
 
+relacao_implau  <- purrr::map_chr( unlist(var_names_join),function(x) stringr::str_split(x, " [(] ")[[1]][2]) %>%
+  gsub(pattern = '.{2}$', replacement = '')
+var_implau_original <-  purrr::map_chr( unlist(var_names_join),function(x) stringr::str_split(x, " [(] ")[[1]][1])
+names(relacao_implau) <- var_implau_original
+relacao_implau <- relacao_implau[var_dados_implau]

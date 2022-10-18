@@ -61,16 +61,19 @@ app_ui <- function(request) {
               ),
               dashboardBody(tabItems(
               mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude",
+                                        vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",
-                                        descricao =  'incompletude',indicador = 'incom'),
+                                        descricao =  desc_incom ,indicador = 'incom'),
 
-              mod_SIVEP_incompletude_ui(id = "SIVEP_implausibilidade", vars_incon = var_dados_implau,
+              mod_SIVEP_incompletude_ui(id = "SIVEP_implausibilidade",
+                                        vars_incon = var_dados_implau,
                                         tabname ="implau_sivep",
-                                        descricao = 'implausibilidade',indicador = 'implau'),
+                                        descricao = desc_implau,indicador = 'implau'),
 
               mod_SIVEP_incompletude_ui(id = "SIVEP_inconsistencia",
+                                        vars_incon = variaveis_incom_nomes,
                                         tabname ="incons_sivep",
-                                        descricao = 'Inconsistência',indicador = 'incom')),
+                                        descricao = desc_incon,indicador = 'incom')),
                   )
                 )
               )

@@ -71,9 +71,9 @@ app_ui <- function(request) {
                                         descricao = desc_implau,indicador = 'implau'),
 
               mod_SIVEP_incompletude_ui(id = "SIVEP_inconsistencia",
-                                        vars_incon = variaveis_incom_nomes,
+                                        vars_incon = unname(vars_incon),
                                         tabname ="incons_sivep",
-                                        descricao = desc_incon,indicador = 'incom')),
+                                        descricao = desc_incon,indicador = 'incon')),
                   )
                 )
               )

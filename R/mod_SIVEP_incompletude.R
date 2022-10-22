@@ -106,6 +106,21 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                         placement = 'right'
                       )
                     },
+                    if(indicador == 'incon'){
+                      checkboxGroupInput(
+                        inputId = ns("Exib_Dados"),
+                        label = "Exibir dados:",
+                        choices = c("Dado Inconsistente" = "incon",
+                                    "Dado Válido" = "valido"),
+                        selected = c("incon"))
+                    },
+                    if(indicador == 'incon'){
+                      tippy::tippy_this(
+                        elementId = ns('Exib_Dados'),
+                        tooltip = 'Dados que ao comparar duas variáveis não fazem sentido ( verificar com professora )',
+                        placement = 'right'
+                      )
+                    },
                     #FILTRO POR LOCALIDADE
                     selectInput(
                       ns("Graf_OpcaoLocalidade"),
@@ -410,16 +425,16 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         local({
           my_i <- i
           output[[paste('print',i,sep='')]] <- renderText({
-            if(variaveis_incon_nomes[my_i] %in% input$Graf_Variaveis_Incon){
+            if(variaveis_incom_nomes[my_i] %in% input$Graf_Variaveis_Incon){
               kableExtra::kable(
                 questionr::freq(
-                  selectData()[[variaveis_incon[my_i]]],
+                  selectData()[[variaveis_incom[my_i]]],
                   cum = FALSE,
                   total = TRUE,
                   na.last = FALSE,
                   valid = FALSE
                 ),
-                caption = paste0("Dados faltantes para ",variaveis_incon_nomes[my_i]),
+                caption = paste0("Dados faltantes para ",variaveis_incom_nomes[my_i]),
                 digits = 2
               ) %>%
                 kableExtra::kable_styling()}
@@ -662,7 +677,8 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           angle = 45
         ))
 
-      ggplotly(g, height = length(variaveis) * 125) %>% layout(legend = list(orientation = "h", y = 20))})
+      ggplotly(g, height = length(variaveis) * 125) %>%
+        layout(legend = list(orientation = "h", y = 20))})
 
 
       selectDataAux <- reactive({
@@ -873,6 +889,135 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
     }
     #GRAFICO INCONSISTENCIA ----------
     if(indicador == 'incon'){
+
+      output$graficoCompleteness <- renderPlotly({
+        #FILTRAGEM PELOS FILTROS SELECIONADOS ------------
+        #VARIAVEIS SELECIONADAS NO FILTRO
+        variaveis <- NA
+        var_names <- NA
+        for(var in input$Graf_Variaveis_Incon){
+          variaveis <- c(variaveis,names(vars_incon[vars_incon == var]))
+          var_names <- c(var_names,vars_incon[vars_incon == var])
+        }
+        #TIRAR OS VALORES NA INICIAIS
+        var_labeller <- function(variable, value){
+          return(var_names[value])
+        }
+        variaveis <- variaveis[!is.na(variaveis)]
+        var_names <- var_names[!is.na(var_names)]
+        #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
+        Dados_GraficoIncon <- dados_incon %>%
+          dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+        #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
+        Dados_GraficoIncon$data <-
+          with(
+            Dados_GraficoIncon,
+            format(Dados_GraficoIncon$dt_sint, "%Y-%m")
+          )
+
+        Dados_GraficoIncon <- Dados_GraficoIncon %>%
+          filter(as.character(data) >= '2020-03')
+        VarSelecionadas <- Dados_GraficoIncon[variaveis]
+
+
+        #CONVERTER VARIAVEIS SELECIONADAS PARA BINARIO PARA CALCULO DE PORCENTAGEM --------------
+        VarSelecionadas <- Dados_GraficoIncon[variaveis]
+
+        VarSelecionadas <- sapply(VarSelecionadas, as.numeric)
+
+        Dados_GraficoIncon[variaveis] <- VarSelecionadas
+
+        Dados_GraficoIncon <- Dados_GraficoIncon %>%
+          tidyr::pivot_longer(
+            cols = all_of(variaveis),
+            names_to = "variable",
+            values_to = "value"
+          )
+        #FILTRAGEM E FINALIZACAO POR TIPO DE LOCALIDADE ---------------
+        if (input$Graf_OpcaoLocalidade == 'br') {
+          Dados_GraficoIncon1 <- Dados_GraficoIncon[c('variable', 'value', 'data')]
+
+        } else {
+          Dados_GraficoIncon1 <- Dados_GraficoIncon[c('variable', 'value','SG_UF', 'muni_nm_clean', 'data')]
+
+          if (input$Graf_OpcaoLocalidade == "muni") {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              filter(muni_nm_clean == input$Graf_muni)
+
+          } else {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              filter(SG_UF == input$Graf_Estado)
+
+          }
+
+        }
+
+        if (input$Graf_OpcaoLocalidade == 'br') {
+          Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+            group_by(data, variable) %>%
+            summarize(value = mean(value))
+          Dados_GraficoIncon1$localidade <- 'BR'
+        } else {
+
+          if (input$Graf_OpcaoLocalidade == "muni") {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              group_by(data, variable) %>%
+              summarize(value = mean(value))
+            Dados_GraficoIncon1$localidade <- input$Graf_muni
+            print(input$Graf_muni)
+          } else {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              group_by(data, variable) %>%
+              summarize(value = mean(value))
+            Dados_GraficoIncon1$localidade <- input$Graf_Estado
+          }
+        }
+
+        if (input$Graf_OpcaoComparar != 'br') {
+          Dados_GraficoIncon2 <- Dados_GraficoIncon[c('variable', 'value','SG_UF', 'muni_nm_clean', 'data')]
+
+          if (input$Graf_OpcaoComparar == "muni") {
+            Dados_GraficoIncon2 <- Dados_GraficoIncon %>%
+              filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
+              group_by(data, variable) %>%
+              summarize(value = mean(value))
+
+            Dados_GraficoIncon2$localidade <- input$Graf_CompararMunicipio
+            print(input$Graf_CompararMunicipio)
+          } else {
+            print("else")
+            Dados_GraficoIncon2 <- Dados_GraficoIncon %>%
+              filter(SG_UF == input$Graf_CompararEstado) %>%
+              group_by(data, variable) %>%
+              summarize(value = mean(value))
+            Dados_GraficoIncon2$localidade <- input$Graf_CompararEstado
+          }
+          Dados_GraficoIncon1 <- rbind( Dados_GraficoIncon1,Dados_GraficoIncon2)
+
+        }
+
+        Dados_GraficoIncon1$value <- round(Dados_GraficoIncon1$value * 100, 2)
+        #FINALIZACAO COM GGPLOT -------------------------
+        g <- ggplot(data = Dados_GraficoIncon1,
+                    aes(y=value, x=data , fill = localidade)) +
+          geom_bar(position="dodge", stat="identity") +
+          facet_grid(rows = vars(variable), labeller=var_labeller)
+
+        g <- g + labs(x = NULL) +
+          labs(y = "Incompletude (%)", fill = "Localidade") +
+          scale_y_continuous(breaks = seq(0,100,20), limits = c(0, 100)) +
+          scale_fill_viridis_d() +
+          theme_bw() +
+          theme(axis.text.x = element_text(
+            face="bold",
+            color="#000000",
+            size=9,
+            angle=45
+          ))
+
+        ggplotly(g, height=length(variaveis)*125) %>% layout(legend = list(orientation = "h", y = 20))
+      })
 
     }
   })

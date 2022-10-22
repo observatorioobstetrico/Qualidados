@@ -13,6 +13,7 @@ library(rjson)
 library(kableExtra)
 library(shinyalert)
 #PRIMEIRA IMPORTAÇÃO -----------------------------
+#Tem que rever essa parte, ela nao parece muito util
 jsonfile <- c(fromJSON(file = "data1/data_values.json"))
 fields <- jsonfile$fields
 #MOSTRAR NOME MAIS DESCRICAO
@@ -44,6 +45,7 @@ for (variavel in jsonfile$variaveis_tabela) {
 
 dados_incom[['ID_MUNICIP']] <- dados_incom$muni_nm_clean %>%
   purrr::map_chr(function(x) stringr::str_split(x, " -")[[1]][1])
+
 
 #DADOS DE IMPLAUSIBILIDADE ------------
 
@@ -81,8 +83,58 @@ dados_implau[, var_dados_implau] <- apply(dados_implau[, var_dados_implau], 2, f
 var_dados_implau <- purrr::map_chr(var_dados_implau, function(x) stringr::str_split(x, "_IMP")[[1]][1]) %>%
   unique()
 
-relacao_implau  <- purrr::map_chr( unlist(var_names_join),function(x) stringr::str_split(x, " [(] ")[[1]][2]) %>%
-  gsub(pattern = '.{2}$', replacement = '')
-var_implau_original <-  purrr::map_chr( unlist(var_names_join),function(x) stringr::str_split(x, " [(] ")[[1]][1])
-names(relacao_implau) <- var_implau_original
-relacao_implau <- relacao_implau[var_dados_implau]
+
+
+#DADOS DE INCONSISTENCIA -----------------------------
+
+json_incon <- c(fromJSON(file = 'data1/SIVEP_Inconsistencias_Regras.json'))
+dados_incon  <- read_csv("data1/SIVEP_Inconsistencias.csv")
+dados_incon[['ID_MUNICIP']] <- dados_incon$ID_REGIONA
+dados_incon <- dados_incon %>%
+  mutate(
+    dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
+    dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
+    ano = lubridate::year(dt_sint),
+    muni_nm_clean = paste(ID_MUNICIP, "-", SG_UF_NOT)
+  )
+#-----------------------
+#ESTADOS DISPONIVEIS PARA FILTRAGEM ------------
+estadosChoices <- c(
+  "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA",
+  "MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN",
+  "RO","RR","RS","SC","SE","SP","TO")
+
+#VARIAVEIS DISPONIVEIS PARA INCOMPLETUDE -------------------
+
+variaveis_incom <- names(dados_incom)[stringr::str_detect(names(dados_incom), "^f_")]
+variaveis_incom_nomes <- c('Raça','Escolaridade',"Zona de Residência","Histórico de Viagem",
+                           "SG","Infecção Hospitalar","Contato com aves ou suínos","Vacina",
+                           "Antiviral","Febre","Tosse","Garganta","Dispneia","Desc. Resp.",
+                           "Saturação","Diarreia","Vômito","Dor Abdominal","Fadiga","Perda de Olfato",
+                           "Perda paladar","Cardiopatia","Hematologia","Hepática","Asma","Diabetes",
+                           "Neuro","Pneumopatia","Imunodepressores","Renal","Obesidade","UTI",
+                           "Hospitalização","Suporte\nVentilatório","Evolução")
+
+#RELACAO ENTRE OS NOMES CERTOS E OS NOMES NO BD
+
+variaveis_relacao <- variaveis_incom_nomes
+names(variaveis_relacao) <- variaveis_incom
+
+#tem que mudar esse nome aqui, por algum motivo nao tava gerando a variavel dentro
+#do render plot
+
+variaveis <- NA
+var_names <- NA
+
+#DESCRICOES -------------------
+desc_incom <- 'análise das informações que estão faltando na base de dados, seja porque não foram preenchidas (“dados em branco”) ou porque a resposta era desconhecida (“dados ignorados”).'
+desc_implau <- "análise das informações que são improváveis e/ou dificilmente possam ser consideradas aceitáveis dadas as características de sua natureza."
+desc_incon <- "informações que parecem ilógicas e/ou incompatíveis a partir da análise da combinação dos dados informados em dois ou mais campos do formulário."
+
+
+
+#VARIAVEIS DISPONIVEIS PARA INCONSISTENCIA
+
+vars_incon <- gsub('_',' ',colnames(dados_incon[,167:(ncol(dados_incon)-4)]))
+names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-4)])
+

@@ -1,6 +1,8 @@
 # Qualidados em Modulos
 Qualidados com Modulos e Golem para melhor otimização do código.
 Segue o modelo de armazenamento do conjunto de arquivos.
+## O Painel
+O objetivo do painel é apresentar qualidade dos dados para SIVEP-Gripe, SINASC e SIM, onde apresentamos os indicadores de qualidade: incompletude, inconsistência e implausibilidade, de maneira intuitiva e simples ao usuário. Com botões de ajuda e informações a respeito de todos os conjuntos de dados e variáveis disponíveis. O projeto se encontra atualmente em construção, mas está sendo constantemente atualizado via plataforma atual.
 ## Estrutura do repositório:
     
     
@@ -13,6 +15,7 @@ Segue o modelo de armazenamento do conjunto de arquivos.
          └── mod_SIVEP_fct_importacao.R
          └── run_app.R
          └── utils_helpers.R
+         └── fct_informacoes.R
       ├─── dev
       ├─── inst
       ├─── man 
@@ -34,21 +37,23 @@ Aqui está presente o modulo que representa a aba de incompletude bem como uma r
 -
 -
 #### Parte de inconsistência:
---
+-
 -
 -
 -
 -
 ### mod_SIVEP_fct_importação.R
-Utilizado de forma auxiliar para importação dos bancos de dados necessários, bem como as alterações necessárias em cada um deles e variáveis auxiliáres, como nome dos municípios.
+Utilizado de forma auxiliar para importação dos bancos de dados necessários, bem como as alterações necessárias em cada um deles e variáveis auxiliáres.
 ### utils_helpers.R
 Funções menores auxiliáres utilizadas nos módulos
 ### app_server.R
 Server principal onde são feitas as linkagens com os módulos
 ### app_ui.R
 Bem como o server.R, esse arquivo tem como função a linkagem da parte do usuário dos módulos bem como padronização do _dashboard_ ao que se refere a _header_ e _sidebar_.
+### fct_informacoes
+Contem informacoes importantes para a filtragem e análise, como nomes disponíveis para as variáveis em cada tipo de indicador, bem como nome dos estados disponiveis no banco de dado. Alem da devida descrição dos indicadores
 ## \dev
 ## \inst
 ## \man
 ## \data1
-Armazenamento dos bancos de dados utilizados na produção do dash
+Armazenamento dos bancos de dados utilizados na produção do _dashboard_ . Usando arquivos .json para descrição das variáveis em estudo para cada um dos indicadores

@@ -1,0 +1,20 @@
+{
+    "CS_SEXO_e_CS_GESTANT": "Se campo CS_SEXO for 1 ou 9 e o campo CS_GESTANT estiver preenchido com 1, 2, 3 ou 4",
+    "FATOR_RISC_e_COMORBIDADES": "Se campo FATOR_RISC estiver marcado como 2 ou 9 e qualquer um dos campos CARDIOPATI, HEMATOLOGI, SIND_DOWN, HEPATICA, ASMA, DIABETES, NEUROLOGIC, PNEUMOPATI, IMUNODEPRE, RENAL, OBESIDADE, OBES_IMC, OUT_MORBI estivcer preenchido como 1; Se campo FATOR_RISC estiver marcado como 1 e NENHUM dos campos de CARDIOPATI, HEMATOLOGI, SIND_DOWN, HEPATICA, ASMA, DIABETES, NEUROLOGIC, PNEUMOPATI, IMUNODEPRE, RENAL, OBESIDADE, OBES_IMC, OUT_MORBI estiver marcado como 1",
+    "VACINA_e_DT_UT_DOSE": "Se campo VACINA estiver marcado como 2 ou 9 e o campo DT_UT_DOSE estiver preenchido ",
+    "MAE_VAC_e_DT_VAC_MAE": "Se campo MAE_VAC estiver marcado como 2 ou 9 e o campo DT_VAC_MAE estiver preenchido",
+    "DT_DOSEUNI_e_NU_IDADE_N": "\u00c9 inconsistente se o campo DT_DOSEUNI estiver preenchido e o campo NU_IDADE_N for <= 6meses ou >= 8 anos",
+    "ANTIVIRAL_e_TP_ANTIVIR": "Se campo ANTIVIRAL for 2 ou 9 e o campo TP_ANTIVIR for 1, 2 ou 3",
+    "HOSPITAL_e_DT_INTERNA": "Se o campo HOSPITAL estiver como 2 ou 9 e o campo DT_INTERNA estiver preenchido",
+    "UTI_e_DT_ENTUTI": "Se o campo UTI estiver como 2 ou 9 e o campo DT_ENTUTI estiver preenchido; ou se o campo HOSPITAL estiver como 2 ou 9 e o campo UTI estiver como 1",
+    "RAIOX_RES_e_DT_RAIOX": "Se o campo RAIOX_RES estiver como 6 ou 9 e o campo DT_RAIOX estiver preenchido",
+    "AMOSTRA_e_DT_COLETA": "Se o campo AMOSTRA estiver como 6 ou 9 e o campo DT_COLETA estiver preenchido",
+    "HISTO_VGM_e_Campos_VGMs": "Se campo HISTO_VGM for 2 ou 9 e os campos LO_PS_VGM, DT_VGM, DT_RT_VGM estiverem preenchidos",
+    "TOMO_RES_e_DT_TOMO": "Se o campo TOMO_RES estiver 6 ou 9 e o campo DT_TOMO estiver preenchido",
+    "TP_TES_AN_e_DT_RES_AN": "Se campo RES_AN for 4 e o campo TP_TES_AN for 1 ou 2; se campo RES_AN for 4 e o campo DT_RES_AN estiver preenchido",
+    "VACINA_COV_e_DOSES": "se campo VACINA_COV for 2 ou 9 e os campos DOSE_1_COV ou DOSE_2_COV estiverem preenchidos",
+    "CLASSI_FIN_SRAG_INFLUENZA": "se o campo CLASSI_FIN estiver como 1 E [(o campo POS_PCRFLU estiver como 2 ou 9) E (o campo POS_AN_FLU estiver como 2 ou 9)]",
+    "CLASSI_FIN_SRAG_OUTROS_VIRUS": "se o campo CLASSI_FIN estiver como 1 E [(o campo PCR_OUTRO estiver como 2 ou 9) E (o campo AN_OUTRO estiver como 2 ou 9)]",
+    "CLASSI_FIN_SRAG_NAO_ESPECIFICADO": "Definir, a mensagem original \u00e9 mto grande",
+    "CLASSI_FIN_SRAG_POR_COVID": "Definir, a mensagem original \u00e9 mto grande"
+}

@@ -92,6 +92,32 @@ dados_incon  <- read_csv("data1/SIVEP_Inconsistencias.csv")
 dados_incon[['ID_MUNICIP']] <- dados_incon$ID_REGIONA
 dados_incon <- dados_incon %>%
   mutate(
+    classi_gesta_puerp = case_when(
+    CS_GESTANT == 1  ~ "1tri",
+    CS_GESTANT == 2  ~ "2tri",
+    CS_GESTANT == 3  ~ "3tri",
+    CS_GESTANT == 4  ~ "IG_ig",
+    CS_GESTANT == 5 &
+      PUERPERA == 1 ~ "puerp",
+    CS_GESTANT == 9 & PUERPERA == 1 ~ "puerp",
+    TRUE ~ "não"),
+    dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
+    dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
+    ano = lubridate::year(dt_sint),
+    muni_nm_clean = paste(ID_MUNICIP, "-", SG_UF_NOT)
+  )
+dados_implau <- dados_implau %>%
+  mutate(
+    classi_gesta_puerp = case_when(
+      CS_GESTANT == 1  ~ "1tri",
+      CS_GESTANT == 2  ~ "2tri",
+      CS_GESTANT == 3  ~ "3tri",
+      CS_GESTANT == 4  ~ "IG_ig",
+      CS_GESTANT == 5 &
+        PUERPERA == 1 ~ "puerp",
+      CS_GESTANT == 9 & PUERPERA == 1 ~ "puerp",
+      TRUE ~ "não"
+    ),
     dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
     dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
     ano = lubridate::year(dt_sint),
@@ -135,6 +161,8 @@ desc_incon <- "informações que parecem ilógicas e/ou incompatíveis a partir 
 
 #VARIAVEIS DISPONIVEIS PARA INCONSISTENCIA
 
-vars_incon <- gsub('_',' ',colnames(dados_incon[,167:(ncol(dados_incon)-4)]))
-names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-4)])
+vars_incon <- gsub('_e_',' e ',colnames(dados_incon[,167:(ncol(dados_incon)-5)]))
+vars_incon <- gsub('_INCONSISTENTES','',vars_incon)
+names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-5)])
 
+var1 <- unname(vars_incon)[1:4]

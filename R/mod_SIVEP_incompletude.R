@@ -110,9 +110,10 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       checkboxGroupInput(
                         inputId = ns("Exib_Dados"),
                         label = "Exibir dados:",
-                        choices = c("Dado Inconsistente" = "incon",
-                                    "Dado Válido" = "valido"),
-                        selected = c("incon"))
+                        choices = c("Dado Inconsistente",
+                                    "Dado Válido"),
+                        selected = c("Dado Inconsistente",
+                                     "Dado Válido"))
                     },
                     if(indicador == 'incon'){
                       tippy::tippy_this(
@@ -917,16 +918,10 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           )
 
         Dados_GraficoIncon <- Dados_GraficoIncon %>%
-          filter(as.character(data) >= '2020-03')
-        VarSelecionadas <- Dados_GraficoIncon[variaveis]
-
+         filter(as.character(data) >= '2020-03')
 
         #CONVERTER VARIAVEIS SELECIONADAS PARA BINARIO PARA CALCULO DE PORCENTAGEM --------------
-        VarSelecionadas <- Dados_GraficoIncon[variaveis]
-
-        VarSelecionadas <- sapply(VarSelecionadas, as.numeric)
-
-        Dados_GraficoIncon[variaveis] <- VarSelecionadas
+        Dados_GraficoIncon[variaveis] <- sapply(Dados_GraficoIncon[variaveis], as.numeric)
 
         Dados_GraficoIncon <- Dados_GraficoIncon %>%
           tidyr::pivot_longer(
@@ -996,28 +991,144 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           Dados_GraficoIncon1 <- rbind( Dados_GraficoIncon1,Dados_GraficoIncon2)
 
         }
-
         Dados_GraficoIncon1$value <- round(Dados_GraficoIncon1$value * 100, 2)
         #FINALIZACAO COM GGPLOT -------------------------
         g <- ggplot(data = Dados_GraficoIncon1,
-                    aes(y=value, x=data , fill = localidade)) +
-          geom_bar(position="dodge", stat="identity") +
-          facet_grid(rows = vars(variable), labeller=var_labeller)
+                    aes(y = value, x = data, fill = localidade)) +
+          geom_bar(position = "dodge", stat = "identity") +
+          facet_grid(rows = vars(variable))
 
         g <- g + labs(x = NULL) +
-          labs(y = "Incompletude (%)", fill = "Localidade") +
-          scale_y_continuous(breaks = seq(0,100,20), limits = c(0, 100)) +
+          labs(y = "Inconsistência (%)", fill = "Localidade") +
+          scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
           scale_fill_viridis_d() +
           theme_bw() +
           theme(axis.text.x = element_text(
-            face="bold",
-            color="#000000",
-            size=9,
-            angle=45
+            face = "bold",
+            color = "#000000",
+            size = 9,
+            angle = 45
           ))
 
-        ggplotly(g, height=length(variaveis)*125) %>% layout(legend = list(orientation = "h", y = 20))
+        ggplotly(g, height = c(length(variaveis) * 150)) %>%
+          layout(legend = list(orientation = "h", y = 20))})
+
+      selectDataFiltro <- reactive({
+        variaveis <- NA
+        var_names <- NA
+        for(var in input$Graf_Variaveis_Incon){
+          variaveis <- c(variaveis,names(vars_incon[vars_incon == var]))
+          var_names <- c(var_names,vars_incon[vars_incon == var])
+        }
+        variaveis <- variaveis[!is.na(variaveis)]
+        var_names <- var_names[!is.na(var_names)]
+        #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
+        Dados_GraficoIncon <- dados_incon %>%
+          dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+        Dados_GraficoIncon$data <-
+          with(
+            Dados_GraficoIncon,
+            format(Dados_GraficoIncon$dt_sint, "%Y-%m")
+          )
+
+        Dados_GraficoIncon <- Dados_GraficoIncon %>%
+          filter(as.character(data) >= '2020-03')
+        VarSelecionadas <- Dados_GraficoIncon[variaveis]
+
+        Dados_GraficoIncon <- Dados_GraficoIncon %>%
+          tidyr::pivot_longer(
+            cols = all_of(variaveis),
+            names_to = "variable",
+            values_to = "value"
+          )
+        #FILTRAGEM E FINALIZACAO POR TIPO DE LOCALIDADE ---------------
+        if (input$Graf_OpcaoLocalidade == 'br') {
+          Dados_GraficoIncon1 <- Dados_GraficoIncon[c('variable', 'value', 'data')]
+
+        } else {
+          Dados_GraficoIncon1 <- Dados_GraficoIncon[c('variable', 'value','SG_UF', 'muni_nm_clean', 'data')]
+
+          if (input$Graf_OpcaoLocalidade == "muni") {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              filter(muni_nm_clean == input$Graf_muni)
+
+          } else {
+            Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
+              filter(SG_UF == input$Graf_Estado)
+
+          }
+
+        }
+
+        Dados_GraficoIncon1
       })
+
+      selectDataTable <- reactive({
+        data <- selectDataFiltro()
+        data <- data %>%
+          mutate(Dado = case_when(
+            stringr::str_detect(value, "FALSE") ~ "Dado Válido",
+            stringr::str_detect(value, "TRUE") ~ "Dado Inconsistente"
+          ),
+          variavel = gsub('_e_',' e ',variable)
+          ) %>%
+          filter(Dado %in% input$Exib_Dados)
+        data <- data[4:ncol(data)]
+        data <- data  %>% group_by(variavel,Dado)%>% count()
+        data[['variavel']] <- gsub('_INCONSISTENTES','', data[['variavel']])
+        data
+      })
+
+      for(i in 1:35){
+        local({
+          my_i <- i
+          output[[paste('print',i,sep='')]] <- renderText({
+            if(unname(vars_incon)[my_i] %in% input$Graf_Variaveis_Incon){
+              dados <-  selectDataTable()
+              dados <- dados[dados$variavel == unname(vars_incon[my_i]),]
+              dados[['%']] <- round(((dados$n*100)/sum(dados$n)),2)
+              total <- data.frame(variavel = 'Total',
+                                  Dado = 'Total',
+                                  n = sum(dados$n))
+              total[['%']] <- sum(dados[['%']])
+              dados <- rbind(dados,total)
+
+              kableExtra::kable(dados[,c(2:4)],
+                                caption = paste0(unname(vars_incon)[my_i]),
+                                digits  = 2
+              ) %>%
+                kableExtra::kable_styling()}
+          })
+        })
+      }
+
+      # selectDataMicro <- reactive({
+      #   variaveis <- NA
+      #   var_names <- NA
+      #   for(var in input$Graf_Variaveis_Incon){
+      #     variaveis <- c(variaveis,names(vars_incon[vars_incon == var]))
+      #     var_names <- c(var_names,vars_incon[vars_incon == var])
+      #   }
+      #   #TIRAR OS VALORES NA INICIAIS
+      #   var_labeller <- function(variable, value){
+      #     return(var_names[value])
+      #   }
+      #   variaveis <- variaveis[!is.na(variaveis)]
+      #   var_names <- var_names[!is.na(var_names)]
+      #   #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
+      #   Dados_GraficoIncon <- dados_incon %>%
+      #     dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
+      #     dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+      #   #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
+      #   Dados_GraficoIncon$data <-
+      #     with(
+      #       Dados_GraficoIncon,
+      #       format(Dados_GraficoIncon$dt_sint, "%Y-%m")
+      #     )
+      #   purrr::map_chr(variaveis, function(x) stringr::str_split(x, " e ")[[1]][1])
+      #
+      # })
 
     }
   })

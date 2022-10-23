@@ -53,6 +53,11 @@ app_ui <- function(request) {
                     menuSubItem("Inconsistência",
                                 tabName = "incons_sim")
                   ),
+                  menuItem(
+                    'DICIONÁRIO',
+                    tabname = 'dic',
+                    icon = icon('book')
+                  ),
                   actionButton('help','Ajuda',icon('question',lib="font-awesome"),
                     style =  "color: #0A1E3;
                               background-color: white;

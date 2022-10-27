@@ -57,3 +57,18 @@ Contem informacoes importantes para a filtragem e análise, como nomes disponív
 ## \man
 ## \data1
 Armazenamento dos bancos de dados utilizados na produção do _dashboard_ . Usando arquivos .json para descrição das variáveis em estudo para cada um dos indicadores
+
+# Ajustes a serem feitos e discutidos
+
+## mod_SIVEP_incompletude
+
+- Necessário alteração referente a nome de variáveis para generalização já que agora está sendo utilizado apenas 1 mod para todo SIVEP-Gripe
+- Os filtros para casos finalizados na implausibilidade e na Inconsistencia (pode tirar) OK
+- Discutir a respeito das legendas na aba de inconsistencia (tirar o filtro dado plausivel, e o filtro completo para aba tabelas de implausibilidade) OK
+- Arrumar um jeito de ajustar o tamanho dinamico dos graficos(talvez deixar independente ou usar outra funcao ao inves do facet_grid())
+- arrumar um reactive table para os graficos de forma a consumir menos memoria
+- construção da parte de dicionario de dados com base em um .MD
+- Filtro para exibir dados em graficos OK
+- Verificar banco de dados de inconsistencias, muitas variaveis sem inconsistencia OK
+- Ver como vai ficar a parte de microdados OK
+(colocar micro dados com um filtro de variaveis como coluna e inconsistencia como linha) OK

@@ -8,13 +8,13 @@
 #'
 #' @importFrom shiny NS tagList
 mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
-                                      indicador){
-  ns <- NS(id)
-  library(shiny)
-  library(shinydashboard)
-  library(plotly)
-  useShinyjs()
-  tabItem(tabName = tabname,
+                                      indicador,municipios, estados){
+    ns <- NS(id)
+    library(shiny)
+    library(shinydashboard)
+    library(plotly)
+    useShinyjs()
+    tabItem(tabName = tabname,
               #DESCRICAO -----------
               fluidRow(
                 box(
@@ -44,7 +44,7 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       multiple = T),
                     #FILTRO DE DIAGNOSTICO DE SRAG
                     checkboxGroupInput(
-                      inputId = ns("Graf_DiagonisticoSRAG_Incon"),
+                      inputId = ns("Graf_DiagonisticoSRAG"),
                       label = "Diagnóstico de SRAG",
                       choices = c(
                         "COVID-19" = "5",
@@ -56,7 +56,7 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       selected = c("5")),
                     #FILTRO DE CONDICAO
                     tippy::tippy_this(
-                      elementId = ns("Graf_DiagonisticoSRAG_Incon"),
+                      elementId = ns("Graf_DiagonisticoSRAG"),
                       tooltip = "Causa da Sindrome Respiratória Aguda Grave (SRAG).",
                       placement = "right"),
                     checkboxGroupInput(
@@ -69,15 +69,17 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                         "Puérperas" = "puerp"),
                       selected = c("1tri", "2tri", "3tri", "puerp")),
                     #FILTRO DE EXIBICAO OU NAO DE CASOS FINALIZADOS
+                    if(indicador=='incom'){
                     checkboxGroupInput(
                       inputId = ns("Exib_Finalizados"),
                       label = "Casos Finalizados:",
-                      choices = c("Exibir casos finalizados" = "cf")),
+                      choices = c("Exibir casos finalizados" = "cf"))},
                     #DESCRICAO EXIB_FINALIZADOS
+                    if(indicador =='incom'){
                     tippy::tippy_this(
                       elementId = ns("Exib_Finalizados"),
                       tooltip = "Casos em que se tem informação sobre a evolução.",
-                      placement = "right"),
+                      placement = "right")},
                     #FILTRO PARA TIPOS DE DADOS, IGNORADOS OU EM BRANCO
                     if(indicador == 'incom'){
                       checkboxGroupInput(
@@ -96,29 +98,13 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       inputId = ns("Exib_Dados2"),
                       label = "Exibir dados:",
                       choices = c("Dado Improvável",
-                                    "Dado Impossível", 'Dado Plausível'),
+                                    "Dado Impossível"),
                       selected = c("Dado Improvável",
-                                "Dado Impossível", 'Dado Plausível'))},
+                                "Dado Impossível"))},
                     if(indicador =='implau'){
                       tippy::tippy_this(
                         elementId = ns('Exib_Dados2'),
                         tooltip = 'Tipos de implausibilidades, a opção Dado Plausível so pode ser utilizada na sessão de tabelas',
-                        placement = 'right'
-                      )
-                    },
-                    if(indicador == 'incon'){
-                      checkboxGroupInput(
-                        inputId = ns("Exib_Dados"),
-                        label = "Exibir dados:",
-                        choices = c("Dado Inconsistente",
-                                    "Dado Válido"),
-                        selected = c("Dado Inconsistente",
-                                     "Dado Válido"))
-                    },
-                    if(indicador == 'incon'){
-                      tippy::tippy_this(
-                        elementId = ns('Exib_Dados'),
-                        tooltip = 'Dados que ao comparar duas variáveis não fazem sentido ( verificar com professora )',
                         placement = 'right'
                       )
                     },
@@ -138,15 +124,15 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       selectInput(
                         ns("Graf_Estado"),
                         "Selecione o estado",
-                        choices = estadosChoices,
-                        selected = c("ES"))),
+                        choices = estados,
+                        selected = estados[1])),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
                     conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoLocalidade")),
                       selectInput(
                         ns("Graf_muni"),
                         "Selecione o município",
-                        choices = c(unique(dados_incom$muni_nm_clean)))),
+                        choices = sort(unique(municipios)))),
                     #FAZER COMPARACAO
                       selectInput(
                       ns("Graf_OpcaoComparar"),
@@ -168,15 +154,15 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                       selectInput(
                         ns("Graf_CompararEstado"),
                         "Estado de comparação",
-                        choices = estadosChoices,
-                        selected = "ES"
+                        choices = estados,
+                        selected = estados[1]
                       )),
                     conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoComparar")),
                       selectInput(
                         ns("Graf_CompararMunicipio"),
                         "Município de comparação",
-                        c(unique(dados_incom$muni_nm_clean))
+                        c(unique(municipios))
                       )
                     )
                 ),
@@ -236,6 +222,15 @@ mod_SIVEP_incompletude_ui <- function(id, tabname, vars_incon , descricao,
                           ),
                           #TABELAS EXPLICATIVAS
                           tabPanel("Microdados",
+                                    if(indicador == 'incon'){
+                                      shinyWidgets::pickerInput(
+                                        inputId = ns("Vars_microdados_incon"),
+                                        label = "Variaveis",
+                                        choices = sort(Var_micro_incon),
+                                        selected = Var_micro_incon[1:3],
+                                        options = list(`actions-box` = TRUE),
+                                        multiple = T)
+                                     },
                                  reactable::reactableOutput(ns("table_incom")))
                           )))))
 
@@ -267,7 +262,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
         Dados_GraficoIncompletudeIniciais <- dados_incom %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
         #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
         Dados_GraficoIncompletudeIniciais$data <- with(Dados_GraficoIncompletudeIniciais,
                                                        sprintf("%d-%02d", ano, mes))
@@ -400,7 +395,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
       selectData <- reactive({
         df <- dados_incom %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon) %>%
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG) %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
           dplyr::filter(if(input$Graf_OpcaoLocalidade == "est")
             SG_UF == input$Graf_Estado
@@ -458,7 +453,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         variaveis <- variaveis[!is.na(variaveis)]
         var_names <- var_names[!is.na(var_names)]
         Dados_microdados <-  dados_incom %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon) %>%
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG) %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon)
         if("cf" %in% input$Exib_Finalizados)
         {
@@ -555,7 +550,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
            variaveis <- variaveis[!is.na(variaveis)]
            Dados_GraficoImplauIniciais <- dados_implau %>%
              dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-             dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+             dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
 
            # cria coluna de ano data para o grafico
            Dados_GraficoImplauIniciais$data <-
@@ -704,7 +699,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
         Dados_TabelaImplau <- dados_implau %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
 
         # cria coluna de ano data para o grafico
         Dados_TabelaImplau$data <-
@@ -745,13 +740,6 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
 
         variaveis_tab <- sort(variaveis_tab)
 
-        #Filtra os casos finalizados
-        # if ("cf" %in% input$Exib_Finalizados)
-        # {
-        #   Dados_GraficoIncompletudeIniciais <-
-        #     Dados_GraficoIncompletudeIniciais %>%
-        #     filter(f_evolucao == 'Dados válidos')
-        # }
         Dados_TabelaImplau <- selectDataAux()
         Dados_TabelaImplau <-
           Dados_TabelaImplau %>%
@@ -770,8 +758,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
           motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
-          ) %>%
-          filter(imps %in% input$Exib_Dados2)
+          )
 
         columns <- unique(c("SG_UF", "ID_MUNICIP", input$Graf_Variaveis_Incon, "motivo"))
 
@@ -810,13 +797,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           Dados_TabelaImplau[Dados_TabelaImplau[[paste0(var,'_IMPROVAVEL')]] == TRUE,paste0(var,'_IMPLAUSIVEL')] <- FALSE
         }
       }
-      #Filtra os casos finalizados
-      # if ("cf" %in% input$Exib_Finalizados)
-      # {
-      #   Dados_GraficoIncompletudeIniciais <-
-      #     Dados_GraficoIncompletudeIniciais %>%
-      #     filter(f_evolucao == 'Dados válidos')
-      # }
+
       variaveis_tab <- union(variaveis_tab,paste0(var_valida,'_IMPLAUSIVEL')) %>% sort()
       Dados_TabelaImplau <-
         Dados_TabelaImplau %>%
@@ -834,8 +815,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
           TRUE ~ as.character(variable)
         ),
         variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1])#,
-        ) %>%
-        filter(Dado %in% input$Exib_Dados2)
+        )
 
         Dados_TabelaImplau  <- Dados_TabelaImplau %>%
                count(variavel,Dado)
@@ -867,7 +847,54 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
        }
 
       output$table_incom <- reactable::renderReactable({
-        Dados_TabelaImplau <- selectData()
+        variaveis_tab <- vector()
+        var_valida <- vector()
+        for(var_tab in input$Graf_Variaveis_Incon) {
+          if (var_tab == "NU_IDADE_N") {
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPROVAVEL"))
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPOSSIVEL"))
+          } else{
+            variaveis_tab <-
+              union(variaveis_tab,
+                    paste0(var_tab, "_IMPOSSIVEL"))
+          }
+          var_valida <- union(var_tab,var_valida)
+        }
+
+        variaveis_tab <- sort(variaveis_tab)
+
+        Dados_TabelaImplau <- selectDataAux()
+        Dados_TabelaImplau <-
+          Dados_TabelaImplau %>%
+          tidyr::pivot_longer(cols = all_of(variaveis_tab),
+                              names_to = "variable",
+                              values_to = "value")
+
+        Dados_TabelaImplau <- Dados_TabelaImplau %>%
+          filter(value)
+
+        Dados_TabelaImplau <- Dados_TabelaImplau %>%
+          mutate(imps = case_when(
+            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
+            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
+            TRUE ~ as.character(variable)
+          ),
+          variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
+          motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
+          )  %>%
+          filter(imps %in% input$Exib_Dados2)
+
+        columns <- unique(c("SG_UF", "ID_MUNICIP", input$Graf_Variaveis_Incon, "motivo"))
+
+        Dados_TabelaImplau <- Dados_TabelaImplau %>%
+          filter(variavel %in% columns) %>%
+          arrange(SG_UF)
+
+        Dados_TabelaImplau <- Dados_TabelaImplau[, columns]
 
       reactable::reactable(Dados_TabelaImplau, groupBy = c("motivo", "SG_UF"),
                            filterable = TRUE,
@@ -909,7 +936,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
         Dados_GraficoIncon <- dados_incon %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
         #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
         Dados_GraficoIncon$data <-
           with(
@@ -1025,7 +1052,7 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
         Dados_GraficoIncon <- dados_incon %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
+          dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
         Dados_GraficoIncon$data <-
           with(
             Dados_GraficoIncon,
@@ -1103,32 +1130,72 @@ mod_SIVEP_incompletude_server <- function(id, indicador){
         })
       }
 
-      # selectDataMicro <- reactive({
-      #   variaveis <- NA
-      #   var_names <- NA
-      #   for(var in input$Graf_Variaveis_Incon){
-      #     variaveis <- c(variaveis,names(vars_incon[vars_incon == var]))
-      #     var_names <- c(var_names,vars_incon[vars_incon == var])
-      #   }
-      #   #TIRAR OS VALORES NA INICIAIS
-      #   var_labeller <- function(variable, value){
-      #     return(var_names[value])
-      #   }
-      #   variaveis <- variaveis[!is.na(variaveis)]
-      #   var_names <- var_names[!is.na(var_names)]
-      #   #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
-      #   Dados_GraficoIncon <- dados_incon %>%
-      #     dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
-      #     dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG_Incon)
-      #   #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
-      #   Dados_GraficoIncon$data <-
-      #     with(
-      #       Dados_GraficoIncon,
-      #       format(Dados_GraficoIncon$dt_sint, "%Y-%m")
-      #     )
-      #   purrr::map_chr(variaveis, function(x) stringr::str_split(x, " e ")[[1]][1])
-      #
-      # })
+      selectDataMicro <- reactive({
+          variaveis <- NA
+          var_names <- NA
+          for(var in input$Graf_Variaveis_Incon){
+            variaveis <- c(variaveis,names(vars_incon[vars_incon == var]))
+            var_names <- c(var_names,vars_incon[vars_incon == var])
+          }
+          #TIRAR OS VALORES NA INICIAIS
+          var_labeller <- function(variable, value){
+            return(var_names[value])
+          }
+          variaveis <- variaveis[!is.na(variaveis)]
+          var_names <- var_names[!is.na(var_names)]
+          #FILTRAR POR CLASSI_FIN E CLASSE DE GESTANTE SELECIONADA
+          Dados_GraficoIncon <- dados_incon %>%
+            dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
+            dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG)
+          #CRIAR ANO E DATA E FILTRAR DATAS APOS 2020-3
+          Dados_GraficoIncon$data <-
+            with(
+              Dados_GraficoIncon,
+              format(Dados_GraficoIncon$dt_sint, "%Y-%m")
+            )
+          Dados_GraficoIncon <- Dados_GraficoIncon %>%
+            filter(as.character(data) >= '2020-03')
+          VarSelecionadas <- Dados_GraficoIncon[variaveis]
+          if(input$Graf_OpcaoLocalidade == 'est'){
+            Dados_GraficoIncon <- Dados_GraficoIncon[Dados_GraficoIncon$SG_UF == input$Graf_Estado,]
+          } else if(input$Graf_OpcaoLocalidade == 'muni'){
+            Dados_GraficoIncon <- Dados_GraficoIncon[Dados_GraficoIncon$muni_nm_clean == input$Graf_muni,]
+          }
+          Dados_GraficoIncon <- Dados_GraficoIncon[is.na(Dados_GraficoIncon$SG_UF) == F,]
+          Dados_GraficoIncon <- Dados_GraficoIncon %>%
+            tidyr::pivot_longer(
+              cols = all_of(variaveis),
+              names_to = "variable",
+              values_to = "value"
+            )
+          colunas <- input$Vars_microdados_incon
+          Dados_GraficoIncon1 <- Dados_GraficoIncon[,c('variable', 'value','SG_UF','muni_nm_clean',colunas)]
+          Dados_GraficoIncon1$variable <-   gsub('_e_',' e ',Dados_GraficoIncon1$variable)
+          Dados_GraficoIncon1$variable <-   gsub('_INCONSISTENTES','',Dados_GraficoIncon1$variable)
+          names(Dados_GraficoIncon1)[c(1,4)] <- c('Inconsistência','MUNICIPIO')
+          Dados_GraficoIncon2 <- Dados_GraficoIncon1[Dados_GraficoIncon1$value==TRUE,c(1,3:ncol(Dados_GraficoIncon1))]
+          })
+
+      output$table_incom <- reactable::renderReactable({
+        Dados_TabelaIncon <- selectDataMicro()
+        reactable::reactable(Dados_TabelaIncon, groupBy = c('Inconsistência',"SG_UF", "MUNICIPIO"),
+                                                 filterable = TRUE,
+                                                 showSortable = TRUE,
+                                                 searchable = TRUE,
+                                                 showPageSizeOptions = TRUE,
+                                                 pageSizeOptions = c(10, 15, 27),
+                                                 defaultPageSize = 27,
+                                                 striped = TRUE,
+                                                 highlight = TRUE,
+                                                 theme = reactable::reactableTheme(
+                                                   color = "#000000",
+                                                   borderColor = "#dfe2e5",
+                                                   stripedColor = "#f6f8fa",
+                                                   highlightColor = "#f0f5f9",
+                                                   cellPadding = "8px 12px",
+                                                   style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+                                                   searchInputStyle = list(width = "100%")))
+        })
 
     }
   })

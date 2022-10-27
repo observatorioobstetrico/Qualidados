@@ -5,7 +5,6 @@
 #' @noRd
 #'
 
-descricao_incon <- c('O medo é a principal arma da virtude, pois o desejo engana a juventude')
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -68,17 +67,23 @@ app_ui <- function(request) {
               mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude",
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",
-                                        descricao =  desc_incom ,indicador = 'incom'),
+                                        descricao =  desc_incom ,indicador = 'incom',
+                                        municipios =dados_incom$muni_nm_clean,
+                                        estados= unique(dados_incom$SG_UF)),
 
               mod_SIVEP_incompletude_ui(id = "SIVEP_implausibilidade",
                                         vars_incon = var_dados_implau,
                                         tabname ="implau_sivep",
-                                        descricao = desc_implau,indicador = 'implau'),
+                                        descricao = desc_implau,indicador = 'implau',
+                                        municipios = dados_implau$muni_nm_clean,
+                                        estados = unique(dados_implau$SG_UF)),
 
               mod_SIVEP_incompletude_ui(id = "SIVEP_inconsistencia",
                                         vars_incon = unname(vars_incon),
                                         tabname ="incons_sivep",
-                                        descricao = desc_incon,indicador = 'incon')),
+                                        descricao = desc_incon,indicador = 'incon',
+                                        municipios = dados_incon$muni_nm_clean,
+                                        estados = unique(dados_incon$SG_UF)))
                   )
                 )
               )

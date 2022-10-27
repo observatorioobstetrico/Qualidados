@@ -125,10 +125,10 @@ dados_implau <- dados_implau %>%
   )
 #-----------------------
 #ESTADOS DISPONIVEIS PARA FILTRAGEM ------------
-estadosChoices <- c(
-  "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA",
-  "MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN",
-  "RO","RR","RS","SC","SE","SP","TO")
+# estadosChoices <- c(
+#   "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA",
+#   "MG","MS","MT","PA","PB","PE","PI","PR","RJ","RN",
+#   "RO","RR","RS","SC","SE","SP","TO")
 
 #VARIAVEIS DISPONIVEIS PARA INCOMPLETUDE -------------------
 
@@ -166,3 +166,6 @@ vars_incon <- gsub('_INCONSISTENTES','',vars_incon)
 names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-5)])
 
 var1 <- unname(vars_incon)[1:4]
+
+Var_micro_incon <- dados_incon[,c(1:166,185,188)] %>% colnames()
+Var_micro_incon<-Var_micro_incon[stringr::str_detect('SG_UF|ID_MUNICIP',Var_micro_incon) == F]

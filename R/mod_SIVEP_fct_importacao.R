@@ -103,27 +103,32 @@ dados_incon <- dados_incon %>%
     TRUE ~ "não"),
     dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
     dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
-    ano = lubridate::year(dt_sint),
-    muni_nm_clean = paste(ID_MUNICIP, "-", SG_UF_NOT)
+    ano = lubridate::year(dt_sint)
   )
-dados_implau <- dados_implau %>%
-  mutate(
-    classi_gesta_puerp = case_when(
-      CS_GESTANT == 1  ~ "1tri",
-      CS_GESTANT == 2  ~ "2tri",
-      CS_GESTANT == 3  ~ "3tri",
-      CS_GESTANT == 4  ~ "IG_ig",
-      CS_GESTANT == 5 &
-        PUERPERA == 1 ~ "puerp",
-      CS_GESTANT == 9 & PUERPERA == 1 ~ "puerp",
-      TRUE ~ "não"
-    ),
-    dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
-    dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
-    ano = lubridate::year(dt_sint),
-    muni_nm_clean = paste(ID_MUNICIP, "-", SG_UF_NOT)
-  )
+#acertando dados de municipios
+aux_muni <- abjData::muni %>%
+  dplyr::select(muni_id,
+                muni_nm_clean,
+                uf_nm,
+                uf_sigla,
+                regiao_nm) %>%
+  mutate_at("muni_id", as.character)  %>%
+  mutate(cod_mun = stringr::str_sub(muni_id, 1, 6))
+
+dados_aux <- dados_incon %>%
+  dplyr::mutate_at("CO_MUN_RES", as.character) %>%
+  dplyr::rename(cod_mun = CO_MUN_RES) %>%
+  dplyr::left_join(aux_muni, by = "cod_mun")
+
+dados_aux <- dados_aux %>%
+  mutate(muni_nm_clean = ifelse(is.na(muni_nm_clean), ID_MN_RESI, muni_nm_clean))
+dados_incon <- dados_aux
+#para não considerar idênticos municípios de estados diferentes mas com mesmo nome
+dados_aux <- dados_aux %>%
+  mutate(muni_nm_clean = paste(muni_nm_clean, "-", SG_UF))
+
 #-----------------------
+
 #ESTADOS DISPONIVEIS PARA FILTRAGEM ------------
 # estadosChoices <- c(
 #   "AC","AL","AM","AP","BA","CE","DF","ES","GO","MA",

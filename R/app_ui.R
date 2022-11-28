@@ -6,11 +6,13 @@
 #'
 
 app_ui <- function(request) {
+  library(shinydashboard)
+  library(shiny)
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    useShinyjs(),useShinyalert(),
+    shinyjs::useShinyjs(),
             dashboardPage(
               dashboardHeader(title = "Qualidados", titleWidth = 160),
               dashboardSidebar(
@@ -64,26 +66,35 @@ app_ui <- function(request) {
                 )
               ),
               dashboardBody(tabItems(
-              mod_SIVEP_incompletude_ui(id = "SIVEP_incompletude",
+              mod_SIVEP_ui(id = "SIVEP_incompletude",
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",
                                         descricao =  desc_incom ,indicador = 'incom',
                                         municipios =dados_incom$muni_nm_clean,
                                         estados= unique(dados_incom$SG_UF)),
 
-              mod_SIVEP_incompletude_ui(id = "SIVEP_implausibilidade",
+              mod_SIVEP_ui(id = "SIVEP_implausibilidade",
                                         vars_incon = var_dados_implau,
                                         tabname ="implau_sivep",
                                         descricao = desc_implau,indicador = 'implau',
                                         municipios = dados_implau$muni_nm_clean,
                                         estados = unique(dados_implau$SG_UF)),
 
-              mod_SIVEP_incompletude_ui(id = "SIVEP_inconsistencia",
+              mod_SIVEP_ui(id = "SIVEP_inconsistencia",
                                         vars_incon = unname(vars_incon),
                                         tabname ="incons_sivep",
                                         descricao = desc_incon,indicador = 'incon',
                                         municipios = dados_incon$muni_nm_clean,
-                                        estados = unique(dados_incon$SG_UF)))
+                                        estados = unique(dados_incon$SG_UF)),
+                mod_SINASC_ui(id = "SINASC_incompletude",
+                              tabname = "incom_sinasc",
+                              indicador = 'incom',
+                              descricao = 'teste',
+                              vars = vars_incom_sinasc,
+                              estados = unique(Sinasc_incom$ESTADO),
+                              municipios = unique(Sinasc_incom$CODMUNNASC))
+
+              )
                   )
                 )
               )
@@ -103,7 +114,6 @@ golem_add_external_resources <- function() {
     "www",
     app_sys("app/www")
   )
-  includeCSS("inst/app/www/estilo1.css")
   tags$script(HTML("$('body').addClass('fixed');"))
   tags$head(tags$style(
     HTML(

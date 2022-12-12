@@ -220,6 +220,7 @@ mod_SINASC_server <- function(id,indicador){
 
       output$Grafico <- plotly::renderPlotly({
         dados <- data_filtro()
+        dados$VARIAVEL |> is.na()
         h_plot <- input$vars_select %>% unique %>% length()
         h_plot <- h_plot * 125
         if(indicador=='incom'){

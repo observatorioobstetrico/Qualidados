@@ -7,7 +7,9 @@ library(dplyr)
 regras_sinasc_incom <- c(fromJSON(file = 'data1/SINASC_Incompletude_Regras.json'))
 Sinasc_incom <- read_csv("data1/SINASC_Incompletude_v2.csv")
 vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
-
+municipios_SINASC <- read_csv("data1/municipios_SINASC.csv")
+municipios_SINASC$cod <- municipios_SINASC$cod |> as.character()
+municipios_SINASC[municipios_SINASC$cod == 29000,]
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 aux_muni2 <- abjData::muni %>%
   dplyr::select(muni_id,
@@ -18,14 +20,15 @@ aux_muni2 <- abjData::muni %>%
 aux_muni3 <- aux_muni2
 aux_muni3$cod_mun <- aux_muni3$cod_mun |> stringr::str_sub(1,6)
 aux_muni2 <- rbind(aux_muni2,aux_muni3)
-
+aux_muni2[aux_muni2$cod_mun == '290000',]
 Sinasc_incom$CODMUNNASC <- Sinasc_incom$CODMUNNASC |> as.character()
 
-dado_aux <- Sinasc_incom %>%
+Sinasc_incom <- Sinasc_incom %>%
   rename(cod_mun = CODMUNNASC ) %>%
   left_join(aux_muni2 ,by='cod_mun')
-Sinasc_incom$CODMUNNASC <- dado_aux$muni_nm_clean
-Sinasc_incom$ESTADO <- dado_aux$uf_sigla
+Sinasc_incom$CODMUNNASC <- Sinasc_incom$muni_nm_clean
+Sinasc_incom$ESTADO <- Sinasc_incom$uf_sigla
+TESTE <- Sinasc_incom[is.na(Sinasc_incom$muni_nm_clean) == T,]
 
 ############### IMPLAUSIBILIDADE ############################################
 
@@ -40,8 +43,8 @@ vars_implau_sinasc <- vars_implau_sinasc[stringr::str_detect(vars_implau_sinasc,
 
 Sinasc_implau$CODMUNNASC <- Sinasc_implau$CODMUNNASC |> as.character()
 
-dado_aux <- Sinasc_implau %>%
+Sinasc_implau <- Sinasc_implau %>%
   rename(cod_mun = CODMUNNASC ) %>%
   left_join(aux_muni2 ,by='cod_mun')
-Sinasc_implau$CODMUNNASC <- dado_aux$muni_nm_clean
-Sinasc_implau$ESTADO <- dado_aux$uf_sigla
+Sinasc_implau$CODMUNNASC <- Sinasc_implau$muni_nm_clean
+Sinasc_implau$ESTADO <- Sinasc_implau$uf_sigla

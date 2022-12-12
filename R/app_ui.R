@@ -86,13 +86,20 @@ app_ui <- function(request) {
                                         descricao = desc_incon,indicador = 'incon',
                                         municipios = dados_incon$muni_nm_clean,
                                         estados = unique(dados_incon$SG_UF)),
-                mod_SINASC_ui(id = "SINASC_incompletude",
-                              tabname = "incom_sinasc",
-                              indicador = 'incom',
-                              descricao = 'teste',
-                              vars = vars_incom_sinasc,
-                              estados = unique(Sinasc_incom$ESTADO),
-                              municipios = unique(Sinasc_incom$CODMUNNASC))
+              mod_SINASC_ui(id = "SINASC_incompletude",
+                                        tabname = "incom_sinasc",
+                                        indicador = 'incom',
+                                        descricao = 'teste',
+                                        vars = vars_incom_sinasc,
+                                        estados = unique(Sinasc_incom$ESTADO),
+                              municipios = unique(Sinasc_incom$CODMUNNASC)),
+              mod_SINASC_ui(id = "SINASC_implausibilidade",
+                                        tabname = "implau_sinasc",
+                                        indicador = 'implau',
+                                        descricao = 'teste',
+                                        vars = vars_implau_sinasc,
+                                        estados = unique(Sinasc_incom$ESTADO),
+                                        municipios = unique(Sinasc_incom$CODMUNNASC))
 
               )
                   )

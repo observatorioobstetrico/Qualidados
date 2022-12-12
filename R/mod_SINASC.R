@@ -175,13 +175,17 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars, municipios, e
 mod_SINASC_server <- function(id,indicador){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    if(indicador == 'incom'){
-
       #GRAFICOS
       data_filtro <- reactive({
-
         var_value <- input$vars_select
-        dados_inicio <- Sinasc_incom %>%
+        if(indicador == 'incom'){
+          dados_inicio <- Sinasc_incom
+        }
+        if(indicador == 'implau'){
+          dados_inicio <- Sinasc_implau
+          var_value <- paste0(var_value,'_IMPLAUSIVEL')
+        }
+        dados_inicio <- dados_inicio %>%
           dplyr::filter(VARIAVEL %in% var_value) %>%
           dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
         if(input$filtro_loc == 'est'){
@@ -218,8 +222,13 @@ mod_SINASC_server <- function(id,indicador){
         dados <- data_filtro()
         h_plot <- input$vars_select %>% unique %>% length()
         h_plot <- h_plot * 125
+        if(indicador=='incom'){
         dados$value <- dados$NULOS + dados$IGNORADOS
         dados$value <- round((dados$value/dados$TOTAIS)*100,2)
+        }
+        if(indicador == 'implau'){
+        dados$value <- round((dados$IMPLAUSIVEIS/dados$TOTAIS)*100,2)
+        }
 
         #FINALIZACAO COM GGPLOT -------------------------
         g <- ggplot(data = dados,
@@ -244,6 +253,7 @@ mod_SINASC_server <- function(id,indicador){
         })
 
       #TABELAS
+      if(indicador=='incon'){
       data_filtro_tab <- reactive({
         dados <- data_filtro()
         dados <- dados[dados$compara == 1,c('VARIAVEL','NULOS','IGNORADOS','TOTAIS')]
@@ -277,9 +287,45 @@ mod_SINASC_server <- function(id,indicador){
               ) %>%
                 kableExtra::kable_styling()}
         })})
-      }
-    }
+      }}
+      if(indicador == 'implau'){
+        data_filtro_tab <- reactive({
+          dados <- data_filtro()
+          dados <- dados[dados$compara == 1,c('VARIAVEL','IMPLAUSIVEIS','TOTAIS')]
+          dados$VALIDOS <- dados$TOTAIS - (dados$IMPLAUSIVEIS)
+          dados <- dados[,c('VARIAVEL','IMPLAUSIVEIS','VALIDOS','TOTAIS')]
+          dados <- dados %>%
+            plyr::ddply('VARIAVEL',plyr::numcolwise(sum))
+          teste <-as.data.frame(t(dados))
+          names(teste) <- teste[1,]
+          teste <- teste[-1,]
+          teste <- cbind(newColName = rownames(teste), teste)
+          colnames(teste)[1] <- 'DADOS'
+          rownames(teste) <- 1:nrow(teste)
+          teste$DADOS <- c('Dados implausiveis','Dados válidos','Total')
+          names(teste)<-names(teste) |> substr(1,nchar( names(teste))-12)
+          names(teste)[1] <- 'DADOS'
+          teste
+        })
+        for(i in 1:72){
+          local({
+            my_i <- i
+            output[[paste('print',i,sep='')]] <- renderText({
+              if(vars_implau_sinasc[my_i] %in% input$vars_select){
+                dados <- data_filtro_tab()
+                dados <- dados[,c('DADOS',paste0(vars_implau_sinasc[my_i]))]
+                dados[['%']] <- (100*as.numeric(
+                  dados[[paste0(vars_implau_sinasc[my_i])]]))/as.numeric(dados[4,2])
+                colnames(dados) <- c('','n','%')
+                kableExtra::kable(dados,
+                                  caption = paste0('Valores implausiveis para ',vars_implau_sinasc[my_i]),
+                                  digits  = 2
+                ) %>%
+                  kableExtra::kable_styling()}
+            })})
+        }
 
+      }
 
 
   })

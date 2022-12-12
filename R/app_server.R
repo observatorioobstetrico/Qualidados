@@ -5,6 +5,9 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
+  mod_Dicionario_server("Dicionarios_SIVEP")
+  mod_Dicionario_server("Dicionario_SINASC")
+  mod_Dicionario_server("Dicionario_SIM")
   mod_SIVEP_server("SIVEP_incompletude", indicador = 'incom')
   mod_SIVEP_server("SIVEP_implausibilidade", indicador = 'implau')
   mod_SIVEP_server("SIVEP_inconsistencia", indicador = 'incon')

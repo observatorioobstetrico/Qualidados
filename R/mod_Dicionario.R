@@ -12,7 +12,7 @@ mod_Dicionario_ui <- function(id,tabname){
   library(shiny)
   library(shinydashboard)
   useShinyjs()
-  tabItem(tabname = tabname
+  tabItem(tabName = tabname
 
   )
 }

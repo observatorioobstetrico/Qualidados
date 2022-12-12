@@ -29,9 +29,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sivep"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sivep"),
-                    menuSubItem('Dicionário',
-                                tabname = 'dic_sivep')
+                                tabName = "incons_sivep")
+                    # , menuSubItem('Dicionário',
+                    #             tabName = 'dic_sivep')
                   ),
                   menuItem(
                     "SINASC" ,
@@ -42,9 +42,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sinasc"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sinasc"),
-                    menuSubItem('Dicionário',
-                                tabname = 'dic_sinasc')
+                                tabName = "incons_sinasc")
+                    # ,menuSubItem('Dicionário',
+                    #             tabName = 'dic_sinasc')
                   ),
                   menuItem(
                     "SIM" ,
@@ -56,9 +56,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sim"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sim"),
-                    menuSubItem('Dicionário',
-                                tabname = 'dic_sim')
+                                tabName = "incons_sim")
+                    # ,menuSubItem('Dicionário',
+                    #             tabName = 'dic_sim')
                   ),
                   actionButton('help','Ajuda',icon('question',lib="font-awesome"),
                     style =  "color: #0A1E3;
@@ -67,6 +67,9 @@ app_ui <- function(request) {
                 )
               ),
               dashboardBody(tabItems(
+                # mod_Dicionario_ui("Dicionario_SIVEP",tabname = 'dic_sivep'),
+                # mod_Dicionario_ui("Dicionario_SINASC",tabname = 'dic_sinasc'),
+                # mod_Dicionario_ui("Dicionario_SIM",tabname='dic_sim'),
               mod_SIVEP_ui(id = "SIVEP_incompletude",
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",

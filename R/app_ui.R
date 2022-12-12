@@ -29,7 +29,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sivep"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sivep")
+                                tabName = "incons_sivep"),
+                    menuSubItem('Dicionário',
+                                tabname = 'dic_sivep')
                   ),
                   menuItem(
                     "SINASC" ,
@@ -40,7 +42,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sinasc"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sinasc")
+                                tabName = "incons_sinasc"),
+                    menuSubItem('Dicionário',
+                                tabname = 'dic_sinasc')
                   ),
                   menuItem(
                     "SIM" ,
@@ -52,12 +56,9 @@ app_ui <- function(request) {
                     menuSubItem("Implausibilidade",
                                 tabName = "implau_sim"),
                     menuSubItem("Inconsistência",
-                                tabName = "incons_sim")
-                  ),
-                  menuItem(
-                    'DICIONÁRIO',
-                    tabname = 'dic',
-                    icon = icon('book')
+                                tabName = "incons_sim"),
+                    menuSubItem('Dicionário',
+                                tabname = 'dic_sim')
                   ),
                   actionButton('help','Ajuda',icon('question',lib="font-awesome"),
                     style =  "color: #0A1E3;

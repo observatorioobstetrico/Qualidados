@@ -11,7 +11,6 @@ mod_Dicionario_ui <- function(id,tabname){
   ns <- NS(id)
   library(shiny)
   library(shinydashboard)
-  library(plotly)
   useShinyjs()
   tabItem(tabname = tabname
 

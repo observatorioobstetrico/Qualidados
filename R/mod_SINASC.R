@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars, municipios, estados){
+mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
   ns <- NS(id)
     library(shiny)
     library(shinydashboard)
@@ -70,7 +70,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars, municipios, e
                             selectInput(
                               ns("filtro_loc_muni"),
                               "Selecione o município",
-                              choices = sort(unique(municipios)))),
+                              choices = ('municipios'))),
                           selectInput(
                             ns('filtro_compara'),
                             "Fazer comparação?",
@@ -87,7 +87,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars, municipios, e
                             placement = "right"
                           ),
                           conditionalPanel(
-                            condition = sprintf("input['%s'] == 'est'",ns("filtro_compara")),
+                            condition = sprintf("input['%s'] != 'br'",ns("filtro_compara")),
                             selectInput(
                               ns("compara_est"),
                               "Estado de comparação",
@@ -99,7 +99,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars, municipios, e
                             selectInput(
                               ns("compara_muni"),
                               "Município de comparação",
-                              c(unique(municipios))))
+                              ('municipios')))
                   ),
               #VISUALIZACAO
               box(title = 'Visualização',
@@ -176,6 +176,31 @@ mod_SINASC_server <- function(id,indicador){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
       #GRAFICOS
+    #municipios
+    observe({
+      var_value <- input$vars_select
+      if(indicador == 'incom')dado <- Sinasc_incom
+      if(indicador == 'implau'){
+        dado <- Sinasc_implau
+        var_value <- paste0(var_value,'_IMPLAUSIVEL')
+      }
+      x <- input$filtro_loc_est
+      y <- input$compara_est
+      dado <- dado %>%
+        dplyr::filter(VARIAVEL %in% var_value) %>%
+        dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+      muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] |> as.vector()
+      muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] |> as.vector()
+
+      updateSelectInput(session,("filtro_loc_muni"),
+                        choices = muni,
+                        selected = muni[1])
+
+      updateSelectInput(session,("compara_muni"),
+                        choices = muni_comp,
+                        selected = muni_comp[1])
+
+    })
       data_filtro <- reactive({
         var_value <- input$vars_select
         if(indicador == 'incom'){

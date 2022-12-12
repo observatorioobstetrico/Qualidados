@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
-                                      indicador,municipios, estados){
+                                      indicador,estados){
     ns <- NS(id)
     library(shiny)
     library(shinydashboard)
@@ -119,7 +119,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       selected = c("br")),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE SE POR ESTADO
                     conditionalPanel(
-                      condition = sprintf("input['%s'] == 'est'",ns("Graf_OpcaoLocalidade")),
+                      condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoLocalidade")),
                       selectInput(
                         ns("Graf_Estado"),
                         "Selecione o estado",
@@ -131,7 +131,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       selectInput(
                         ns("Graf_muni"),
                         "Selecione o município",
-                        choices = sort(unique(municipios)))),
+                        choices = 'municipios')),
                     #FAZER COMPARACAO
                       selectInput(
                       ns("Graf_OpcaoComparar"),
@@ -149,7 +149,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       placement = "right"
                     ),
                     conditionalPanel(
-                      condition = sprintf("input['%s'] == 'est'",ns("Graf_OpcaoLocalidade")),
+                      condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoLocalidade")),
                       selectInput(
                         ns("Graf_CompararEstado"),
                         "Estado de comparação",
@@ -161,7 +161,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       selectInput(
                         ns("Graf_CompararMunicipio"),
                         "Município de comparação",
-                        c(unique(municipios))
+                        ('municipios')
                       )
                     )
                 ),
@@ -241,6 +241,27 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
 mod_SIVEP_server <- function(id, indicador){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    #municipio
+    observe({
+      x <- input$Graf_Estado
+      y <- input$Graf_CompararEstado
+      if(indicador == 'incom')dado <- dados_incom
+      if(indicador == 'implau')dado <- dados_implau
+      if(indicador == 'incon')dado <- dados_incon
+      dados_aux <- dado[dado$SG_UF %in% x,c('muni_nm_clean','SG_UF')]
+      dados_compara <- dado[dado$SG_UF %in% y,c('muni_nm_clean','SG_UF')]
+
+      updateSelectInput(session,("Graf_muni"),
+                        choices = sort(unique(dados_aux$muni_nm_clean)),
+                        selected = unique(dados_aux$muni_nm_clean)[1])
+
+      updateSelectInput(session,("Graf_CompararMunicipio"),
+                        choices = sort(unique(dados_compara$muni_nm_clean)),
+                        selected = unique(dados_compara$muni_nm_clean)[1])
+
+
+    })
+
     #GRAFICO INCOMPLETUDE ------------
     if(indicador == 'incom'){
 

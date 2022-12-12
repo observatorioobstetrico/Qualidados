@@ -74,36 +74,31 @@ app_ui <- function(request) {
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",
                                         descricao =  desc_incom ,indicador = 'incom',
-                                        municipios =dados_incom$muni_nm_clean,
-                                        estados= unique(dados_incom$SG_UF)),
+                                        estados = sort(unique(dados_incom$SG_UF))),
 
               mod_SIVEP_ui(id = "SIVEP_implausibilidade",
                                         vars_incon = var_dados_implau,
                                         tabname ="implau_sivep",
                                         descricao = desc_implau,indicador = 'implau',
-                                        municipios = dados_implau$muni_nm_clean,
-                                        estados = unique(dados_implau$SG_UF)),
+                                        estados = sort(unique(dados_implau$SG_UF))),
 
               mod_SIVEP_ui(id = "SIVEP_inconsistencia",
                                         vars_incon = unname(vars_incon),
                                         tabname ="incons_sivep",
                                         descricao = desc_incon,indicador = 'incon',
-                                        municipios = dados_incon$muni_nm_clean,
-                                        estados = unique(dados_incon$SG_UF)),
+                                        estados = sort(unique(dados_incon$SG_UF))),
               mod_SINASC_ui(id = "SINASC_incompletude",
                                         tabname = "incom_sinasc",
                                         indicador = 'incom',
                                         descricao = 'teste',
                                         vars = vars_incom_sinasc,
-                                        estados = unique(Sinasc_incom$ESTADO),
-                              municipios = unique(Sinasc_incom$CODMUNNASC)),
+                                        estados = sort(unique(Sinasc_incom$ESTADO))),
               mod_SINASC_ui(id = "SINASC_implausibilidade",
                                         tabname = "implau_sinasc",
                                         indicador = 'implau',
                                         descricao = 'teste',
                                         vars = vars_implau_sinasc,
-                                        estados = unique(Sinasc_incom$ESTADO),
-                                        municipios = unique(Sinasc_incom$CODMUNNASC))
+                                        estados = sort(unique(Sinasc_implau$ESTADO)))
 
               )
                   )

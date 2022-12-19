@@ -9,6 +9,7 @@
 #' @importFrom shiny NS tagList
 mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
   ns <- NS(id)
+    library(magrittr)
     library(shiny)
     library(shinydashboard)
     shinyjs::useShinyjs()
@@ -184,13 +185,18 @@ mod_SINASC_server <- function(id,indicador){
         dado <- Sinasc_implau
         var_value <- paste0(var_value,'_IMPLAUSIVEL')
       }
+      if(indicador == 'incon'){
+        dado <- Sinasc_incon
+        var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
+          names()
+      }
       x <- input$filtro_loc_est
       y <- input$compara_est
       dado <- dado %>%
         dplyr::filter(VARIAVEL %in% var_value) %>%
         dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
-      muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] |> as.vector()
-      muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] |> as.vector()
+      muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] %>%unlist()%>% as.vector()
+      muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] %>%unlist()%>% as.vector()
 
       updateSelectInput(session,("filtro_loc_muni"),
                         choices = muni,
@@ -209,6 +215,11 @@ mod_SINASC_server <- function(id,indicador){
         if(indicador == 'implau'){
           dados_inicio <- Sinasc_implau
           var_value <- paste0(var_value,'_IMPLAUSIVEL')
+        }
+        if(indicador == 'incon'){
+          dados_inicio <- Sinasc_incon
+          var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
+            names()
         }
         dados_inicio <- dados_inicio %>%
           dplyr::filter(VARIAVEL %in% var_value) %>%
@@ -245,15 +256,20 @@ mod_SINASC_server <- function(id,indicador){
 
       output$Grafico <- plotly::renderPlotly({
         dados <- data_filtro()
-        dados$VARIAVEL |> is.na()
-        h_plot <- input$vars_select %>% unique %>% length()
+        h_plot <- input$vars_select %>% unique() %>% length()
         h_plot <- h_plot * 125
         if(indicador=='incom'){
         dados$value <- dados$NULOS + dados$IGNORADOS
         dados$value <- round((dados$value/dados$TOTAIS)*100,2)
+        leg <- 'Incompletude'
         }
         if(indicador == 'implau'){
         dados$value <- round((dados$IMPLAUSIVEIS/dados$TOTAIS)*100,2)
+        leg <- 'Impalusibilidade'
+        }
+        if(indicador == 'incon'){
+        dados$value <- round((dados$INCONSISTENTES/dados$TOTAIS)*100,2)
+        leg <- 'Inconsistência'
         }
 
         #FINALIZACAO COM GGPLOT -------------------------
@@ -263,7 +279,7 @@ mod_SINASC_server <- function(id,indicador){
           facet_grid(rows = vars(VARIAVEL))
 
         g <- g + labs(x = NULL) +
-          labs(y = "Incompletude (%)") +
+          labs(y = paste0(leg," (%)")) +
           scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
           scale_fill_viridis_d() +
           theme_bw() +
@@ -279,7 +295,7 @@ mod_SINASC_server <- function(id,indicador){
         })
 
       #TABELAS
-      if(indicador=='incon'){
+      if(indicador=='incom'){
       data_filtro_tab <- reactive({
         dados <- data_filtro()
         dados <- dados[dados$compara == 1,c('VARIAVEL','NULOS','IGNORADOS','TOTAIS')]
@@ -329,7 +345,7 @@ mod_SINASC_server <- function(id,indicador){
           colnames(teste)[1] <- 'DADOS'
           rownames(teste) <- 1:nrow(teste)
           teste$DADOS <- c('Dados implausiveis','Dados válidos','Total')
-          names(teste)<-names(teste) |> substr(1,nchar( names(teste))-12)
+          names(teste)<-names(teste) %>% substr(1,nchar( names(teste))-12)
           names(teste)[1] <- 'DADOS'
           teste
         })
@@ -352,7 +368,42 @@ mod_SINASC_server <- function(id,indicador){
         }
 
       }
+      if(indicador == 'incon'){
+        data_filtro_tab <- reactive({
+          dados <- data_filtro()
+          dados <- dados[dados$compara == 1,c('VARIAVEL','INCONSISTENTES','TOTAIS')]
+          dados$VALIDOS <- dados$TOTAIS - (dados$INCONSISTENTES)
+          dados <- dados[,c('VARIAVEL','INCONSISTENTES','VALIDOS','TOTAIS')]
+          dados <- dados %>%
+            plyr::ddply('VARIAVEL',plyr::numcolwise(sum))
+          teste <-as.data.frame(t(dados))
+          names(teste) <- teste[1,]
+          names(teste) <- var_incon_sinasc[names(teste)] |> unname()
+          teste <- cbind(newColName = rownames(teste), teste)
+          teste <- teste[-1,]
+          colnames(teste)[1] <- 'DADOS'
+          rownames(teste) <- 1:nrow(teste)
+          teste$DADOS <- c('Dados inconsistêntes','Dados válidos','Total')
+          teste
+        })
 
+        for(i in 1:72){
+          local({
+            my_i <- i
+            output[[paste('print',i,sep='')]] <- renderText({
+              if(var_incon_sinasc[my_i] %in% input$vars_select){
+                dados <- data_filtro_tab()
+                dados <- dados[,c('DADOS',(var_incon_sinasc[my_i]))]
+                dados[['%']] <- (100*as.numeric(
+                  dados[[paste0(var_incon_sinasc[my_i])]]))/as.numeric(dados[3,2])
+                colnames(dados) <- c('','n','%')
+                kableExtra::kable(dados,
+                                  caption = paste0('Valores inconsistêntes para ',var_incon_sinasc[my_i]),
+                                  digits  = 2
+                ) %>%
+                  kableExtra::kable_styling()}
+            })})
+        }}
 
   })
 }

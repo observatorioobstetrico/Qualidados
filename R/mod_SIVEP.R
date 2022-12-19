@@ -10,6 +10,7 @@
 mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                                       indicador,estados){
     ns <- NS(id)
+    library(magrittr)
     library(shiny)
     library(shinydashboard)
     shinyjs::useShinyjs()

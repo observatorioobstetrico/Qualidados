@@ -1,0 +1,6 @@
+{
+    "LOCNASC_e_PARTO": "Se campo LOCNASC for 2,3,4,5 e o campo PARTO estiver preenchido com 2",
+    "PARTO_e_STCESPARTO": "Se o campo STCESPARTO estiver preenchido como 1 e o campo PARTO estiver como 2 ou 9",
+    "TPROBSON_e_composicao": "Se o campo TPROBSON estiver preenchido entre 1 e 10 e qualquer um dos campos QTDGESTANT,QTDPARTNOR,QTDPARTCES,SEMAGESTAC,TPAPRESENT,STTRABPART estiverem em branco",
+    "PARTO_PREMATURO_e_PESO": "Se o campo PARTO_PREMATURO estiver preenchido como 1 e o campo PESO > 2500"
+}

@@ -23,15 +23,15 @@ var_names_join <- list()
 var_names_join <- append(var_names_join,paste(names(fields[1]), "(", fields[[1]], ")"))
 for (field in 2:length(fields)){
   if((names(fields[field]) %in% names(relatorio_df)) && !(names(fields[field]) %in% jsonfile$ignore))
-  var_names_join <- append(var_names_join, paste(names(fields[field]), "(", fields[[field]], ")"))
-  }
+    var_names_join <- append(var_names_join, paste(names(fields[field]), "(", fields[[field]], ")"))
+}
 
 for(f in 1:length(names(relatorio_df))){
   if(names(relatorio_df[f]) %in% jsonfile$datetime){
-  relatorio_df[[f]] <- substring(relatorio_df[[f]], 1, nchar(relatorio_df[[f]]))
-  relatorio_df[[f]] <- as.Date(x = relatorio_df[[f]], tryFormats = c("%d/%m/%y"))
-    }
+    relatorio_df[[f]] <- substring(relatorio_df[[f]], 1, nchar(relatorio_df[[f]]))
+    relatorio_df[[f]] <- as.Date(x = relatorio_df[[f]], tryFormats = c("%d/%m/%y"))
   }
+}
 #DADOS DE INCOMPLETUDE ------------------------
 dados_incom <- readRDS("data1/dados_incompletude.rds")
 for (variavel in jsonfile$variaveis_tabela) {
@@ -49,8 +49,8 @@ dados_incom[['ID_MUNICIP']] <- dados_incom$muni_nm_clean %>%
 
 #DADOS DE IMPLAUSIBILIDADE ------------
 
-jsonfile_gest <- c(fromJSON(file = "data1/implausibilidade_puerperas.json"))
-jsonfile_puerp <- c(fromJSON(file = "data1/implausibilidade_gestantes.json"))
+jsonfile_puerp<- c(fromJSON(file = "data1/implausibilidade_puerperas.json"))
+jsonfile_gest<- c(fromJSON(file = "data1/implausibilidade_gestantes.json"))
 implau_gest <- readRDS("data1/implausibilidade_gestantes.rds") %>%
   select(-PUERPERA_IMPOSSIVEL)
 implau_puerp <- readRDS("data1/implausibilidade_puerperas.rds") %>%
@@ -93,14 +93,14 @@ dados_incon[['ID_MUNICIP']] <- dados_incon$ID_REGIONA
 dados_incon <- dados_incon %>%
   mutate(
     classi_gesta_puerp = case_when(
-    CS_GESTANT == 1  ~ "1tri",
-    CS_GESTANT == 2  ~ "2tri",
-    CS_GESTANT == 3  ~ "3tri",
-    CS_GESTANT == 4  ~ "IG_ig",
-    CS_GESTANT == 5 &
-      PUERPERA == 1 ~ "puerp",
-    CS_GESTANT == 9 & PUERPERA == 1 ~ "puerp",
-    TRUE ~ "não"),
+      CS_GESTANT == 1  ~ "1tri",
+      CS_GESTANT == 2  ~ "2tri",
+      CS_GESTANT == 3  ~ "3tri",
+      CS_GESTANT == 4  ~ "IG_ig",
+      CS_GESTANT == 5 &
+        PUERPERA == 1 ~ "puerp",
+      CS_GESTANT == 9 & PUERPERA == 1 ~ "puerp",
+      TRUE ~ "não"),
     dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
     dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
     ano = lubridate::year(dt_sint)
@@ -122,10 +122,10 @@ dados_aux <- dados_incon %>%
 
 dados_aux <- dados_aux %>%
   mutate(muni_nm_clean = ifelse(is.na(muni_nm_clean), ID_MN_RESI, muni_nm_clean))
-dados_incon <- dados_aux
-#para não considerar idênticos municípios de estados diferentes mas com mesmo nome
 dados_aux <- dados_aux %>%
   mutate(muni_nm_clean = paste(muni_nm_clean, "-", SG_UF))
+dados_incon <- dados_aux
+
 
 #-----------------------
 
@@ -170,7 +170,26 @@ vars_incon <- gsub('_e_',' e ',colnames(dados_incon[,167:(ncol(dados_incon)-5)])
 vars_incon <- gsub('_INCONSISTENTES','',vars_incon)
 names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-5)])
 
-var1 <- unname(vars_incon)[1:4]
 
 Var_micro_incon <- dados_incon[,c(1:166,185,188)] %>% colnames()
 Var_micro_incon<-Var_micro_incon[stringr::str_detect('SG_UF|ID_MUNICIP',Var_micro_incon) == F]
+
+####################################### EXPORTAÇÃO
+# usethis::use_data(var_names_join, overwrite = TRUE)
+# usethis::use_data(dados_incom, overwrite = TRUE)
+# usethis::use_data(jsonfile_puerp, overwrite = TRUE)
+# usethis::use_data(jsonfile_gest, overwrite = TRUE)
+# usethis::use_data(dados_implau, overwrite = TRUE)
+# usethis::use_data(var_dados_implau, overwrite = TRUE)
+# usethis::use_data(json_incon, overwrite = TRUE)
+# usethis::use_data(dados_incon, overwrite = TRUE)
+# usethis::use_data(variaveis_incom, overwrite = TRUE)
+# usethis::use_data(variaveis_incom_nomes, overwrite = TRUE)
+# usethis::use_data(variaveis_relacao, overwrite = TRUE)
+# usethis::use_data(desc_incom, overwrite = TRUE)
+# usethis::use_data(desc_implau, overwrite = TRUE)
+# usethis::use_data(desc_incon, overwrite = TRUE)
+# usethis::use_data(vars_incon, overwrite = TRUE)
+# usethis::use_data(Var_micro_incon, overwrite = TRUE)
+# usethis::use_data(variaveis, overwrite = TRUE)
+# usethis::use_data(var_names, overwrite = TRUE)

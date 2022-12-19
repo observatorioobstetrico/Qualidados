@@ -90,15 +90,21 @@ app_ui <- function(request) {
               mod_SINASC_ui(id = "SINASC_incompletude",
                                         tabname = "incom_sinasc",
                                         indicador = 'incom',
-                                        descricao = 'teste',
+                                        descricao = desc_incom,
                                         vars = vars_incom_sinasc,
                                         estados = sort(unique(Sinasc_incom$ESTADO))),
               mod_SINASC_ui(id = "SINASC_implausibilidade",
                                         tabname = "implau_sinasc",
                                         indicador = 'implau',
-                                        descricao = 'teste',
+                                        descricao = desc_implau,
                                         vars = vars_implau_sinasc,
-                                        estados = sort(unique(Sinasc_implau$ESTADO)))
+                                        estados = sort(unique(Sinasc_implau$ESTADO))),
+              mod_SINASC_ui(id = "SINASC_inconsistencia",
+                            tabname = "incons_sinasc",
+                            indicador = 'incon',
+                            descricao = desc_incon,
+                            vars = unname(var_incon_sinasc),
+                            estados = sort(unique(Sinasc_incon$ESTADO)))
 
               )
                   )

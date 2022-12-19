@@ -20,7 +20,9 @@ aux_muni2 <- abjData::muni %>%
 aux_muni2 <- rbind(aux_muni2,aux_muni2|>
                      mutate(cod_mun = stringr::str_sub(muni_id, 1, 6)))
 
-Sinasc_incom$CODMUNNASC <- Sinasc_incom$CODMUNNASC |> as.character()
+
+Sinasc_incom$CODMUNNASC <- as.character(format(Sinasc_incom$CODMUNNASC , scientific = FALSE))
+Sinasc_incom$CODMUNNASC <- gsub(' ','',Sinasc_incom$CODMUNNASC)
 
 Sinasc_incom <- Sinasc_incom %>%
   rename(cod_mun = CODMUNNASC ) %>%
@@ -52,7 +54,8 @@ vars_implau_sinasc <- vars_implau_sinasc[stringr::str_detect(vars_implau_sinasc,
 
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 
-Sinasc_implau$CODMUNNASC <- Sinasc_implau$CODMUNNASC |> as.character()
+Sinasc_implau$CODMUNNASC <- as.character(format(Sinasc_implau$CODMUNNASC , scientific = FALSE))
+Sinasc_implau$CODMUNNASC <- gsub(' ','',Sinasc_implau$CODMUNNASC)
 
 Sinasc_implau <- Sinasc_implau %>%
   rename(cod_mun = CODMUNNASC ) %>%
@@ -73,6 +76,7 @@ Sinasc_implau[is.na(Sinasc_implau$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não in
 Sinasc_implau$CODMUNNASC <- Sinasc_implau$muni_nm_clean
 Sinasc_implau$ESTADO <- Sinasc_implau$uf_sigla
 Sinasc_implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")
@@ -84,8 +88,8 @@ var_incon_sinasc <-Sinasc_incon$VARIAVEL |>
 nomes_incon <- Sinasc_incon$VARIAVEL |> unique()
 var_incon_sinasc |> names() <- nomes_incon
 # ACRESCENTAR MUNICIPIO
-Sinasc_incon$CODMUNNASC <- Sinasc_incon$CODMUNNASC |> as.character()
-
+Sinasc_incon$CODMUNNASC <- as.character(format(Sinasc_incon$CODMUNNASC , scientific = FALSE))
+Sinasc_incon$CODMUNNASC <- gsub(' ','',Sinasc_incon$CODMUNNASC)
 Sinasc_incon <- Sinasc_incon %>%
   rename(cod_mun = CODMUNNASC ) %>%
   left_join(aux_muni2 ,by='cod_mun')
@@ -105,7 +109,7 @@ Sinasc_incon[is.na(Sinasc_incon$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não info
 Sinasc_incon$CODMUNNASC <- Sinasc_incon$muni_nm_clean
 Sinasc_incon$ESTADO <- Sinasc_incon$uf_sigla
 Sinasc_incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
-
+Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,]
 ###############################################  EXPORTACAO ##################
 # usethis::use_data(Sinasc_implau, overwrite = TRUE)
 # usethis::use_data(regras_sinasc_incom, overwrite = TRUE)

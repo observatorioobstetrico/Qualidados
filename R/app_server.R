@@ -5,9 +5,6 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  mod_Dicionario_server("Dicionarios_SIVEP")
-  mod_Dicionario_server("Dicionario_SINASC")
-  mod_Dicionario_server("Dicionario_SIM")
   mod_SIVEP_server("SIVEP_incompletude", indicador = 'incom')
   mod_SIVEP_server("SIVEP_implausibilidade", indicador = 'implau')
   mod_SIVEP_server("SIVEP_inconsistencia", indicador = 'incon')
@@ -16,7 +13,7 @@ app_server <- function(input, output, session) {
   mod_SINASC_server("SINASC_inconsistencia",indicador = 'incon')
   observeEvent(input$help, {
     # Show a modal when the button is pressed
-    shinyalert("Ajuda",html =T,text = tagList("TEXTO AJUDA",
+    shinyalert::shinyalert("Ajuda",html =T,text = tagList("TEXTO AJUDA",
       tags$video(type ='video/mp4',src = 'www/hello-there.mp4', width = '100%',
                                   controls = 'controls')))
   })

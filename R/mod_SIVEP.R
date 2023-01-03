@@ -10,16 +10,14 @@
 mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                                       indicador,estados){
     ns <- NS(id)
-    library(magrittr)
-    library(shiny)
-    library(shinydashboard)
+
     shinyjs::useShinyjs()
-    tabItem(tabName = tabname,
+    shinydashboard::tabItem(tabName = tabname,
               #DESCRICAO -----------
-              fluidRow(
-                box(
+              shiny::fluidRow(
+                shinydashboard::box(
                   width = 12,
-                  title = "Descrição",
+                  title = "Descri\u00e7\u00e3o",
                   status = "primary",
                   solidHeader = FALSE,
                   span(descricao,
@@ -28,8 +26,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                 )
               ),
               #CAIXA COM FILTROS -----------------
-              fluidRow(
-                box(collapsible = TRUE,
+              shiny::fluidRow(
+                shinydashboard::box(collapsible = TRUE,
                     width = 2,
                     title = "Campos",
                     status = "primary",
@@ -43,34 +41,34 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       options = list(`actions-box` = TRUE),
                       multiple = T),
                     #FILTRO DE DIAGNOSTICO DE SRAG
-                    checkboxGroupInput(
+                    shiny::checkboxGroupInput(
                       inputId = ns("Graf_DiagonisticoSRAG"),
-                      label = "Diagnóstico de SRAG",
+                      label = "Diagn\u00f3stico de SRAG",
                       choices = c(
                         "COVID-19" = "5",
-                        "Não especificado" = "4",
-                        "Não respondido" = "9",
+                        "N\u00e3o especificado" = "4",
+                        "N\u00e3o respondido" = "9",
                         "Influenza" = "1",
-                        "Outro vírus" = "2",
+                        "Outro v\u00edrus" = "2",
                         "Outro agente" = "3"),
                       selected = c("5")),
                     #FILTRO DE CONDICAO
                     tippy::tippy_this(
                       elementId = ns("Graf_DiagonisticoSRAG"),
-                      tooltip = "Causa da Sindrome Respiratória Aguda Grave (SRAG).",
+                      tooltip = "Causa da Sindrome Respirat\u00f3ria Aguda Grave (SRAG).",
                       placement = "right"),
-                    checkboxGroupInput(
+                    shiny::checkboxGroupInput(
                       inputId = ns("Graf_Condicao_Incon"),
-                      label = "Filtrar Condição",
+                      label = "Filtrar Condi\u00e7\u00e3o",
                       choices = c(
-                        "Grávidas 1º Trimestre" = "1tri",
-                        "Grávidas 2º Trimestre" = "2tri",
-                        "Grávidas 3º Trimestre" = "3tri",
-                        "Puérperas" = "puerp"),
+                        "Gr\u00e1vidas 1\u00ba Trimestre" = "1tri",
+                        "Gr\u00e1vidas 2\u00ba Trimestre" = "2tri",
+                        "Gr\u00e1vidas 3\u00ba Trimestre" = "3tri",
+                        "Pu\u00e9rperas" = "puerp"),
                       selected = c("1tri", "2tri", "3tri", "puerp")),
                     #FILTRO DE EXIBICAO OU NAO DE CASOS FINALIZADOS
                     if(indicador=='incom'){
-                    checkboxGroupInput(
+                      shiny::checkboxGroupInput(
                       inputId = ns("Exib_Finalizados"),
                       label = "Casos Finalizados:",
                       choices = c("Exibir casos finalizados" = "cf"))},
@@ -78,11 +76,11 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                     if(indicador =='incom'){
                     tippy::tippy_this(
                       elementId = ns("Exib_Finalizados"),
-                      tooltip = "Casos em que se tem informação sobre a evolução.",
+                      tooltip = "Casos em que se tem informa\u00e7\u00e3o sobre a evolu\u00e7\u00e3o.",
                       placement = "right")},
                     #FILTRO PARA TIPOS DE DADOS, IGNORADOS OU EM BRANCO
                     if(indicador == 'incom'){
-                      checkboxGroupInput(
+                      shiny::checkboxGroupInput(
                       inputId = ns("Exib_Dados"),
                       label = "Exibir dados:",
                       choices = c("Ignorados" = "ignore",
@@ -91,137 +89,137 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                     if(indicador == 'incom'){
                     tippy::tippy_this(
                       elementId = ns("Exib_Dados"),
-                      tooltip = "Dados que não foram preenchidos ('dados em branco') ou são desconhecidos ('dados ignorados')",
+                      tooltip = "Dados que n\u00e3o foram preenchidos ('dados em branco') ou s\u00e3o desconhecidos ('dados ignorados')",
                       placement = "right")},
                     if(indicador == 'implau'){
-                     checkboxGroupInput(
+                      shiny::checkboxGroupInput(
                       inputId = ns("Exib_Dados2"),
                       label = "Exibir dados:",
-                      choices = c("Dado Improvável",
-                                    "Dado Impossível"),
-                      selected = c("Dado Improvável",
-                                "Dado Impossível"))},
+                      choices = c("Dado Improv\u00e1vel",
+                                    "Dado Imposs\u00edvel"),
+                      selected = c("Dado Improv\u00e1vel",
+                                "Dado Imposs\u00edvel"))},
                     if(indicador =='implau'){
                       tippy::tippy_this(
                         elementId = ns('Exib_Dados2'),
-                        tooltip = 'Tipos de implausibilidades, a opção Dado Plausível so pode ser utilizada na sessão de tabelas',
+                        tooltip = 'Tipos de implausibilidades, a op\u00e7\u00e3o Dado Plaus\u00edvel so pode ser utilizada na sess\u00e3o de tabelas',
                         placement = 'right'
                       )
                     },
                     #FILTRO POR LOCALIDADE
-                    selectInput(
+                    shiny::selectInput(
                       ns("Graf_OpcaoLocalidade"),
                       "Dados por localidade:",
                       c(
                         "Brasil" = "br",
                         "Estado" = "est",
-                        "Município" = "muni"
+                        "Munic\u00edpio" = "muni"
                       ),
                       selected = c("br")),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE SE POR ESTADO
-                    conditionalPanel(
+                    shiny::conditionalPanel(
                       condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoLocalidade")),
-                      selectInput(
+                      shiny::selectInput(
                         ns("Graf_Estado"),
                         "Selecione o estado",
                         choices = estados,
                         selected = estados[1])),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
-                    conditionalPanel(
+                    shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoLocalidade")),
-                      selectInput(
+                      shiny::selectInput(
                         ns("Graf_muni"),
-                        "Selecione o município",
+                        "Selecione o munic\u00edpio",
                         choices = 'municipios')),
                     #FAZER COMPARACAO
-                      selectInput(
+                    shiny::selectInput(
                       ns("Graf_OpcaoComparar"),
-                      "Fazer comparação?",
+                      "Fazer compara\u00e7\u00e3o?",
                       c(
-                        "Não" = "br",
+                        "N\u00e3o" = "br",
                         "Sim, com estado" = "est",
-                        "Sim, com município" = "muni"
+                        "Sim, com munic\u00edpio" = "muni"
                       ),
                       selected = c("br")
                     ),
                     tippy::tippy_this(
                       elementId = ns("Graf_OpcaoComparar"),
-                      tooltip = "Disponível apenas para visualização gráfica.",
+                      tooltip = "Dispon\u00edvel apenas para visualiza\u00e7\u00e3o gr\u00e1fica.",
                       placement = "right"
                     ),
-                    conditionalPanel(
+                    shiny::conditionalPanel(
                       condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoLocalidade")),
-                      selectInput(
+                      shiny::selectInput(
                         ns("Graf_CompararEstado"),
-                        "Estado de comparação",
+                        "Estado de compara\u00e7\u00e3o",
                         choices = estados,
                         selected = estados[1]
                       )),
-                    conditionalPanel(
+                    shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoComparar")),
                       selectInput(
                         ns("Graf_CompararMunicipio"),
-                        "Município de comparação",
+                        "Munic\u00edpio de compara\u00e7\u00e3o",
                         ('municipios')
                       )
                     )
                 ),
               #AREA DOS GRAFICOS, TABELAS QUANT E EXPLICATIVAS ----------------
-                  box(
-                    title = "Visualização",
+                  shinydashboard::box(
+                    title = "Visualiza\u00e7\u00e3o",
                     status = "primary",
                     width = 10,
-                    div(tabsetPanel(
+                    shiny::div(tabsetPanel(
                           #GRAFICOS
-                          tabPanel(
-                            "Gráficos",
+                          shiny::tabPanel(
+                            "Gr\u00e1ficos",
                             plotly::plotlyOutput(ns("graficoCompleteness"),
                                                 height = 'auto')),
 
                           #TABELAS QUANT
-                           tabPanel(
+                           shiny::tabPanel(
                              "Tabelas",
-                             tabBox(
+                             shinydashboard::tabBox(
                                width = 24,
-                               tabPanel(htmlOutput(ns('print1'))),
-                               tabPanel(htmlOutput(ns('print2'))),
-                               tabPanel(htmlOutput(ns('print3'))),
-                               tabPanel(htmlOutput(ns('print4'))),
-                               tabPanel(htmlOutput(ns('print5'))),
-                               tabPanel(htmlOutput(ns('print6'))),
-                               tabPanel(htmlOutput(ns('print7'))),
-                               tabPanel(htmlOutput(ns('print8'))),
-                               tabPanel(htmlOutput(ns('print9'))),
-                               tabPanel(htmlOutput(ns('print10'))),
-                               tabPanel(htmlOutput(ns('print11'))),
-                               tabPanel(htmlOutput(ns('print12'))),
-                               tabPanel(htmlOutput(ns('print13'))),
-                               tabPanel(htmlOutput(ns('print14'))),
-                               tabPanel(htmlOutput(ns('print15'))),
-                               tabPanel(htmlOutput(ns('print16'))),
-                               tabPanel(htmlOutput(ns('print17'))),
-                               tabPanel(htmlOutput(ns('print18'))),
-                               tabPanel(htmlOutput(ns('print19'))),
-                               tabPanel(htmlOutput(ns('print20'))),
-                               tabPanel(htmlOutput(ns('print21'))),
-                               tabPanel(htmlOutput(ns('print22'))),
-                               tabPanel(htmlOutput(ns('print23'))),
-                               tabPanel(htmlOutput(ns('print24'))),
-                               tabPanel(htmlOutput(ns('print25'))),
-                               tabPanel(htmlOutput(ns('print26'))),
-                               tabPanel(htmlOutput(ns('print27'))),
-                               tabPanel(htmlOutput(ns('print28'))),
-                               tabPanel(htmlOutput(ns('print29'))),
-                               tabPanel(htmlOutput(ns('print30'))),
-                               tabPanel(htmlOutput(ns('print31'))),
-                               tabPanel(htmlOutput(ns('print32'))),
-                               tabPanel(htmlOutput(ns('print33'))),
-                               tabPanel(htmlOutput(ns('print34'))),
-                               tabPanel(htmlOutput(ns('print35')))
+                               shiny::tabPanel(shiny::htmlOutput(ns('print1'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print2'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print3'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print4'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print5'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print6'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print7'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print8'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print9'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print10'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print11'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print12'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print13'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print14'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print15'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print16'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print17'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print18'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print19'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print20'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print21'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print22'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print23'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print24'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print25'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print26'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print27'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print28'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print29'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print30'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print31'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print32'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print33'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print34'))),
+                               shiny::tabPanel(shiny::htmlOutput(ns('print35')))
                                 )
                           ),
                           #TABELAS EXPLICATIVAS
-                          tabPanel("Microdados",
+                          shiny::tabPanel("Microdados",
                                     if(indicador == 'incon'){
                                       shinyWidgets::pickerInput(
                                         inputId = ns("Vars_microdados_incon"),
@@ -243,7 +241,7 @@ mod_SIVEP_server <- function(id, indicador){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     #municipio
-    observe({
+    shiny::observe({
       x <- input$Graf_Estado
       y <- input$Graf_CompararEstado
       if(indicador == 'incom')dado <- dados_incom
@@ -252,11 +250,11 @@ mod_SIVEP_server <- function(id, indicador){
       dados_aux <- dado[dado$SG_UF %in% x,c('muni_nm_clean','SG_UF')]
       dados_compara <- dado[dado$SG_UF %in% y,c('muni_nm_clean','SG_UF')]
 
-      updateSelectInput(session,("Graf_muni"),
+      shiny::updateSelectInput(session,("Graf_muni"),
                         choices = sort(unique(dados_aux$muni_nm_clean)),
                         selected = unique(dados_aux$muni_nm_clean)[1])
 
-      updateSelectInput(session,("Graf_CompararMunicipio"),
+      shiny::updateSelectInput(session,("Graf_CompararMunicipio"),
                         choices = sort(unique(dados_compara$muni_nm_clean)),
                         selected = unique(dados_compara$muni_nm_clean)[1])
 
@@ -288,17 +286,16 @@ mod_SIVEP_server <- function(id, indicador){
         Dados_GraficoIncompletudeIniciais$data <- with(Dados_GraficoIncompletudeIniciais,
                                                        sprintf("%d-%02d", ano, mes))
         Dados_GraficoIncompletudeIniciais <- Dados_GraficoIncompletudeIniciais %>%
-          filter(data >= '2020-03')
+          dplyr::filter(data >= '2020-03')
         #FILTRAR POR CASOS FINALIZADOS
-        if("cf" %in% input$Exib_Finalizados)
-        {
+        if("cf" %in% input$Exib_Finalizados){
           Dados_GraficoIncompletudeIniciais <- Dados_GraficoIncompletudeIniciais %>%
-            filter(f_evolucao == 'Dados válidos')
+            dplyr::filter(f_evolucao == 'Dados v\u00e1lidos')
         }
     #CONVERTER VARIAVEIS SELECIONADAS PARA BINARIO PARA CALCULO DE PORCENTAGEM --------------
         VarSelecionadas = Dados_GraficoIncompletudeIniciais[variaveis]
 
-        VarSelecionadas[VarSelecionadas == 'Dados válidos'] <- "0"
+        VarSelecionadas[VarSelecionadas == 'Dados v\u00e1lidos'] <- "0"
 
         if(!("ignore" %in% input$Exib_Dados))
         {
@@ -337,11 +334,11 @@ mod_SIVEP_server <- function(id, indicador){
 
           if (input$Graf_OpcaoLocalidade == "muni") {
             Dados_GraficoIncompletude <- Dados_GraficoIncompletude %>%
-              filter(muni_nm_clean == input$Graf_muni)
+              dplyr::filter(muni_nm_clean == input$Graf_muni)
 
           } else {
             Dados_GraficoIncompletude <- Dados_GraficoIncompletude %>%
-              filter(SG_UF == input$Graf_Estado)
+              dplyr::filter(SG_UF == input$Graf_Estado)
 
           }
 
@@ -349,21 +346,21 @@ mod_SIVEP_server <- function(id, indicador){
 
         if (input$Graf_OpcaoLocalidade == 'br') {
           Dados_GraficoIncompletude <- Dados_GraficoIncompletude %>%
-            group_by(data, variable) %>%
-            summarize(value = mean(value))
+            dplyr::group_by(data, variable) %>%
+            dplyr::summarize(value = mean(value))
           Dados_GraficoIncompletude$localidade <- 'BR'
         } else {
 
           if (input$Graf_OpcaoLocalidade == "muni") {
             Dados_GraficoIncompletude <- Dados_GraficoIncompletude %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncompletude$localidade <- input$Graf_muni
             print(input$Graf_muni)
           } else {
             Dados_GraficoIncompletude <- Dados_GraficoIncompletude %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncompletude$localidade <- input$Graf_Estado
           }
         }
@@ -373,17 +370,17 @@ mod_SIVEP_server <- function(id, indicador){
 
           if (input$Graf_OpcaoComparar == "muni") {
             Dados_GraficoIncompletude2 <- Dados_GraficoIncompletudeIniciais %>%
-              filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
 
             Dados_GraficoIncompletude2$localidade <- input$Graf_CompararMunicipio
             print(input$Graf_CompararMunicipio)
           } else {
             Dados_GraficoIncompletude2 <- Dados_GraficoIncompletudeIniciais %>%
-              filter(SG_UF == input$Graf_CompararEstado) %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::filter(SG_UF == input$Graf_CompararEstado) %>%
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncompletude2$localidade <- input$Graf_CompararEstado
           }
           Dados_GraficoIncompletude <- rbind( Dados_GraficoIncompletude,Dados_GraficoIncompletude2)
@@ -392,28 +389,28 @@ mod_SIVEP_server <- function(id, indicador){
 
         Dados_GraficoIncompletude$value <- round(Dados_GraficoIncompletude$value * 100, 2)
     #FINALIZACAO COM GGPLOT -------------------------
-        g <- ggplot(data = Dados_GraficoIncompletude,
-                    aes(y=value, x=data , fill = localidade)) +
-          geom_bar(position="dodge", stat="identity") +
-          facet_grid(rows = vars(variable), labeller=var_labeller)
+        g <- ggplot2::ggplot(data = Dados_GraficoIncompletude,
+                    ggplot2::aes(y=value, x=data , fill = localidade)) +
+          ggplot2::geom_bar(position="dodge", stat="identity") +
+          ggplot2::facet_grid(rows = ggplot2::vars(variable), labeller=var_labeller)
 
-        g <- g + labs(x = NULL) +
-          labs(y = "Incompletude (%)", fill = "Localidade") +
-          scale_y_continuous(breaks = seq(0,100,20), limits = c(0, 100)) +
-          scale_fill_viridis_d() +
-          theme_bw() +
-          theme(axis.text.x = element_text(
+        g <- g + ggplot2::labs(x = NULL) +
+          ggplot2::labs(y = "Incompletude (%)", fill = "Localidade") +
+          ggplot2::scale_y_continuous(breaks = seq(0,100,20), limits = c(0, 100)) +
+          ggplot2::scale_fill_viridis_d() +
+          ggplot2::theme_bw() +
+          ggplot2::theme(axis.text.x = ggplot2::element_text(
             face="bold",
             color="#000000",
             size=9,
             angle=45
           ))
 
-        plotly::ggplotly(g, height=(length(variaveis)*125 + 125)) %>% layout(legend = list(orientation = "h", y = 20))
+        plotly::ggplotly(g, height=(length(variaveis)*125 + 125)) %>% plotly::layout(legend = list(orientation = "h", y = 20))
     })
 
 
-      selectData <- reactive({
+      selectData <- shiny::reactive({
         df <- dados_incom %>%
           dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG) %>%
           dplyr::filter(classi_gesta_puerp %in% input$Graf_Condicao_Incon) %>%
@@ -429,7 +426,7 @@ mod_SIVEP_server <- function(id, indicador){
         if("cf" %in% input$Exib_Finalizados)
         {
           df <- df %>%
-            filter(f_evolucao == 'Dados válidos')
+            dplyr::filter(f_evolucao == 'Dados v\u00e1lidos')
         } else{
           df
         }
@@ -440,7 +437,7 @@ mod_SIVEP_server <- function(id, indicador){
       for(i in 1:35){
         local({
           my_i <- i
-          output[[paste('print',i,sep='')]] <- renderText({
+          output[[paste('print',i,sep='')]] <- shiny::renderText({
             if(variaveis_incom_nomes[my_i] %in% input$Graf_Variaveis_Incon){
               kableExtra::kable(
                 questionr::freq(
@@ -478,7 +475,7 @@ mod_SIVEP_server <- function(id, indicador){
         if("cf" %in% input$Exib_Finalizados)
         {
           Dados_microdados  <- Dados_microdados %>%
-            filter(f_evolucao == 'Dados válidos')
+            dplyr::filter(f_evolucao == 'Dados v\u00e1lidos')
         }
         if(input$Graf_OpcaoLocalidade == 'est'){
           Dados_microdados <- Dados_microdados[Dados_microdados$SG_UF == input$Graf_Estado,]
@@ -492,7 +489,7 @@ mod_SIVEP_server <- function(id, indicador){
             format(Dados_microdados$dt_sint, "%Y-%m")
           )
         Dados_microdados <- Dados_microdados %>%
-          filter(as.character(data) >= '2020-03')
+          dplyr::filter(as.character(data) >= '2020-03')
 
         Dados_microdados <-
           Dados_microdados %>%
@@ -503,18 +500,18 @@ mod_SIVEP_server <- function(id, indicador){
         columns <- unique(c("SG_UF", "ID_MUNICIP",variaveis))
 
         Dados_microdados <- Dados_microdados %>%
-          filter(variable %in% columns) %>%
-          arrange(SG_UF)
+          dplyr::filter(variable %in% columns) %>%
+          dplyr::arrange(SG_UF)
 
         Dados_microdados <- Dados_microdados[,c("SG_UF", "ID_MUNICIP",'variable','value')]
-        Dados_microdados <- Dados_microdados %>% count(value,SG_UF,ID_MUNICIP,variable)
+        Dados_microdados <- Dados_microdados %>% dplyr::count(value,SG_UF,ID_MUNICIP,variable)
         for(i in variaveis){
           Dados_microdados[Dados_microdados$variable == i,"variable"] <- variaveis_relacao[i]
         }
-        names(Dados_microdados)[c(1,4,5)] <- c('Incompletude','Variável','Frequência')
+        names(Dados_microdados)[c(1,4,5)] <- c('Incompletude','Vari\u00e1vel','Frequ\u00eancia')
         if('ignore' %in%  input$Exib_Dados & 'na' %in%  input$Exib_Dados){
           Dados_microdados <-
-            Dados_microdados[Dados_microdados$Incompletude !='Dados válidos',]
+            Dados_microdados[Dados_microdados$Incompletude !='Dados v\u00e1lidos',]
         }else if('ignore' %in% input$Exib_Dados){
           Dados_microdados <-
             Dados_microdados[Dados_microdados$Incompletude=='Dados ignorados',]
@@ -525,7 +522,7 @@ mod_SIVEP_server <- function(id, indicador){
           Dados_microdados <- NULL
         }
 
-        reactable::reactable(Dados_microdados, groupBy = c("Incompletude",'Variável','SG_UF'),
+        reactable::reactable(Dados_microdados, groupBy = c("Incompletude",'Vari\u00e1vel','SG_UF'),
                              filterable = TRUE,
                              showSortable = TRUE,
                              searchable = TRUE,
@@ -579,7 +576,7 @@ mod_SIVEP_server <- function(id, indicador){
              )
 
            Dados_GraficoImplauIniciais <- Dados_GraficoImplauIniciais %>%
-             filter(as.character(data) >= '2020-03')
+             dplyr::filter(as.character(data) >= '2020-03')
            VarSelecionadas <- Dados_GraficoImplauIniciais[variaveis]
 
            Dados_GraficoImplauIniciais <-
@@ -589,9 +586,9 @@ mod_SIVEP_server <- function(id, indicador){
                                  values_to = "value")
 
            Dados_GraficoImplauIniciais <- Dados_GraficoImplauIniciais %>%
-             mutate(imps = case_when(
-               stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
-               stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
+             dplyr::mutate(imps = dplyr::case_when(
+               stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Imposs\u00edvel",
+               stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improv\u00e1vel",
                TRUE ~ as.character(variable)
              ),
              variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1])
@@ -600,7 +597,7 @@ mod_SIVEP_server <- function(id, indicador){
            Dados_TabelaImplau <- Dados_GraficoImplauIniciais
 
            Dados_GraficoImplauIniciais <- Dados_GraficoImplauIniciais %>%
-             filter(imps %in% input$Exib_Dados2)
+             dplyr::filter(imps %in% input$Exib_Dados2)
 
            # filtra apenas as variaveis escolhidas pelo usuario
 
@@ -614,11 +611,11 @@ mod_SIVEP_server <- function(id, indicador){
 
              if (input$Graf_OpcaoLocalidade == "muni") {
                Dados_GraficoImplau <- Dados_GraficoImplau %>%
-                 filter(muni_nm_clean == input$Graf_muni)
+                 dplyr::filter(muni_nm_clean == input$Graf_muni)
 
              } else {
                Dados_GraficoImplau <- Dados_GraficoImplau %>%
-                 filter(SG_UF == input$Graf_Estado)
+                 dplyr::filter(SG_UF == input$Graf_Estado)
 
              }
 
@@ -626,20 +623,20 @@ mod_SIVEP_server <- function(id, indicador){
 
            if (input$Graf_OpcaoLocalidade== 'br') {
              Dados_GraficoImplau <- Dados_GraficoImplau %>%
-               group_by(data, variavel) %>%
-               summarize(value = mean(value))
+               dplyr::group_by(data, variavel) %>%
+               dplyr::summarize(value = mean(value))
              Dados_GraficoImplau$localidade <- 'BR'
            } else {
              if (input$Graf_OpcaoLocalidade == "muni") {
                Dados_GraficoImplau <- Dados_GraficoImplau %>%
-                 group_by(data, variavel) %>%
-                 summarize(value = mean(value))
+                 dplyr::group_by(data, variavel) %>%
+                 dplyr::summarize(value = mean(value))
                Dados_GraficoImplau$localidade <- input$Graf_muni
                print(input$Graf_muni)
              } else {
                Dados_GraficoImplau <- Dados_GraficoImplau %>%
-                 group_by(data, variavel) %>%
-                 summarize(value = mean(value))
+                 dplyr::group_by(data, variavel) %>%
+                 dplyr::summarize(value = mean(value))
                Dados_GraficoImplau$localidade <- input$Graf_Estado
              }
            }
@@ -650,9 +647,9 @@ mod_SIVEP_server <- function(id, indicador){
 
              if (input$Graf_OpcaoComparar== "muni") {
                Dados_GraficoImplau2 <- Dados_GraficoImplauIniciais %>%
-                 filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
-                 group_by(data, variavel) %>%
-                 summarize(value = mean(value))
+                 dplyr::filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
+                 dplyr::group_by(data, variavel) %>%
+                 dplyr::summarize(value = mean(value))
 
                Dados_GraficoImplau2$localidade <-
                  input$Graf_CompararMunicipio
@@ -661,9 +658,9 @@ mod_SIVEP_server <- function(id, indicador){
                print("else")
                Dados_GraficoImplau2 <-
                  Dados_GraficoImplauIniciais %>%
-                 filter(SG_UF == input$Graf_CompararEstado) %>%
-                 group_by(data, variavel) %>%
-                 summarize(value = mean(value))
+                 dplyr::filter(SG_UF == input$Graf_CompararEstado) %>%
+                 dplyr::group_by(data, variavel) %>%
+                 dplyr::summarize(value = mean(value))
                Dados_GraficoImplau2$localidade <-
                  input$Graf_CompararEstado
              }
@@ -675,17 +672,17 @@ mod_SIVEP_server <- function(id, indicador){
            Dados_GraficoImplau$value <-
              round(Dados_GraficoImplau$value * 100, 2)
 
-      g <- ggplot(data = Dados_GraficoImplau,
-                  aes(y = value, x = data, fill = localidade)) +
-        geom_bar(position = "dodge", stat = "identity") +
-        facet_grid(rows = vars(variavel))
+      g <- ggplot2::ggplot(data = Dados_GraficoImplau,
+                           ggplot2::aes(y = value, x = data, fill = localidade)) +
+        ggplot2::geom_bar(position = "dodge", stat = "identity") +
+        ggplot2::facet_grid(rows = ggplot2::vars(variavel))
 
-      g <- g + labs(x = NULL) +
-        labs(y = "Implausibilidade (%)", fill = "Localidade") +
-        scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
-        scale_fill_viridis_d() +
-        theme_bw() +
-        theme(axis.text.x = element_text(
+      g <- g + ggplot2::labs(x = NULL) +
+        ggplot2::labs(y = "Implausibilidade (%)", fill = "Localidade") +
+        ggplot2::scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
+        ggplot2::scale_fill_viridis_d() +
+        ggplot2::theme_bw() +
+        ggplot2::theme(axis.text.x =ggplot2::element_text(
           face = "bold",
           color = "#000000",
           size = 9,
@@ -693,14 +690,14 @@ mod_SIVEP_server <- function(id, indicador){
         ))
       if('NU_IDADE_N' %in% input$Graf_Variaveis_Incon){
       plotly::ggplotly(g, height = length(variaveis) * 125) %>%
-        layout(legend = list(orientation = "h", y = 20))}
+          plotly::layout(legend = list(orientation = "h", y = 20))}
       else{plotly::ggplotly(g, height = (length(variaveis) * 125 + 125)) %>%
-          layout(legend = list(orientation = "h", y = 20))
+          plotly::layout(legend = list(orientation = "h", y = 20))
 
       }})
 
 
-      selectDataAux <- reactive({
+      selectDataAux <- shiny::reactive({
         variaveis_tab <- vector()
         var_valida <- vector()
         for(var_tab in input$Graf_Variaveis_Incon) {
@@ -732,7 +729,7 @@ mod_SIVEP_server <- function(id, indicador){
           )
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          filter(as.character(data) >= '2020-03')
+          dplyr::filter(as.character(data) >= '2020-03')
         if(input$Graf_OpcaoLocalidade == 'est'){
           Dados_TabelaImplau <- Dados_TabelaImplau[Dados_TabelaImplau$SG_UF == input$Graf_Estado,]
         } else if(input$Graf_OpcaoLocalidade == 'muni'){
@@ -742,7 +739,7 @@ mod_SIVEP_server <- function(id, indicador){
       })
 
 
-      selectData <- reactive({
+      selectData <- shiny::reactive({
         variaveis_tab <- vector()
         var_valida <- vector()
         for(var_tab in input$Graf_Variaveis_Incon) {
@@ -771,12 +768,12 @@ mod_SIVEP_server <- function(id, indicador){
                               values_to = "value")
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          filter(value)
+          dplyr::filter(value)
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          mutate(imps = case_when(
-            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
-            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
+          dplyr::mutate(imps = dplyr::case_when(
+            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Imposs\u00edvel",
+            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improv\u00e1vel",
             TRUE ~ as.character(variable)
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
@@ -786,14 +783,14 @@ mod_SIVEP_server <- function(id, indicador){
         columns <- unique(c("SG_UF", "ID_MUNICIP", input$Graf_Variaveis_Incon, "motivo"))
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          filter(variavel %in% columns) %>%
-          arrange(SG_UF)
+          dplyr::filter(variavel %in% columns) %>%
+          dplyr::arrange(SG_UF)
 
         Dados_TabelaImplau <- Dados_TabelaImplau[, columns]
       })
 
 
-      selectData2 <- reactive({
+      selectData2 <- shiny::reactive({
         variaveis_tab <- vector()
         var_valida <- vector()
       for(var_tab in input$Graf_Variaveis_Incon) {
@@ -829,19 +826,19 @@ mod_SIVEP_server <- function(id, indicador){
                             values_to = "value")
 
       Dados_TabelaImplau <- Dados_TabelaImplau %>%
-        filter(value)
+        dplyr::filter(value)
       Dados_TabelaImplau <- Dados_TabelaImplau %>%
-        mutate(Dado = case_when(
-          stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
-          stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
-          stringr::str_detect(variable, "PLAUSIVEL") ~ "Dado Plausível",
+        dplyr::mutate(Dado = dplyr::case_when(
+          stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Imposs\u00edvel",
+          stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improv\u00e1vel",
+          stringr::str_detect(variable, "PLAUSIVEL") ~ "Dado Plaus\u00edvel",
           TRUE ~ as.character(variable)
         ),
         variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1])#,
         )
 
         Dados_TabelaImplau  <- Dados_TabelaImplau %>%
-               count(variavel,Dado)
+               dplyr::count(variavel,Dado)
         Dados_TabelaImplau[['%']] <- NA
         for(var in var_valida){
           Dados_TabelaImplau[Dados_TabelaImplau$variavel == var, 4] <- 100 *
@@ -854,7 +851,7 @@ mod_SIVEP_server <- function(id, indicador){
        for(i in 1:35){
          local({
            my_i <- i
-           output[[paste('print',i,sep='')]] <- renderText({
+           output[[paste('print',i,sep='')]] <- shiny::renderText({
              if(var_dados_implau[my_i] %in% input$Graf_Variaveis_Incon){
                dados <-  selectData2()
                dados <- dados[dados$variavel == var_dados_implau[my_i],]
@@ -898,24 +895,24 @@ mod_SIVEP_server <- function(id, indicador){
                               values_to = "value")
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          filter(value)
+          dplyr::filter(value)
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          mutate(imps = case_when(
-            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Impossível",
-            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improvável",
+          dplyr::mutate(imps = dplyr::case_when(
+            stringr::str_detect(variable, "IMPOSSIVEL") ~ "Dado Imposs\u00edvel",
+            stringr::str_detect(variable, "IMPROVAVEL") ~ "Dado Improv\u00e1vel",
             TRUE ~ as.character(variable)
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
           motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
           )  %>%
-          filter(imps %in% input$Exib_Dados2)
+          dplyr::filter(imps %in% input$Exib_Dados2)
 
         columns <- unique(c("SG_UF", "ID_MUNICIP", input$Graf_Variaveis_Incon, "motivo"))
 
         Dados_TabelaImplau <- Dados_TabelaImplau %>%
-          filter(variavel %in% columns) %>%
-          arrange(SG_UF)
+          dplyr::filter(variavel %in% columns) %>%
+          dplyr::arrange(SG_UF)
 
         Dados_TabelaImplau <- Dados_TabelaImplau[, columns]
 
@@ -968,7 +965,7 @@ mod_SIVEP_server <- function(id, indicador){
           )
 
         Dados_GraficoIncon <- Dados_GraficoIncon %>%
-         filter(as.character(data) >= '2020-03')
+         dplyr::filter(as.character(data) >= '2020-03')
 
         #CONVERTER VARIAVEIS SELECIONADAS PARA BINARIO PARA CALCULO DE PORCENTAGEM --------------
         Dados_GraficoIncon[variaveis] <- sapply(Dados_GraficoIncon[variaveis], as.numeric)
@@ -988,11 +985,11 @@ mod_SIVEP_server <- function(id, indicador){
 
           if (input$Graf_OpcaoLocalidade == "muni") {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              filter(muni_nm_clean == input$Graf_muni)
+             dplyr::filter(muni_nm_clean == input$Graf_muni)
 
           } else {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              filter(SG_UF == input$Graf_Estado)
+              dplyr::filter(SG_UF == input$Graf_Estado)
 
           }
 
@@ -1000,21 +997,21 @@ mod_SIVEP_server <- function(id, indicador){
 
         if (input$Graf_OpcaoLocalidade == 'br') {
           Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-            group_by(data, variable) %>%
-            summarize(value = mean(value))
+            dplyr::group_by(data, variable) %>%
+            dplyr::summarize(value = mean(value))
           Dados_GraficoIncon1$localidade <- 'BR'
         } else {
 
           if (input$Graf_OpcaoLocalidade == "muni") {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncon1$localidade <- input$Graf_muni
             print(input$Graf_muni)
           } else {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncon1$localidade <- input$Graf_Estado
           }
         }
@@ -1024,18 +1021,18 @@ mod_SIVEP_server <- function(id, indicador){
 
           if (input$Graf_OpcaoComparar == "muni") {
             Dados_GraficoIncon2 <- Dados_GraficoIncon %>%
-              filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::filter(muni_nm_clean == input$Graf_CompararMunicipio) %>%
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
 
             Dados_GraficoIncon2$localidade <- input$Graf_CompararMunicipio
             print(input$Graf_CompararMunicipio)
           } else {
             print("else")
             Dados_GraficoIncon2 <- Dados_GraficoIncon %>%
-              filter(SG_UF == input$Graf_CompararEstado) %>%
-              group_by(data, variable) %>%
-              summarize(value = mean(value))
+              dplyr::filter(SG_UF == input$Graf_CompararEstado) %>%
+              dplyr::group_by(data, variable) %>%
+              dplyr::summarize(value = mean(value))
             Dados_GraficoIncon2$localidade <- input$Graf_CompararEstado
           }
           Dados_GraficoIncon1 <- rbind( Dados_GraficoIncon1,Dados_GraficoIncon2)
@@ -1043,17 +1040,17 @@ mod_SIVEP_server <- function(id, indicador){
         }
         Dados_GraficoIncon1$value <- round(Dados_GraficoIncon1$value * 100, 2)
         #FINALIZACAO COM GGPLOT -------------------------
-        g <- ggplot(data = Dados_GraficoIncon1,
-                    aes(y = value, x = data, fill = localidade)) +
-          geom_bar(position = "dodge", stat = "identity") +
-          facet_grid(rows = vars(variable))
+        g <- ggplot2::ggplot(data = Dados_GraficoIncon1,
+                    ggplot2::aes(y = value, x = data, fill = localidade)) +
+          ggplot2::geom_bar(position = "dodge", stat = "identity") +
+          ggplot2::facet_grid(rows = ggplot2::vars(variable))
 
-        g <- g + labs(x = NULL) +
-          labs(y = "Inconsistência (%)", fill = "Localidade") +
-          scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
-          scale_fill_viridis_d() +
-          theme_bw() +
-          theme(axis.text.x = element_text(
+        g <- g + ggplot2::labs(x = NULL) +
+          ggplot2::labs(y = "Inconsist\u00eancia (%)", fill = "Localidade") +
+          ggplot2::scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
+          ggplot2::scale_fill_viridis_d() +
+          ggplot2::theme_bw() +
+          ggplot2::theme(axis.text.x = ggplot2::element_text(
             face = "bold",
             color = "#000000",
             size = 9,
@@ -1061,7 +1058,7 @@ mod_SIVEP_server <- function(id, indicador){
           ))
 
         plotly::ggplotly(g, height = c(length(var_names) * 125 + 125)) %>%
-          layout(legend = list(orientation = "h", y = 20))})
+        plotly::layout(legend = list(orientation = "h", y = 20))})
 
       selectDataFiltro <- reactive({
         variaveis <- NA
@@ -1083,7 +1080,7 @@ mod_SIVEP_server <- function(id, indicador){
           )
 
         Dados_GraficoIncon <- Dados_GraficoIncon %>%
-          filter(as.character(data) >= '2020-03')
+          dplyr::filter(as.character(data) >= '2020-03')
         VarSelecionadas <- Dados_GraficoIncon[variaveis]
 
         Dados_GraficoIncon <- Dados_GraficoIncon %>%
@@ -1101,11 +1098,11 @@ mod_SIVEP_server <- function(id, indicador){
 
           if (input$Graf_OpcaoLocalidade == "muni") {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              filter(muni_nm_clean == input$Graf_muni)
+              dplyr::filter(muni_nm_clean == input$Graf_muni)
 
           } else {
             Dados_GraficoIncon1 <- Dados_GraficoIncon1 %>%
-              filter(SG_UF == input$Graf_Estado)
+              dplyr::filter(SG_UF == input$Graf_Estado)
 
           }
 
@@ -1117,15 +1114,15 @@ mod_SIVEP_server <- function(id, indicador){
       selectDataTable <- reactive({
         data <- selectDataFiltro()
         data <- data %>%
-          mutate(Dado = case_when(
-            stringr::str_detect(value, "FALSE") ~ "Dado Válido",
+          dplyr::mutate(Dado = dplyr::case_when(
+            stringr::str_detect(value, "FALSE") ~ "Dado V\u00e1lido",
             stringr::str_detect(value, "TRUE") ~ "Dado Inconsistente"
           ),
           variavel = gsub('_e_',' e ',variable)
           ) %>%
-          filter(Dado %in% input$Exib_Dados)
+          dplyr::filter(Dado %in% input$Exib_Dados)
         data <- data[4:ncol(data)]
-        data <- data  %>% group_by(variavel,Dado)%>% count()
+        data <- data  %>% group_by(variavel,Dado)%>% dplyr::count()
         data[['variavel']] <- gsub('_INCONSISTENTES','', data[['variavel']])
         data
       })
@@ -1133,7 +1130,7 @@ mod_SIVEP_server <- function(id, indicador){
       for(i in 1:35){
         local({
           my_i <- i
-          output[[paste('print',i,sep='')]] <- renderText({
+          output[[paste('print',i,sep='')]] <- shiny::renderText({
             if(unname(vars_incon)[my_i] %in% input$Graf_Variaveis_Incon){
               dados <-  selectDataTable()
               dados <- dados[dados$variavel == unname(vars_incon[my_i]),]
@@ -1153,7 +1150,7 @@ mod_SIVEP_server <- function(id, indicador){
         })
       }
 
-      selectDataMicro <- reactive({
+      selectDataMicro <- shiny::reactive({
           variaveis <- NA
           var_names <- NA
           for(var in input$Graf_Variaveis_Incon){
@@ -1177,7 +1174,7 @@ mod_SIVEP_server <- function(id, indicador){
               format(Dados_GraficoIncon$dt_sint, "%Y-%m")
             )
           Dados_GraficoIncon <- Dados_GraficoIncon %>%
-            filter(as.character(data) >= '2020-03')
+            dplyr::filter(as.character(data) >= '2020-03')
           VarSelecionadas <- Dados_GraficoIncon[variaveis]
           if(input$Graf_OpcaoLocalidade == 'est'){
             Dados_GraficoIncon <- Dados_GraficoIncon[Dados_GraficoIncon$SG_UF == input$Graf_Estado,]
@@ -1195,13 +1192,13 @@ mod_SIVEP_server <- function(id, indicador){
           Dados_GraficoIncon1 <- Dados_GraficoIncon[,c('variable', 'value','SG_UF','muni_nm_clean',colunas)]
           Dados_GraficoIncon1$variable <-   gsub('_e_',' e ',Dados_GraficoIncon1$variable)
           Dados_GraficoIncon1$variable <-   gsub('_INCONSISTENTES','',Dados_GraficoIncon1$variable)
-          names(Dados_GraficoIncon1)[c(1,4)] <- c('Inconsistência','MUNICIPIO')
+          names(Dados_GraficoIncon1)[c(1,4)] <- c('Inconsist\u00eancia','MUNICIPIO')
           Dados_GraficoIncon2 <- Dados_GraficoIncon1[Dados_GraficoIncon1$value==TRUE,c(1,3:ncol(Dados_GraficoIncon1))]
           })
 
       output$table_incom <- reactable::renderReactable({
         Dados_TabelaIncon <- selectDataMicro()
-        reactable::reactable(Dados_TabelaIncon, groupBy = c('Inconsistência',"SG_UF", "MUNICIPIO"),
+        reactable::reactable(Dados_TabelaIncon, groupBy = c('Inconsist\u00eancia',"SG_UF", "MUNICIPIO"),
                                                  filterable = TRUE,
                                                  showSortable = TRUE,
                                                  searchable = TRUE,

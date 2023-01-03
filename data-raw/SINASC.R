@@ -76,6 +76,7 @@ Sinasc_implau[is.na(Sinasc_implau$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não in
 Sinasc_implau$CODMUNNASC <- Sinasc_implau$muni_nm_clean
 Sinasc_implau$ESTADO <- Sinasc_implau$uf_sigla
 Sinasc_implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+Sinasc_implau[is.na(Sinasc_implau$ESTADO) == T,'ESTADO'] <- 'Não informado'
 
 ###################################### INCONSISTÊNCIA ###########################
 
@@ -109,15 +110,16 @@ Sinasc_incon[is.na(Sinasc_incon$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não info
 Sinasc_incon$CODMUNNASC <- Sinasc_incon$muni_nm_clean
 Sinasc_incon$ESTADO <- Sinasc_incon$uf_sigla
 Sinasc_incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
-Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,]
+Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,'ESTADO'] <- 'Não informado'
+
 ###############################################  EXPORTACAO ##################
-# usethis::use_data(Sinasc_implau, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_incom, overwrite = TRUE)
-# usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
-# usethis::use_data(Sinasc_incom, overwrite = TRUE)
-# usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_implau, overwrite = TRUE)
-# usethis::use_data(Sinasc_incon, overwrite = TRUE)
-# usethis::use_data(var_incon_sinasc, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_incon, overwrite = TRUE)
+usethis::use_data(Sinasc_implau, overwrite = TRUE)
+usethis::use_data(regras_sinasc_incom, overwrite = TRUE)
+usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
+usethis::use_data(Sinasc_incom, overwrite = TRUE)
+usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
+usethis::use_data(regras_sinasc_implau, overwrite = TRUE)
+usethis::use_data(Sinasc_incon, overwrite = TRUE)
+usethis::use_data(var_incon_sinasc, overwrite = TRUE)
+usethis::use_data(regras_sinasc_incon, overwrite = TRUE)
 

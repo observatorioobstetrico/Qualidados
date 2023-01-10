@@ -61,7 +61,6 @@ app_ui <- function(request) {
                 )
               ),
               shinydashboard::dashboardBody(shinydashboard::tabItems(
-
               mod_SIVEP_ui(id = "SIVEP_incompletude",
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",

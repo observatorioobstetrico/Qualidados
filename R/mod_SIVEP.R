@@ -392,7 +392,7 @@ mod_SIVEP_server <- function(id, indicador){
         g <- ggplot2::ggplot(data = Dados_GraficoIncompletude,
                     ggplot2::aes(y=value, x=data , fill = localidade)) +
           ggplot2::geom_bar(position="dodge", stat="identity") +
-          ggplot2::facet_grid(rows = ggplot2::vars(variable), labeller=var_labeller)
+          ggplot2::facet_grid(rows = ggplot2::vars(variable))#, labeller=var_labeller)
 
         g <- g + ggplot2::labs(x = NULL) +
           ggplot2::labs(y = "Incompletude (%)", fill = "Localidade") +

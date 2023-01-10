@@ -60,8 +60,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
                             shiny::selectInput(
                               ns("filtro_loc_est"),
                               "Selecione o estado",
-                              choices = estados,
-                              selected = estados[1])),
+                              choices = 'estados')),
                           #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
                           shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_loc")),
@@ -89,8 +88,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
                             shiny::selectInput(
                               ns("compara_est"),
                               "Estado de compara\u00e7\u00e3o",
-                              choices = estados,
-                              selected = estados[1]
+                              choices = 'estados'
                             )),
                           shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_compara")),
@@ -175,23 +173,35 @@ mod_SINASC_server <- function(id,indicador){
     ns <- session$ns
       #GRAFICOS
     #municipios
+    data_inicio <- shiny::reactive({var_value <- input$vars_select
+    if(indicador == 'incom')dado <- Sinasc_incom
+    if(indicador == 'implau'){
+      dado <- Sinasc_implau
+      var_value <- paste0(var_value,'_IMPLAUSIVEL')
+    }
+    if(indicador == 'incon'){
+      dado <- Sinasc_incon
+      var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
+        names()
+    }
+    dado <- dado %>%
+      dplyr::filter(VARIAVEL %in% var_value) %>%
+      dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+    shiny::updateSelectInput(session,("filtro_loc_est"),
+                             choices = unique(dado$ESTADO),
+                             selected = unique(dado$ESTADO)[1])
+
+    shiny::updateSelectInput(session,("compara_est"),
+                             choices = unique(dado$ESTADO),
+                             selected = unique(dado$ESTADO)[1])
+    dado
+    })
+
+
     shiny::observe({
-      var_value <- input$vars_select
-      if(indicador == 'incom')dado <- Sinasc_incom
-      if(indicador == 'implau'){
-        dado <- Sinasc_implau
-        var_value <- paste0(var_value,'_IMPLAUSIVEL')
-      }
-      if(indicador == 'incon'){
-        dado <- Sinasc_incon
-        var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
-          names()
-      }
       x <- input$filtro_loc_est
       y <- input$compara_est
-      dado <- dado %>%
-        dplyr::filter(VARIAVEL %in% var_value) %>%
-        dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+      dado <- data_inicio()
       muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] %>%unlist()%>% as.vector()
       muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] %>%unlist()%>% as.vector()
 
@@ -205,22 +215,7 @@ mod_SINASC_server <- function(id,indicador){
 
     })
       data_filtro <- shiny::reactive({
-        var_value <- input$vars_select
-        if(indicador == 'incom'){
-          dados_inicio <- Sinasc_incom
-        }
-        if(indicador == 'implau'){
-          dados_inicio <- Sinasc_implau
-          var_value <- paste0(var_value,'_IMPLAUSIVEL')
-        }
-        if(indicador == 'incon'){
-          dados_inicio <- Sinasc_incon
-          var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
-            names()
-        }
-        dados_inicio <- dados_inicio %>%
-          dplyr::filter(VARIAVEL %in% var_value) %>%
-          dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+        dados_inicio <- data_inicio()
         if(input$filtro_loc == 'est'){
           dados <- dados_inicio[dados_inicio$ESTADO == input$filtro_loc_est,]
           dados$LOCALIDADE <- input$filtro_loc_est

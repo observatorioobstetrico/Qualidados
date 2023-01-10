@@ -50,7 +50,7 @@ Sinasc_implau <- read_csv('data1/SINASC_Implausibilidade_v2.csv',show_col_types 
 vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 vars_implau_sinasc <- vars_implau_sinasc |>
   stringr::str_split("_IMPLAUSIVEL") |> unlist()
-vars_implau_sinasc <- vars_implau_sinasc[stringr::str_detect(vars_implau_sinasc,'')]
+vars_implau_sinasc <- vars_implau_sinasc[vars_implau_sinasc != '']
 
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 

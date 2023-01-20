@@ -187,7 +187,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
             names()
         }
     }
-    if(SIM == TRUE){
+    else{
       if(indicador == 'incom')dado <- SIM_Incom
     }
     dado <- dado %>%

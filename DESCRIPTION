@@ -9,36 +9,24 @@ License: MIT + file LICENSE
 URL: https://github.com/SammyMar/QualidadosModulos
 BugReports: https://github.com/SammyMar/QualidadosModulos/issues
 Imports: 
-    abjData,
     config (>= 0.3.1),
     dplyr,
-    DT,
-    forcats,
     ggplot2,
-    ggridges,
     golem (>= 0.3.3),
-    highcharter,
-    htmltools,
     kableExtra,
-    leaflet,
-    leaflet.extras,
-    magrittr,
-    modelsummary,
-    pkgload,
     plotly,
     questionr,
     reactable,
-    readxl,
-    rjson,
     shiny (>= 1.7.2),
     shinyalert,
-    shinydashboard,
     shinyjs,
     shinyWidgets,
     stringr,
-    summarytools,
     tidyr,
-    tippy
+    tippy,
+    magrittr,
+    shinydashboard,
+    plyr
 Suggests: 
     spelling,
     testthat (>= 3.0.0)

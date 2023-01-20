@@ -5,7 +5,7 @@ library(dplyr)
 ############## INCOMPLETUDE ################################################
 
 regras_sinasc_incom <- c(fromJSON(file = 'data1/SINASC_Incompletude_Regras.json'))
-Sinasc_incom <- read_csv("data1/SINASC_Incompletude_v2.csv",show_col_types = FALSE)
+Sinasc_incom <- read_csv("data1/SINASC_Incompletude_v2.csv",show_col_types = FALSE )
 vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 
@@ -43,6 +43,8 @@ Sinasc_incom[is.na(Sinasc_incom$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não info
 Sinasc_incom$CODMUNNASC <- Sinasc_incom$muni_nm_clean
 Sinasc_incom$ESTADO <- Sinasc_incom$uf_sigla
 Sinasc_incom[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+
+
 ############### IMPLAUSIBILIDADE ############################################
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
@@ -50,7 +52,7 @@ Sinasc_implau <- read_csv('data1/SINASC_Implausibilidade_v2.csv',show_col_types 
 vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 vars_implau_sinasc <- vars_implau_sinasc |>
   stringr::str_split("_IMPLAUSIVEL") |> unlist()
-vars_implau_sinasc <- vars_implau_sinasc[stringr::str_detect(vars_implau_sinasc,'')]
+vars_implau_sinasc <- vars_implau_sinasc[vars_implau_sinasc != '']
 
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 
@@ -76,6 +78,7 @@ Sinasc_implau[is.na(Sinasc_implau$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não in
 Sinasc_implau$CODMUNNASC <- Sinasc_implau$muni_nm_clean
 Sinasc_implau$ESTADO <- Sinasc_implau$uf_sigla
 Sinasc_implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+Sinasc_implau[is.na(Sinasc_implau$ESTADO) == T,'ESTADO'] <- 'Não informado'
 
 ###################################### INCONSISTÊNCIA ###########################
 
@@ -109,15 +112,16 @@ Sinasc_incon[is.na(Sinasc_incon$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não info
 Sinasc_incon$CODMUNNASC <- Sinasc_incon$muni_nm_clean
 Sinasc_incon$ESTADO <- Sinasc_incon$uf_sigla
 Sinasc_incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
-Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,]
+Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,'ESTADO'] <- 'Não informado'
+
 ###############################################  EXPORTACAO ##################
-# usethis::use_data(Sinasc_implau, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_incom, overwrite = TRUE)
-# usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
-# usethis::use_data(Sinasc_incom, overwrite = TRUE)
-# usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_implau, overwrite = TRUE)
-# usethis::use_data(Sinasc_incon, overwrite = TRUE)
-# usethis::use_data(var_incon_sinasc, overwrite = TRUE)
-# usethis::use_data(regras_sinasc_incon, overwrite = TRUE)
+usethis::use_data(Sinasc_implau, overwrite = TRUE)
+usethis::use_data(regras_sinasc_incom, overwrite = TRUE)
+usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
+usethis::use_data(Sinasc_incom, overwrite = TRUE)
+usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
+usethis::use_data(regras_sinasc_implau, overwrite = TRUE)
+usethis::use_data(Sinasc_incon, overwrite = TRUE)
+usethis::use_data(var_incon_sinasc, overwrite = TRUE)
+usethis::use_data(regras_sinasc_incon, overwrite = TRUE)
 

@@ -7,28 +7,25 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
+mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= FALSE){
   ns <- NS(id)
-    library(magrittr)
-    library(shiny)
-    library(shinydashboard)
     shinyjs::useShinyjs()
-    tabItem(tabName = tabname,
+    shinydashboard::tabItem(tabName = tabname,
             #DESCRICAO
-            fluidRow(
-              box(
+            shiny::fluidRow(
+              shinydashboard::box(
                 width = 12,
-                title = "Descrição",
+                title = "Descri\u00e7\u00e3o",
                 status = "primary",
                 solidHeader = FALSE,
-                span(descricao,
+                shiny::span(descricao,
                      style = "color:black")
                 )
               ),
             #CAIXA COM FILTROS E GRAFICOS
-            fluidRow(
+            shiny::fluidRow(
               #FILTROS
-              box(collapsible = TRUE,
+              shinydashboard::box(collapsible = TRUE,
                           width = 2,
                           title = "Campos",
                           status = "primary",
@@ -42,7 +39,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
                             options = list(`actions-box` = TRUE),
                             multiple = T),
                           #LOCALIDADE
-                          sliderInput(
+                          shiny::sliderInput(
                             ns('filtro_tempo'),
                             'Selecione a janela de tempo:',
                             min = 1996,
@@ -50,7 +47,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
                             value = c(2000,2018),
                             round = T,
                             sep=''),
-                          selectInput(
+                          shiny::selectInput(
                             ns("filtro_loc"),
                             "Dados por localidade:",
                             c("Brasil" = 'br',
@@ -58,111 +55,109 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
                               "Municipio" = 'muni'
                             ), selected = 'br'),
                           #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE SE POR ESTADO
-                          conditionalPanel(
+                          shiny::conditionalPanel(
                             condition = sprintf("input['%s'] != 'br'",ns("filtro_loc")),
-                            selectInput(
+                            shiny::selectInput(
                               ns("filtro_loc_est"),
                               "Selecione o estado",
-                              choices = estados,
-                              selected = estados[1])),
+                              choices = 'AC')),
                           #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
-                          conditionalPanel(
+                          shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_loc")),
-                            selectInput(
+                            shiny::selectInput(
                               ns("filtro_loc_muni"),
-                              "Selecione o município",
+                              "Selecione o munic\u00edpio",
                               choices = ('municipios'))),
-                          selectInput(
+                          shiny::selectInput(
                             ns('filtro_compara'),
-                            "Fazer comparação?",
+                            "Fazer compara\u00e7\u00e3o?",
                             c(
-                              "Não" = "br",
+                              "N\u00e3o" = "br",
                               "Sim, com estado" = "est",
-                              "Sim, com município" = "muni"
+                              "Sim, com munic\u00edpio" = "muni"
                             ),
                             selected = c("br")
                           ),
                           tippy::tippy_this(
                             elementId = ns("filtro_compara"),
-                            tooltip = "Disponível apenas para visualização gráfica.",
+                            tooltip = "Dispon\u00edvel apenas para visualiza\u00e7\u00e3o gr\u00e1fica.",
                             placement = "right"
                           ),
-                          conditionalPanel(
+                          shiny::conditionalPanel(
                             condition = sprintf("input['%s'] != 'br'",ns("filtro_compara")),
-                            selectInput(
+                            shiny::selectInput(
                               ns("compara_est"),
-                              "Estado de comparação",
-                              choices = estados,
-                              selected = estados[1]
+                              "Estado de compara\u00e7\u00e3o",
+                              choices = 'AC'
                             )),
-                          conditionalPanel(
+                          shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_compara")),
-                            selectInput(
+                            shiny::selectInput(
                               ns("compara_muni"),
-                              "Município de comparação",
+                              "Munic\u00edpio de compara\u00e7\u00e3o",
                               ('municipios')))
                   ),
               #VISUALIZACAO
-              box(title = 'Visualização',
+              shinydashboard::box(title = 'Visualiza\u00e7\u00e3o',
                   status = 'primary',
                   width = 10,
-                  div(tabsetPanel(
-                    tabPanel("Gráficos",
+                  shiny::div(shiny::tabsetPanel(
+                    shiny::tabPanel("Gr\u00e1ficos",
                              plotly::plotlyOutput(ns("Grafico"))),
-                    tabPanel("Tabelas",
-                             tabBox(
+                    shiny::tabPanel("Tabelas",
+                             shinydashboard::tabBox(
                                width = 24,
-                                 tabPanel(htmlOutput(ns(paste0('print',1)))),
-                               tabPanel(htmlOutput(ns(paste0('print',2)))),
-                               tabPanel(htmlOutput(ns(paste0('print',3)))),
-                               tabPanel(htmlOutput(ns(paste0('print',4)))),
-                               tabPanel(htmlOutput(ns(paste0('print',5)))),
-                               tabPanel(htmlOutput(ns(paste0('print',6)))),
-                               tabPanel(htmlOutput(ns(paste0('print',7)))),
-                               tabPanel(htmlOutput(ns(paste0('print',8)))),
-                               tabPanel(htmlOutput(ns(paste0('print',9)))),
-                               tabPanel(htmlOutput(ns(paste0('print',10)))),
-                               tabPanel(htmlOutput(ns(paste0('print',11)))),
-                               tabPanel(htmlOutput(ns(paste0('print',12)))),
-                               tabPanel(htmlOutput(ns(paste0('print',13)))),
-                               tabPanel(htmlOutput(ns(paste0('print',14)))),
-                               tabPanel(htmlOutput(ns(paste0('print',15)))),
-                               tabPanel(htmlOutput(ns(paste0('print',16)))),
-                               tabPanel(htmlOutput(ns(paste0('print',17)))),
-                               tabPanel(htmlOutput(ns(paste0('print',18)))),
-                               tabPanel(htmlOutput(ns(paste0('print',19)))),
-                               tabPanel(htmlOutput(ns(paste0('print',20)))),
-                               tabPanel(htmlOutput(ns(paste0('print',21)))),
-                               tabPanel(htmlOutput(ns(paste0('print',22)))),
-                               tabPanel(htmlOutput(ns(paste0('print',23)))),
-                               tabPanel(htmlOutput(ns(paste0('print',24)))),
-                               tabPanel(htmlOutput(ns(paste0('print',25)))),
-                               tabPanel(htmlOutput(ns(paste0('print',26)))),
-                               tabPanel(htmlOutput(ns(paste0('print',27)))),
-                               tabPanel(htmlOutput(ns(paste0('print',28)))),
-                               tabPanel(htmlOutput(ns(paste0('print',29)))),
-                               tabPanel(htmlOutput(ns(paste0('print',30)))),
-                               tabPanel(htmlOutput(ns(paste0('print',31)))),
-                               tabPanel(htmlOutput(ns(paste0('print',32)))),
-                               tabPanel(htmlOutput(ns(paste0('print',33)))),
-                               tabPanel(htmlOutput(ns(paste0('print',34)))),
-                               tabPanel(htmlOutput(ns(paste0('print',35)))),
-                               tabPanel(htmlOutput(ns(paste0('print',36)))),
-                               tabPanel(htmlOutput(ns(paste0('print',37)))),
-                               tabPanel(htmlOutput(ns(paste0('print',38)))),
-                               tabPanel(htmlOutput(ns(paste0('print',39)))),
-                               tabPanel(htmlOutput(ns(paste0('print',40)))),
-                               tabPanel(htmlOutput(ns(paste0('print',41)))),
-                               tabPanel(htmlOutput(ns(paste0('print',42)))),
-                               tabPanel(htmlOutput(ns(paste0('print',43)))),
-                               tabPanel(htmlOutput(ns(paste0('print',44)))),
-                               tabPanel(htmlOutput(ns(paste0('print',45)))),
-                               tabPanel(htmlOutput(ns(paste0('print',46)))),
-                               tabPanel(htmlOutput(ns(paste0('print',47)))),
-                               tabPanel(htmlOutput(ns(paste0('print',48)))),
-                               tabPanel(htmlOutput(ns(paste0('print',49)))),
-                               tabPanel(htmlOutput(ns(paste0('print',50)))),
-                               tabPanel(htmlOutput(ns(paste0('print',51))))
+                                 shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',1)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',2)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',3)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',4)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',5)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',6)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',7)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',8)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',9)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',10)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',11)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',12)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',13)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',14)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',15)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',16)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',17)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',18)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',19)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',20)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',21)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',22)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',23)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',24)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',25)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',26)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',27)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',28)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',29)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',30)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',31)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',32)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',33)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',34)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',35)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',36)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',37)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',38)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',39)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',40)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',41)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',42)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',43)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',44)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',45)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',46)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',47)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',48)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',49)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',50)))),
+                               shiny::tabPanel(shiny::htmlOutput(ns(paste0('print',51))))
                                     ))
                   ))
               ))
@@ -173,60 +168,71 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados){
 #' mod_SINASC Server Functions
 #'
 #' @noRd
-mod_SINASC_server <- function(id,indicador){
+mod_SINASC_server <- function(id,indicador,SIM = FALSE){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
       #GRAFICOS
     #municipios
-    observe({
+    data_inicio <- shiny::reactive({
       var_value <- input$vars_select
-      if(indicador == 'incom')dado <- Sinasc_incom
-      if(indicador == 'implau'){
-        dado <- Sinasc_implau
-        var_value <- paste0(var_value,'_IMPLAUSIVEL')
-      }
-      if(indicador == 'incon'){
-        dado <- Sinasc_incon
-        var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
-          names()
-      }
+    if(SIM == FALSE){
+        if(indicador == 'incom')dado <- Sinasc_incom
+        if(indicador == 'implau'){
+          dado <- Sinasc_implau
+          var_value <- paste0(var_value,'_IMPLAUSIVEL')
+        }
+        if(indicador == 'incon'){
+          dado <- Sinasc_incon
+          var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
+            names()
+        }
+    }
+    if(SIM == TRUE){
+      if(indicador == 'incom')dado <- SIM_Incom
+    }
+    dado <- dado %>%
+      dplyr::filter(VARIAVEL %in% var_value) %>%
+      dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+    shiny::updateSelectInput(session,("filtro_loc_est"),
+                             choices = sort(unique(dado$ESTADO)),
+                             selected = sort(unique(dado$ESTADO))[1])
+
+    shiny::updateSelectInput(session,("compara_est"),
+                             choices = sort(unique(dado$ESTADO)),
+                             selected = sort(unique(dado$ESTADO))[1])
+    dado
+    })
+
+
+    shiny::observe({
       x <- input$filtro_loc_est
       y <- input$compara_est
-      dado <- dado %>%
-        dplyr::filter(VARIAVEL %in% var_value) %>%
-        dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
-      muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] %>%unlist()%>% as.vector()
-      muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] %>%unlist()%>% as.vector()
+      dado <- data_inicio()
+      muni <- dado[dado$ESTADO == x,'CODMUNNASC' ] %>% unlist() %>%
+        as.vector() %>%
+        unique() %>%
+        sort()
+      muni_comp <- dado[dado$ESTADO == y,'CODMUNNASC' ] %>% unlist() %>%
+        as.vector() %>%
+        unique() %>%
+        sort()
 
-      updateSelectInput(session,("filtro_loc_muni"),
+      shiny::updateSelectInput(session,("filtro_loc_muni"),
                         choices = muni,
                         selected = muni[1])
 
-      updateSelectInput(session,("compara_muni"),
+      shiny::updateSelectInput(session,("compara_muni"),
                         choices = muni_comp,
                         selected = muni_comp[1])
 
     })
-      data_filtro <- reactive({
-        var_value <- input$vars_select
-        if(indicador == 'incom'){
-          dados_inicio <- Sinasc_incom
-        }
-        if(indicador == 'implau'){
-          dados_inicio <- Sinasc_implau
-          var_value <- paste0(var_value,'_IMPLAUSIVEL')
-        }
-        if(indicador == 'incon'){
-          dados_inicio <- Sinasc_incon
-          var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
-            names()
-        }
-        dados_inicio <- dados_inicio %>%
-          dplyr::filter(VARIAVEL %in% var_value) %>%
-          dplyr::filter(ANO >= input$filtro_tempo[1] & ANO <= input$filtro_tempo[2])
+      data_filtro <- shiny::reactive({
+        dados_inicio <- data_inicio()
         if(input$filtro_loc == 'est'){
-          dados <- dados_inicio[dados_inicio$ESTADO == input$filtro_loc_est,]
+          dados <- dados_inicio |> dplyr::filter(ESTADO %in% input$filtro_loc_est)
+
           dados$LOCALIDADE <- input$filtro_loc_est
+
         } else if(input$filtro_loc == 'muni'){
           dados <- dados_inicio[dados_inicio$CODMUNNASC == input$filtro_loc_muni,]
           dados$LOCALIDADE <- input$filtro_loc_muni
@@ -269,28 +275,28 @@ mod_SINASC_server <- function(id,indicador){
         }
         if(indicador == 'incon'){
         dados$value <- round((dados$INCONSISTENTES/dados$TOTAIS)*100,2)
-        leg <- 'Inconsistência'
+        leg <- 'Inconsist\u00eancia'
         }
 
         #FINALIZACAO COM GGPLOT -------------------------
-        g <- ggplot(data = dados,
-                    aes(y = value, x = ANO, fill = LOCALIDADE)) +
-          geom_bar(position = "dodge", stat = "identity") +
-          facet_grid(rows = vars(VARIAVEL))
+        g <- ggplot2::ggplot(data = dados,
+                             ggplot2::aes(y = value, x = ANO, fill = LOCALIDADE)) +
+          ggplot2::geom_bar(position = "dodge", stat = "identity") +
+          ggplot2::facet_grid(rows = ggplot2::vars(VARIAVEL))
 
-        g <- g + labs(x = NULL) +
-          labs(y = paste0(leg," (%)")) +
-          scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
-          scale_fill_viridis_d() +
-          theme_bw() +
-          theme(axis.text.x = element_text(
+        g <- g + ggplot2::labs(x = NULL) +
+          ggplot2::labs(y = paste0(leg," (%)")) +
+          ggplot2::scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
+          ggplot2::scale_fill_viridis_d() +
+          ggplot2::theme_bw() +
+          ggplot2::theme(axis.text.x = ggplot2::element_text(
             face = "bold",
             color = "#000000",
             size = 9,
             angle = 45
           ))
          plotly::ggplotly(g, height = (h_plot + 125)) %>%
-           layout(legend = list(orientation = "h", y = 20))
+           plotly::layout(legend = list(orientation = "h", y = 20))
 
         })
 
@@ -309,22 +315,28 @@ mod_SINASC_server <- function(id,indicador){
         teste <- cbind(newColName = rownames(teste), teste)
         colnames(teste)[1] <- 'DADOS'
         rownames(teste) <- 1:nrow(teste)
-        teste$DADOS <- c('Dados em branco','Dados ignorados','Dados válidos','Total')
+        teste$DADOS <- c('Dados em branco','Dados ignorados','Dados v\u00e1lidos','Total')
         teste
       })
 
       for(i in 1:72){
         local({
           my_i <- i
-          output[[paste('print',i,sep='')]] <- renderText({
-            if(vars_incom_sinasc[my_i] %in% input$vars_select){
+          output[[paste('print',i,sep='')]] <- shiny::renderText({
+            if(SIM == FALSE){
+              vars_reais <- vars_incom_sinasc
+            }else{
+              vars_reais <- vars_incom_sim
+            }
+
+            if(vars_reais[my_i] %in% input$vars_select){
               dados <- data_filtro_tab()
-              dados <- dados[,c('DADOS',paste0(vars_incom_sinasc[my_i]))]
+              dados <- dados[,c('DADOS',paste0(vars_reais[my_i]))]
               dados[['%']] <- (100*as.numeric(
-                dados[[paste0(vars_incom_sinasc[my_i])]]))/as.numeric(dados[4,2])
+                dados[[paste0(vars_reais[my_i])]]))/as.numeric(dados[4,2])
               colnames(dados) <- c('','n','%')
               kableExtra::kable(dados,
-                                caption = paste0('Valores faltantes para ',vars_incom_sinasc[my_i]),
+                                caption = paste0('Valores faltantes para ',vars_reais[my_i]),
                                 digits  = 2
               ) %>%
                 kableExtra::kable_styling()}
@@ -344,7 +356,7 @@ mod_SINASC_server <- function(id,indicador){
           teste <- cbind(newColName = rownames(teste), teste)
           colnames(teste)[1] <- 'DADOS'
           rownames(teste) <- 1:nrow(teste)
-          teste$DADOS <- c('Dados implausiveis','Dados válidos','Total')
+          teste$DADOS <- c('Dados implausiveis','Dados v\u00e1lidos','Total')
           names(teste)<-names(teste) %>% substr(1,nchar( names(teste))-12)
           names(teste)[1] <- 'DADOS'
           teste
@@ -352,7 +364,7 @@ mod_SINASC_server <- function(id,indicador){
         for(i in 1:72){
           local({
             my_i <- i
-            output[[paste('print',i,sep='')]] <- renderText({
+            output[[paste('print',i,sep='')]] <- shiny::renderText({
               if(vars_implau_sinasc[my_i] %in% input$vars_select){
                 dados <- data_filtro_tab()
                 dados <- dados[,c('DADOS',paste0(vars_implau_sinasc[my_i]))]
@@ -383,14 +395,14 @@ mod_SINASC_server <- function(id,indicador){
           teste <- teste[-1,]
           colnames(teste)[1] <- 'DADOS'
           rownames(teste) <- 1:nrow(teste)
-          teste$DADOS <- c('Dados inconsistêntes','Dados válidos','Total')
+          teste$DADOS <- c('Dados inconsist\u00eantes','Dados v\u00e1lidos','Total')
           teste
         })
 
         for(i in 1:72){
           local({
             my_i <- i
-            output[[paste('print',i,sep='')]] <- renderText({
+            output[[paste('print',i,sep='')]] <- shiny::renderText({
               if(var_incon_sinasc[my_i] %in% input$vars_select){
                 dados <- data_filtro_tab()
                 dados <- dados[,c('DADOS',(var_incon_sinasc[my_i]))]
@@ -398,7 +410,7 @@ mod_SINASC_server <- function(id,indicador){
                   dados[[paste0(var_incon_sinasc[my_i])]]))/as.numeric(dados[3,2])
                 colnames(dados) <- c('','n','%')
                 kableExtra::kable(dados,
-                                  caption = paste0('Valores inconsistêntes para ',var_incon_sinasc[my_i]),
+                                  caption = paste0('Valores inconsist\u00eantes para ',var_incon_sinasc[my_i]),
                                   digits  = 2
                 ) %>%
                   kableExtra::kable_styling()}

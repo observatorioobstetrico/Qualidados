@@ -6,70 +6,61 @@
 #'
 
 app_ui <- function(request) {
-  library(shinydashboard)
-  library(shiny)
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     shinyjs::useShinyjs(),
-            dashboardPage(
-              dashboardHeader(title = "Qualidados", titleWidth = 160),
-              dashboardSidebar(
+            shinydashboard::dashboardPage(
+              shinydashboard::dashboardHeader(title = "Qualidados", titleWidth = 160),
+              shinydashboard::dashboardSidebar(
                 width = 160,
-                sidebarMenu(
+                shinydashboard::sidebarMenu(
                   style = "position: fixed; overflow: visible;",
-                  menuItem(
+                  shinydashboard::menuItem(
                     "SIVEP-GRIPE" ,
                     tabname = "sivep",
                     icon = icon("table"),
                     startExpanded = TRUE,
-                    menuSubItem("Incompletude",
+                    shinydashboard::menuSubItem("Incompletude",
                                 tabName = "incom_sivep"),
-                    menuSubItem("Implausibilidade",
+                    shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sivep"),
-                    menuSubItem("Inconsistência",
+                    shinydashboard::menuSubItem("Inconsist\u00eancia",
                                 tabName = "incons_sivep")
-                    # , menuSubItem('Dicionário',
-                    #             tabName = 'dic_sivep')
                   ),
-                  menuItem(
+                  shinydashboard::menuItem(
                     "SINASC" ,
                     tabname = "sinasc",
                     icon = icon("table"),
-                    menuSubItem("Incompletude",
+                    shinydashboard::menuSubItem("Incompletude",
                                 tabName = "incom_sinasc"),
-                    menuSubItem("Implausibilidade",
+                    shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sinasc"),
-                    menuSubItem("Inconsistência",
+                    shinydashboard::menuSubItem("Inconsist\u00eancia",
                                 tabName = "incons_sinasc")
-                    # ,menuSubItem('Dicionário',
-                    #             tabName = 'dic_sinasc')
+
                   ),
-                  menuItem(
+                  shinydashboard::menuItem(
                     "SIM" ,
                     tabname = "sim",
                     icon = icon("table"),
-                    menuSubItem("Incompletude",
+                    shinydashboard::menuSubItem("Incompletude",
                                 tabName = "incom_sim"),
 
-                    menuSubItem("Implausibilidade",
+                    shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sim"),
-                    menuSubItem("Inconsistência",
+                    shinydashboard::menuSubItem("Inconsist\u00eancia",
                                 tabName = "incons_sim")
-                    # ,menuSubItem('Dicionário',
-                    #             tabName = 'dic_sim')
+
                   ),
-                  actionButton('help','Ajuda',icon('question',lib="font-awesome"),
+                  shiny::actionButton('help','Ajuda',icon('question',lib="font-awesome"),
                     style =  "color: #0A1E3;
                               background-color: white;
                               border-color: #0A1E3")
                 )
               ),
-              dashboardBody(tabItems(
-                # mod_Dicionario_ui("Dicionario_SIVEP",tabname = 'dic_sivep'),
-                # mod_Dicionario_ui("Dicionario_SINASC",tabname = 'dic_sinasc'),
-                # mod_Dicionario_ui("Dicionario_SIM",tabname='dic_sim'),
+              shinydashboard::dashboardBody(shinydashboard::tabItems(
               mod_SIVEP_ui(id = "SIVEP_incompletude",
                                         vars_incon = variaveis_incom_nomes,
                                         tabname ="incom_sivep",
@@ -104,7 +95,14 @@ app_ui <- function(request) {
                             indicador = 'incon',
                             descricao = desc_incon,
                             vars = unname(var_incon_sinasc),
-                            estados = sort(unique(Sinasc_incon$ESTADO)))
+                            estados = sort(unique(Sinasc_incon$ESTADO))),
+              mod_SINASC_ui(id = "SIM_inconsistencia",
+                            tabname = "incom_sim",
+                            indicador = 'incom',
+                            SIM = TRUE,
+                            descricao = desc_incom,
+                            vars = unname(vars_incom_sim),
+                            estados = sort(unique(SIM_incom$ESTADO)))
 
               )
                   )
@@ -171,6 +169,6 @@ golem_add_external_resources <- function() {
                               }
                               '
     ),
-    HTML("hr {border-top: 1px solid #0A1E3C;}")
+    htmltools::HTML("hr {border-top: 1px solid #0A1E3C;}")
   ))
   }

@@ -27,7 +27,9 @@ app_ui <- function(request) {
                     shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sivep"),
                     shinydashboard::menuSubItem("Inconsist\u00eancia",
-                                tabName = "incons_sivep")
+                                tabName = "incons_sivep"),
+                    shinydashboard::menuSubItem("Dicionário",
+                                tabName = "dic-sivep")
                   ),
                   shinydashboard::menuItem(
                     "SINASC" ,
@@ -38,7 +40,9 @@ app_ui <- function(request) {
                     shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sinasc"),
                     shinydashboard::menuSubItem("Inconsist\u00eancia",
-                                tabName = "incons_sinasc")
+                                tabName = "incons_sinasc"),
+                    shinydashboard::menuSubItem("Dicionário",
+                                                tabName = "dic-sinasc")
 
                   ),
                   shinydashboard::menuItem(
@@ -51,7 +55,9 @@ app_ui <- function(request) {
                     shinydashboard::menuSubItem("Implausibilidade",
                                 tabName = "implau_sim"),
                     shinydashboard::menuSubItem("Inconsist\u00eancia",
-                                tabName = "incons_sim")
+                                tabName = "incons_sim"),
+                    shinydashboard::menuSubItem("Dicionário",
+                                                tabName = "dic-sim")
 
                   ),
                   shiny::actionButton('help','Ajuda',icon('question',lib="font-awesome"),
@@ -102,7 +108,10 @@ app_ui <- function(request) {
                             SIM = TRUE,
                             descricao = desc_incom,
                             vars = unname(vars_incom_sim),
-                            estados = sort(unique(SIM_incom$ESTADO)))
+                            estados = sort(unique(SIM_incom$ESTADO))),
+              mod_Dicionario_ui("dicsivep","dic-sivep"),
+              mod_Dicionario_ui("dicsinasc","dic-sinasc"),
+              mod_Dicionario_ui("dicsim",'dic-sim')
 
               )
                   )

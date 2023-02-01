@@ -1,0 +1,6 @@
+library(readxl)
+library(dplyr)
+sim_dic <- read_excel("data1/dicionario_SIM.xlsx")
+sivep_dic <-  read_excel("data1/Dicionario_SIVEP_Valores.xlsx")
+sinasc_dic <-  read_excel("data1/dicionario_SINASC.xlsx")
+usethis::use_data(sinasc_dic,overwrite = T)

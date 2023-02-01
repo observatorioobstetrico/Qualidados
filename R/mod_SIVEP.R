@@ -169,7 +169,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                     title = "Visualiza\u00e7\u00e3o",
                     status = "primary",
                     width = 10,
-                    shiny::div(tabsetPanel(
+                    shiny::div(shiny::tabsetPanel(
                           #GRAFICOS
                           shiny::tabPanel(
                             "Gr\u00e1ficos",

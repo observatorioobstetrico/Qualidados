@@ -145,10 +145,17 @@ variaveis_incom_nomes <- c('Raça','Escolaridade',"Zona de Residência","Histór
                            "Perda paladar","Cardiopatia","Hematologia","Hepática","Asma","Diabetes",
                            "Neuro","Pneumopatia","Imunodepressores","Renal","Obesidade","UTI",
                            "Hospitalização","Suporte\nVentilatório","Evolução")
+variaveis_incom_nomes_ori <- c('CS_RACA','CS_ESCOL_N','CS_ZONA','HISTO_VGM','SURTO_SG',
+                               'NOSOCOMIAL','AVE_SUINO','VACINA','ANTIVIRAL','FEBRE',
+                               'TOSSE','GARGANTA','DISPNEIA','DESC_RESP','SATURACAO','DIARREIA',
+                               'VOMITO','DOR_ABD','FADIGA','PERD_OLFT','PERD_PALA','CARDIOPATI',
+                               'HEMATOLOGI','HEPATICA','ASMA','DIABETES','NEUROLOGIC','PNEUMOPATI',
+                               'IMUNODEPRE','RENAL','OBESIDADE','UTI','HOSPITAL','SUPORT_VEN','EVOLUCAO')
+
 
 #RELACAO ENTRE OS NOMES CERTOS E OS NOMES NO BD
 
-variaveis_relacao <- variaveis_incom_nomes
+variaveis_relacao <- variaveis_incom_nomes_ori
 names(variaveis_relacao) <- variaveis_incom
 
 #tem que mudar esse nome aqui, por algum motivo nao tava gerando a variavel dentro
@@ -174,7 +181,29 @@ names(vars_incon) <- colnames(dados_incon[,167:(ncol(dados_incon)-5)])
 Var_micro_incon <- dados_incon[,c(1:166,185,188)] %>% colnames()
 Var_micro_incon<-Var_micro_incon[stringr::str_detect('SG_UF|ID_MUNICIP',Var_micro_incon) == F]
 
+
+json_incon <- json_incon |> as.data.frame() |> t() |> as.data.frame()
+json_incon <- cbind(json_incon |> row.names(),json_incon)
+json_incon |> row.names() <- NULL
+json_incon |> colnames() <- c('Variavel','Regra')
+json_incon$Variavel <- json_incon$Variavel |> gsub(pattern = '_e_', replacement = ' e ')
+json_incon$Indicador <- 'Inconsistência'
+
+jsonfile_gest <- jsonfile_gest |> as.data.frame() |> t() |> as.data.frame()
+jsonfile_gest <- cbind(jsonfile_gest |> row.names(),jsonfile_gest)
+jsonfile_gest |> row.names() <- NULL
+jsonfile_gest |> colnames() <- c('Variavel','Regra')
+jsonfile_gest$Variavel <- jsonfile_gest$Variavel |> gsub(pattern = '_IMPOSSIVEL', replacement = '')
+jsonfile_gest$Regra <- jsonfile_gest$Regra |> gsub(pattern = 'de gestantes ', replacement = '')
+jsonfile_gest$Regra <- jsonfile_gest$Regra |> gsub(pattern = 'Gestantes ', replacement = 'Gestantes e puérperas ')
+jsonfile_gest$Regra[4] <- 'Gestantes e puérperas ao mesmo tempo'
+
+jsonfile_gest$Indicador <- 'Implausiblidade'
+regras_sivep <- rbind(json_incon,jsonfile_gest)
 ####################################### EXPORTAÇÃO
+
+usethis::use_data(regras_sivep, overwrite = TRUE)
+
 usethis::use_data(var_names_join, overwrite = TRUE)
 usethis::use_data(dados_incom, overwrite = TRUE)
 usethis::use_data(jsonfile_puerp, overwrite = TRUE)
@@ -185,6 +214,7 @@ usethis::use_data(json_incon, overwrite = TRUE)
 usethis::use_data(dados_incon, overwrite = TRUE)
 usethis::use_data(variaveis_incom, overwrite = TRUE)
 usethis::use_data(variaveis_incom_nomes, overwrite = TRUE)
+usethis::use_data(variaveis_incom_nomes_ori, overwrite = TRUE)
 usethis::use_data(variaveis_relacao, overwrite = TRUE)
 usethis::use_data(desc_incom, overwrite = TRUE)
 usethis::use_data(desc_implau, overwrite = TRUE)

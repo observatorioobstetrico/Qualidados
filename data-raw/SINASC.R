@@ -43,8 +43,11 @@ Sinasc_incom[is.na(Sinasc_incom$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não info
 Sinasc_incom$CODMUNNASC <- Sinasc_incom$muni_nm_clean
 Sinasc_incom$ESTADO <- Sinasc_incom$uf_sigla
 Sinasc_incom[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
-
-
+regras_sinasc_incom <-regras_sinasc_incom |> as.data.frame()  |> t() |> as.data.frame()
+regras_sinasc_incom <- cbind(regras_sinasc_incom|> row.names(), regras_sinasc_incom)
+regras_sinasc_incom |> row.names() <- NULL
+regras_sinasc_incom |> colnames() <- c('Variável','Regra')
+regras_sinasc_incom$Variável <- regras_sinasc_incom$Variável |> gsub(pattern = 'IGNORADOS_', replacement = '')
 ############### IMPLAUSIBILIDADE ############################################
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
@@ -80,6 +83,11 @@ Sinasc_implau$ESTADO <- Sinasc_implau$uf_sigla
 Sinasc_implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
 Sinasc_implau[is.na(Sinasc_implau$ESTADO) == T,'ESTADO'] <- 'Não informado'
 
+regras_sinasc_implau <-regras_sinasc_implau |> as.data.frame()  |> t() |> as.data.frame()
+regras_sinasc_implau <- cbind(regras_sinasc_implau|> row.names(), regras_sinasc_implau)
+regras_sinasc_implau |> row.names() <- NULL
+regras_sinasc_implau |> colnames() <- c('Variável','Regra')
+
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")
@@ -114,14 +122,23 @@ Sinasc_incon$ESTADO <- Sinasc_incon$uf_sigla
 Sinasc_incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
 Sinasc_incon[is.na(Sinasc_incon$ESTADO) == T,'ESTADO'] <- 'Não informado'
 
+regras_sinasc_incon <-regras_sinasc_incon |> as.data.frame()  |> t() |> as.data.frame()
+regras_sinasc_incon <- cbind(regras_sinasc_incon|> row.names(), regras_sinasc_incon)
+regras_sinasc_incon |> row.names() <- NULL
+regras_sinasc_incon |> colnames() <- c('Variável','Regra')
+regras_sinasc_incon$Variável <- regras_sinasc_incon$Variável |> gsub(pattern = '_',replacement = ' ')
 ###############################################  EXPORTACAO ##################
 usethis::use_data(Sinasc_implau, overwrite = TRUE)
-usethis::use_data(regras_sinasc_incom, overwrite = TRUE)
 usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
 usethis::use_data(Sinasc_incom, overwrite = TRUE)
 usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
-usethis::use_data(regras_sinasc_implau, overwrite = TRUE)
 usethis::use_data(Sinasc_incon, overwrite = TRUE)
 usethis::use_data(var_incon_sinasc, overwrite = TRUE)
-usethis::use_data(regras_sinasc_incon, overwrite = TRUE)
 
+
+######## REGRAS ####################
+regras_sinasc_implau$Indicador <- 'Implausibilidade'
+regras_sinasc_incon$Indicador <- 'Inconsistência'
+regras_sinasc_incom$Indicador <- 'Incompletude'
+regras_sinasc <- rbind(regras_sinasc_implau,regras_sinasc_incom,regras_sinasc_incon)
+usethis::use_data(regras_sinasc, overwrite = TRUE)

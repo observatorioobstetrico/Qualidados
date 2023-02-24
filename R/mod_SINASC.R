@@ -188,7 +188,9 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
         }
     }
     else{
-      if(indicador == 'incom')dado <- SIM_Incom
+      if(indicador == 'incom'){dado <- SIM_Incom}
+      if(indicador == 'implau'){dado <- SIM_Implau}
+      if(indicador == 'incon'){dado <- SIM_Incon}
     }
     dado <- dado %>%
       dplyr::filter(VARIAVEL %in% var_value) %>%
@@ -263,7 +265,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
       output$Grafico <- plotly::renderPlotly({
         dados <- data_filtro()
         h_plot <- input$vars_select %>% unique() %>% length()
-        h_plot <- h_plot * 125
+        h_plot <- h_plot * 200
         if(indicador=='incom'){
         dados$value <- dados$NULOS + dados$IGNORADOS
         dados$value <- round((dados$value/dados$TOTAIS)*100,2)
@@ -272,6 +274,9 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
         if(indicador == 'implau'){
         dados$value <- round((dados$IMPLAUSIVEIS/dados$TOTAIS)*100,2)
         leg <- 'Impalusibilidade'
+          if(SIM == F){
+            dados$VARIAVEL <- dados$VARIAVEL |> gsub(pattern = '_IMPLAUSIVEL',replacement = '')
+          }
         }
         if(indicador == 'incon'){
         dados$value <- round((dados$INCONSISTENTES/dados$TOTAIS)*100,2)
@@ -279,11 +284,19 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
         }
 
         #FINALIZACAO COM GGPLOT -------------------------
+        if(indicador == 'incon' && SIM == F){
+          dados$VARIAVEL <- dados$VARIAVEL |> gsub(pattern = '_INCONSISTENTE',replacement = '')
+          dados$VARIAVEL <- dados$VARIAVEL |> gsub(pattern = '_e_',replacement = ' e ')
+          g <- ggplot2::ggplot(data = dados,
+                               ggplot2::aes(y = value, x = ANO, fill = LOCALIDADE)) +
+            ggplot2::geom_bar(position = "dodge", stat = "identity") +
+            ggplot2::facet_grid(rows = ggplot2::vars(VARIAVEL))
+        }else{
         g <- ggplot2::ggplot(data = dados,
                              ggplot2::aes(y = value, x = ANO, fill = LOCALIDADE)) +
           ggplot2::geom_bar(position = "dodge", stat = "identity") +
           ggplot2::facet_grid(rows = ggplot2::vars(VARIAVEL))
-
+        }
         g <- g + ggplot2::labs(x = NULL) +
           ggplot2::labs(y = paste0(leg," (%)")) +
           ggplot2::scale_y_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
@@ -352,27 +365,30 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
             plyr::ddply('VARIAVEL',plyr::numcolwise(sum))
           teste <-as.data.frame(t(dados))
           names(teste) <- teste[1,]
-          teste <- teste[-1,]
           teste <- cbind(newColName = rownames(teste), teste)
+           teste <- teste[-1,]
           colnames(teste)[1] <- 'DADOS'
           rownames(teste) <- 1:nrow(teste)
           teste$DADOS <- c('Dados implausiveis','Dados v\u00e1lidos','Total')
-          names(teste)<-names(teste) %>% substr(1,nchar( names(teste))-12)
+          if(SIM == F){
+          names(teste)<-names(teste) %>% substr(1,nchar( names(teste))-12)}
           names(teste)[1] <- 'DADOS'
           teste
         })
         for(i in 1:72){
           local({
+            if(SIM ==F){vars_db <-vars_implau_sinasc}
+            else {vars_db <- vars_implau_sim}
             my_i <- i
             output[[paste('print',i,sep='')]] <- shiny::renderText({
-              if(vars_implau_sinasc[my_i] %in% input$vars_select){
+              if(vars_db[my_i] %in% input$vars_select){
                 dados <- data_filtro_tab()
-                dados <- dados[,c('DADOS',paste0(vars_implau_sinasc[my_i]))]
+                dados <- dados[,c('DADOS',paste0(vars_db[my_i]))]
                 dados[['%']] <- (100*as.numeric(
-                  dados[[paste0(vars_implau_sinasc[my_i])]]))/as.numeric(dados[4,2])
+                  dados[[paste0(vars_db[my_i])]]))/as.numeric(dados[3,2])
                 colnames(dados) <- c('','n','%')
                 kableExtra::kable(dados,
-                                  caption = paste0('Valores implausiveis para ',vars_implau_sinasc[my_i]),
+                                  caption = paste0('Valores implausiveis para ',vars_db[my_i]),
                                   digits  = 2
                 ) %>%
                   kableExtra::kable_styling()}
@@ -390,7 +406,8 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
             plyr::ddply('VARIAVEL',plyr::numcolwise(sum))
           teste <-as.data.frame(t(dados))
           names(teste) <- teste[1,]
-          names(teste) <- var_incon_sinasc[names(teste)] |> unname()
+          if(SIM == F){
+          names(teste) <- var_incon_sinasc[names(teste)] |> unname()}
           teste <- cbind(newColName = rownames(teste), teste)
           teste <- teste[-1,]
           colnames(teste)[1] <- 'DADOS'
@@ -401,16 +418,18 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
 
         for(i in 1:72){
           local({
+            if(SIM ==F){vars_db <-var_incon_sinasc}
+            else {vars_db <- vars_incon_sim}
             my_i <- i
             output[[paste('print',i,sep='')]] <- shiny::renderText({
-              if(var_incon_sinasc[my_i] %in% input$vars_select){
+              if(vars_db[my_i] %in% input$vars_select){
                 dados <- data_filtro_tab()
-                dados <- dados[,c('DADOS',(var_incon_sinasc[my_i]))]
+                dados <- dados[,c('DADOS',(vars_db[my_i]))]
                 dados[['%']] <- (100*as.numeric(
-                  dados[[paste0(var_incon_sinasc[my_i])]]))/as.numeric(dados[3,2])
+                  dados[[paste0(vars_db[my_i])]]))/as.numeric(dados[3,2])
                 colnames(dados) <- c('','n','%')
                 kableExtra::kable(dados,
-                                  caption = paste0('Valores inconsist\u00eantes para ',var_incon_sinasc[my_i]),
+                                  caption = paste0('Valores inconsist\u00eantes para ',vars_db[my_i]),
                                   digits  = 2
                 ) %>%
                   kableExtra::kable_styling()}

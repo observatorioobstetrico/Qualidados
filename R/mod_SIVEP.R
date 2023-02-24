@@ -148,7 +148,7 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       placement = "right"
                     ),
                     shiny::conditionalPanel(
-                      condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoLocalidade")),
+                      condition = sprintf("input['%s'] != 'br'",ns("Graf_OpcaoComparar")),
                       shiny::selectInput(
                         ns("Graf_CompararEstado"),
                         "Estado de compara\u00e7\u00e3o",
@@ -392,7 +392,7 @@ mod_SIVEP_server <- function(id, indicador){
         g <- ggplot2::ggplot(data = Dados_GraficoIncompletude,
                     ggplot2::aes(y=value, x=data , fill = localidade)) +
           ggplot2::geom_bar(position="dodge", stat="identity") +
-          ggplot2::facet_grid(rows = ggplot2::vars(variable))#, labeller=var_labeller)
+          ggplot2::facet_grid(rows = ggplot2::vars(variable), labeller=var_labeller)
 
         g <- g + ggplot2::labs(x = NULL) +
           ggplot2::labs(y = "Incompletude (%)", fill = "Localidade") +
@@ -406,7 +406,7 @@ mod_SIVEP_server <- function(id, indicador){
             angle=45
           ))
 
-        plotly::ggplotly(g, height=(length(variaveis)*125 + 125)) %>% plotly::layout(legend = list(orientation = "h", y = 20))
+        plotly::ggplotly(g, height=(length(variaveis)*200 + 150)) %>% plotly::layout(legend = list(orientation = "h", y = 20))
     })
 
 
@@ -438,7 +438,7 @@ mod_SIVEP_server <- function(id, indicador){
         local({
           my_i <- i
           output[[paste('print',i,sep='')]] <- shiny::renderText({
-            if(variaveis_incom_nomes[my_i] %in% input$Graf_Variaveis_Incon){
+            if(variaveis_incom_nomes_ori[my_i] %in% input$Graf_Variaveis_Incon){
               kableExtra::kable(
                 questionr::freq(
                   selectData()[[variaveis_incom[my_i]]],
@@ -447,7 +447,7 @@ mod_SIVEP_server <- function(id, indicador){
                   na.last = FALSE,
                   valid = FALSE
                 ),
-                caption = paste0("Dados faltantes para ",variaveis_incom_nomes[my_i]),
+                caption = paste0("Dados faltantes para ",variaveis_incom_nomes_ori[my_i]),
                 digits = 2
               ) %>%
                 kableExtra::kable_styling()}
@@ -689,9 +689,9 @@ mod_SIVEP_server <- function(id, indicador){
           angle = 45
         ))
       if('NU_IDADE_N' %in% input$Graf_Variaveis_Incon){
-      plotly::ggplotly(g, height = length(variaveis) * 125) %>%
+      plotly::ggplotly(g, height = length(variaveis) * 200) %>%
           plotly::layout(legend = list(orientation = "h", y = 20))}
-      else{plotly::ggplotly(g, height = (length(variaveis) * 125 + 125)) %>%
+      else{plotly::ggplotly(g, height = (length(variaveis) * 200 + 150)) %>%
           plotly::layout(legend = list(orientation = "h", y = 20))
 
       }})
@@ -1043,7 +1043,7 @@ mod_SIVEP_server <- function(id, indicador){
         g <- ggplot2::ggplot(data = Dados_GraficoIncon1,
                     ggplot2::aes(y = value, x = data, fill = localidade)) +
           ggplot2::geom_bar(position = "dodge", stat = "identity") +
-          ggplot2::facet_grid(rows = ggplot2::vars(variable))
+          ggplot2::facet_grid(rows = ggplot2::vars(variable),labeller = var_labeller)
 
         g <- g + ggplot2::labs(x = NULL) +
           ggplot2::labs(y = "Inconsist\u00eancia (%)", fill = "Localidade") +
@@ -1057,7 +1057,7 @@ mod_SIVEP_server <- function(id, indicador){
             angle = 45
           ))
 
-        plotly::ggplotly(g, height = c(length(var_names) * 125 + 125)) %>%
+        plotly::ggplotly(g, height = c(length(var_names) * 200 + 150)) %>%
         plotly::layout(legend = list(orientation = "h", y = 20))})
 
       selectDataFiltro <- reactive({

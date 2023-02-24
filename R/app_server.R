@@ -11,8 +11,12 @@ app_server <- function(input, output, session) {
   mod_SINASC_server("SINASC_incompletude",indicador = 'incom')
   mod_SINASC_server("SINASC_implausibilidade",indicador = 'implau')
   mod_SINASC_server("SINASC_inconsistencia",indicador = 'incon')
-  mod_SINASC_server("SIM_inconsistencia",indicador = 'incom', SIM = TRUE)
-  mod_Dicionario_server("dicsinasc",sinasc_dic)
+  mod_SINASC_server("SIM_incompletude",indicador = 'incom', SIM = TRUE)
+  mod_SINASC_server("SIM_implausibilidade",indicador = 'implau', SIM = TRUE)
+  mod_SINASC_server("SIM_inconsistencia",indicador = 'incon', SIM = TRUE)
+  mod_Dicionario_server('dicsivep',sivep_dic,regra = regras_sivep)
+  mod_Dicionario_server("dicsinasc",sinasc_dic,regra = regras_sinasc)
+  mod_Dicionario_server("dicsim",sim_dic,regra = regras_sim)
   observeEvent(input$help, {
     # Show a modal when the button is pressed
     shinyalert::shinyalert("Ajuda",html =T,text = tagList("TEXTO AJUDA",

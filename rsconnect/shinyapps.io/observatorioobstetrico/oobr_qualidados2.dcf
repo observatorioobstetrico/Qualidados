@@ -5,9 +5,9 @@ account: observatorioobstetrico
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6081533
-bundleId: 6756193
+bundleId: 6884448
 url: https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/
-when: 1674237022.82691
-lastSyncTime: 1674237022.82692
+when: 1677263793.10332
+lastSyncTime: 1677263793.10333
 asMultiple: FALSE
 asStatic: FALSE

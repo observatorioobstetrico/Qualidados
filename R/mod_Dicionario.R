@@ -17,14 +17,7 @@ mod_Dicionario_ui <- function(id, tabname ){
                           title = "Regras de agrupamento dos indicadores do banco de dados",
                           status = "primary",
                           solidHeader = FALSE,
-                          shiny::div(shiny::tabsetPanel(
-                            shiny::tabPanel("Incompletude",
-                                            shiny::tableOutput(ns('INCOM'))),
-                            shiny::tabPanel('Implausibilidade',
-                                            shiny::tableOutput(ns('IMPLAU'))),
-                            shiny::tabPanel("Inconsistência",
-                                            shiny::tableOutput(ns('INCON')))
-                          ))
+                          reactable::reactableOutput(ns("regras"))
       )
     ),
     shiny::fluidRow(
@@ -41,7 +34,7 @@ mod_Dicionario_ui <- function(id, tabname ){
 #' Dicionario Server Functions
 #'
 #' @noRd
-mod_Dicionario_server <- function(id, df){
+mod_Dicionario_server <- function(id, df, banco, regra){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     output$dicionario <-  shiny::renderText({
@@ -50,7 +43,26 @@ mod_Dicionario_server <- function(id, df){
       knitr::kable(df) |>
         kableExtra::kable_styling("striped", full_width = F)
     })
-  })
+    output$regras <-  reactable::renderReactable({
+      reactable::reactable(regra, groupBy = c("Indicador"),
+                         filterable = TRUE,
+                         showSortable = TRUE,
+                         searchable = TRUE,
+                         showPageSizeOptions = TRUE,
+                         pageSizeOptions = c(10, 15, 27),
+                         defaultPageSize = 27,
+                         striped = TRUE,
+                         highlight = TRUE,
+                         theme = reactable::reactableTheme(
+                           color = "#000000",
+                           borderColor = "#dfe2e5",
+                           stripedColor = "#f6f8fa",
+                           highlightColor = "#f0f5f9",
+                           cellPadding = "8px 12px",
+                           style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+                           searchInputStyle = list(width = "100%")))
+    })
+})
 }
 
 ## To be copied in the UI

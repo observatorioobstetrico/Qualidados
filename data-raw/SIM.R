@@ -43,6 +43,15 @@ SIM_Incom[is.na(SIM_Incom$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não informado'
 SIM_Incom$CODMUNNASC <- SIM_Incom$muni_nm_clean
 SIM_Incom$ESTADO <- SIM_Incom$uf_sigla
 SIM_Incom[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+var_sim_tirar <- c('CODBAIOCOR',
+                   'CODCART',
+                   'CODMUNCART',
+                   'CONTADOR',
+                   'DTREGCART',
+                   'EXPDIFDATA',
+                   'NUMREGCART',
+                   'UFINFORM')
+SIM_Incom <- SIM_Incom[!(SIM_Incom$VARIAVEL %in% var_sim_tirar),]
 ################# REGRAS
 df_aux <- regras_sim_incom |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)
@@ -84,6 +93,7 @@ SIM_Implau[is.na(SIM_Implau$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não informad
 SIM_Implau$CODMUNNASC <- SIM_Implau$muni_nm_clean
 SIM_Implau$ESTADO <- SIM_Implau$uf_sigla
 SIM_Implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
+SIM_Implau <- SIM_Implau[!(SIM_Implau$VARIAVEL %in% var_sim_tirar),]
 ################# REGRAS
 df_aux <- regras_sim_implau |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)
@@ -124,7 +134,7 @@ SIM_Incon[is.na(SIM_Incon$muni_nm_clean)==T,'muni_nm_clean'] <- 'Não informado'
 SIM_Incon$CODMUNNASC <- SIM_Incon$muni_nm_clean
 SIM_Incon$ESTADO <- SIM_Incon$uf_sigla
 SIM_Incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
-
+SIM_Incon <- SIM_Incon[!(SIM_Incon$VARIAVEL %in% SIM_Incon),]
 ################# REGRAS
 df_aux <- regras_sim_incon |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)

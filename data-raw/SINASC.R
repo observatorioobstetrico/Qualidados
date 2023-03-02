@@ -48,6 +48,20 @@ regras_sinasc_incom <- cbind(regras_sinasc_incom|> row.names(), regras_sinasc_in
 regras_sinasc_incom |> row.names() <- NULL
 regras_sinasc_incom |> colnames() <- c('Variável','Regra')
 regras_sinasc_incom$Variável <- regras_sinasc_incom$Variável |> gsub(pattern = 'IGNORADOS_', replacement = '')
+regras_sinasc_incom$Regra <- regras_sinasc_incom$Regra |> gsub(pattern = 'estiver', replacement = ' estiver')
+variaveis_sinasc_tirar <- c('CONTADOR' ,
+'CODCART',
+'NUMREGCART',
+'DTRECORIG',
+'RACACOR_RN',
+'CODBAINASC',
+'CODBAIRES',
+'UFINFORM',
+'RACACORN',
+'CODMUNCART',
+'ENDRES',
+'CONFPESO')
+Sinasc_incom <- Sinasc_incom[!(Sinasc_incom$VARIAVEL %in% variaveis_sinasc_tirar),]
 ############### IMPLAUSIBILIDADE ############################################
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
@@ -87,7 +101,8 @@ regras_sinasc_implau <-regras_sinasc_implau |> as.data.frame()  |> t() |> as.dat
 regras_sinasc_implau <- cbind(regras_sinasc_implau|> row.names(), regras_sinasc_implau)
 regras_sinasc_implau |> row.names() <- NULL
 regras_sinasc_implau |> colnames() <- c('Variável','Regra')
-
+regras_sinasc_implau$Regra <- regras_sinasc_implau$Regra |> gsub(pattern = 'não',replacement = ' não')
+Sinasc_implau <- Sinasc_implau[!(Sinasc_implau$VARIAVEL %in% variaveis_sinasc_tirar),]
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")
@@ -127,6 +142,7 @@ regras_sinasc_incon <- cbind(regras_sinasc_incon|> row.names(), regras_sinasc_in
 regras_sinasc_incon |> row.names() <- NULL
 regras_sinasc_incon |> colnames() <- c('Variável','Regra')
 regras_sinasc_incon$Variável <- regras_sinasc_incon$Variável |> gsub(pattern = '_',replacement = ' ')
+Sinasc_incon <- Sinasc_incon[!(Sinasc_incon$VARIAVEL %in% variaveis_sinasc_tirar),]
 ###############################################  EXPORTACAO ##################
 usethis::use_data(Sinasc_implau, overwrite = TRUE)
 usethis::use_data(vars_implau_sinasc, overwrite = TRUE)

@@ -689,7 +689,7 @@ mod_SIVEP_server <- function(id, indicador){
           angle = 45
         ))
       if('NU_IDADE_N' %in% input$Graf_Variaveis_Incon){
-      plotly::ggplotly(g, height = length(variaveis) * 200) %>%
+      plotly::ggplotly(g, height = ((length(variaveis) -1)* 200 + 150)) %>%
           plotly::layout(legend = list(orientation = "h", y = 20))}
       else{plotly::ggplotly(g, height = (length(variaveis) * 200 + 150)) %>%
           plotly::layout(legend = list(orientation = "h", y = 20))

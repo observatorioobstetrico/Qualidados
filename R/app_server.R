@@ -14,12 +14,12 @@ app_server <- function(input, output, session) {
   mod_SINASC_server("SIM_incompletude",indicador = 'incom', SIM = TRUE)
   mod_SINASC_server("SIM_implausibilidade",indicador = 'implau', SIM = TRUE)
   mod_SINASC_server("SIM_inconsistencia",indicador = 'incon', SIM = TRUE)
-  mod_Dicionario_server('dicsivep',sivep_dic,regra = regras_sivep)
-  mod_Dicionario_server("dicsinasc",sinasc_dic,regra = regras_sinasc)
-  mod_Dicionario_server("dicsim",sim_dic,regra = regras_sim)
+  mod_Dicionario_server('dicsivep',df=SIVEP_dic,regra = regras_sivep)
+  mod_Dicionario_server("dicsinasc",df=SINASC_dic,regra = regras_sinasc)
+  mod_Dicionario_server("dicsim",df=SIM_dic,regra = regras_sim)
   observeEvent(input$help, {
     # Show a modal when the button is pressed
-    shinyalert::shinyalert("Ajuda",html =T,text = tagList("TEXTO AJUDA",
+    shinyalert::shinyalert("Ajuda",html =T,text = tagList("Funcionamento do Painel",
       tags$video(type ='video/mp4',src = 'www/hello-there.mp4', width = '100%',
                                   controls = 'controls')))
   })

@@ -2,11 +2,13 @@
 library(rjson)
 library(readr)
 library(dplyr)
+library(readxl)
+SINASC_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SINASC")
+usethis::use_data(SINASC_dic,overwrite = T)
 ############## INCOMPLETUDE ################################################
 
 regras_sinasc_incom <- c(fromJSON(file = 'data1/SINASC_Incompletude_Regras.json'))
 Sinasc_incom <- read_csv("data1/SINASC_Incompletude_v2.csv",show_col_types = FALSE )
-vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 
 aux_muni2 <- abjData::muni %>%
@@ -60,16 +62,24 @@ variaveis_sinasc_tirar <- c('CONTADOR' ,
 'RACACORN',
 'CODMUNCART',
 'ENDRES',
-'CONFPESO')
+'CONFPESO',
+'ORIGEM',
+'KOTELCHUCK')
 Sinasc_incom <- Sinasc_incom[!(Sinasc_incom$VARIAVEL %in% variaveis_sinasc_tirar),]
+Sinasc_incom <- merge(Sinasc_incom, SINASC_dic[,c("Codigo Qualidados", "Codigo SINASC") ], by.x="VARIAVEL", by.y="Codigo SINASC", all=TRUE)
+Sinasc_incom$VARIAVEL <- Sinasc_incom$`Codigo Qualidados`
+Sinasc_incom$`Codigo Qualidados` <- NULL
+vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
 ############### IMPLAUSIBILIDADE ############################################
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
 Sinasc_implau <- read_csv('data1/SINASC_Implausibilidade_v2.csv',show_col_types = FALSE)
+
 vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 vars_implau_sinasc <- vars_implau_sinasc |>
   stringr::str_split("_IMPLAUSIVEL") |> unlist()
 vars_implau_sinasc <- vars_implau_sinasc[vars_implau_sinasc != '']
+
 
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 
@@ -103,6 +113,10 @@ regras_sinasc_implau |> row.names() <- NULL
 regras_sinasc_implau |> colnames() <- c('Variável','Regra')
 regras_sinasc_implau$Regra <- regras_sinasc_implau$Regra |> gsub(pattern = 'não',replacement = ' não')
 Sinasc_implau <- Sinasc_implau[!(Sinasc_implau$VARIAVEL %in% variaveis_sinasc_tirar),]
+# Sinasc_implau <- merge(Sinasc_implau, SINASC_dic[,c("Codigo Qualidados", "Codigo SINASC") ], by.x="VARIAVEL", by.y="Codigo SINASC", all=TRUE)
+# Sinasc_implau$VARIAVEL <- Sinasc_implau$`Codigo Qualidados`
+# Sinasc_implau$`Codigo Qualidados` <- NULL
+# vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")
@@ -143,6 +157,7 @@ regras_sinasc_incon |> row.names() <- NULL
 regras_sinasc_incon |> colnames() <- c('Variável','Regra')
 regras_sinasc_incon$Variável <- regras_sinasc_incon$Variável |> gsub(pattern = '_',replacement = ' ')
 Sinasc_incon <- Sinasc_incon[!(Sinasc_incon$VARIAVEL %in% variaveis_sinasc_tirar),]
+
 ###############################################  EXPORTACAO ##################
 usethis::use_data(Sinasc_implau, overwrite = TRUE)
 usethis::use_data(vars_implau_sinasc, overwrite = TRUE)

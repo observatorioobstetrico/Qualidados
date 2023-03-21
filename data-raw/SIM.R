@@ -2,11 +2,14 @@
 library(rjson)
 library(readr)
 library(dplyr)
+library(readxl)
+SIM_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIM")
+usethis::use_data(SIM_dic,overwrite = T)
 ############## INCOMPLETUDE ################################################
 
 regras_sim_incom <- c(fromJSON(file = 'data1/SIM_Incompletude_Regras.json'))
 SIM_Incom <- read_csv("data1/SIM_Incompletude_v2.csv",show_col_types = FALSE )
-vars_incom_sim<- unique(SIM_Incom$VARIAVEL)
+
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 ####################################################################################
 aux_muni2 <- abjData::muni %>%
@@ -50,8 +53,28 @@ var_sim_tirar <- c('CODBAIOCOR',
                    'DTREGCART',
                    'EXPDIFDATA',
                    'NUMREGCART',
-                   'UFINFORM')
+                   'UFINFORM',
+                   'ALTCAUSA',
+                   'DTCADINF',
+                   'DTCADINV',
+                   'DTCONCASO',
+                   'DTCONINV',
+                   'ESTABDESCR',
+                   'FONTES',
+                   'FONTESINF',
+                   'MORTEPARTO',
+                   'NUDIASINF',
+                   'NUDIASOBCO',
+                   'NUDIASOBIN',
+                   'ORIGEM',
+                   'TPNIVELINV',
+                   'TPOBITOCOR',
+                   'TPRESGINFO')
 SIM_Incom <- SIM_Incom[!(SIM_Incom$VARIAVEL %in% var_sim_tirar),]
+SIM_Incom <- merge(SIM_Incom, SIM_dic[,c("Codigo Qualidados", "Codigo SIM") ], by.x="VARIAVEL", by.y="Codigo SIM", all=TRUE)
+SIM_Incom$VARIAVEL <- SIM_Incom$`Codigo Qualidados`
+SIM_Incom$`Codigo Qualidados` <- NULL
+vars_incom_sim<- unique(SIM_Incom$VARIAVEL)
 ################# REGRAS
 df_aux <- regras_sim_incom |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)
@@ -68,7 +91,7 @@ usethis::use_data(vars_incom_sim, overwrite = TRUE)
 regras_sim_implau <- c(fromJSON(file = 'data1/SIM_Implausibilidade_Regras.json'))
 SIM_Implau <- read_csv("data1/SIM_Implausibilidade_v2.csv",show_col_types = FALSE )
 SIM_Implau$VARIAVEL <- SIM_Implau$VARIAVEL |> gsub(pattern = '_IMPLAUSIVEL',replacement = '')
-vars_implau_sim<- unique(SIM_Implau$VARIAVEL)
+
 
 
 SIM_Implau$CODMUNOCOR  <- as.character(format(SIM_Implau$CODMUNOCOR  , scientific = FALSE))
@@ -94,6 +117,10 @@ SIM_Implau$CODMUNNASC <- SIM_Implau$muni_nm_clean
 SIM_Implau$ESTADO <- SIM_Implau$uf_sigla
 SIM_Implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
 SIM_Implau <- SIM_Implau[!(SIM_Implau$VARIAVEL %in% var_sim_tirar),]
+# SIM_Implau <- merge(SIM_Implau, SIM_dic[,c("Codigo Qualidados", "Codigo SIM") ], by.x="VARIAVEL", by.y="Codigo SIM", all=TRUE)
+# SIM_Implau$VARIAVEL <- SIM_Implau$`Codigo Qualidados`
+# SIM_Implau$`Codigo Qualidados` <- NULL
+vars_implau_sim<- unique(SIM_Implau$VARIAVEL)
 ################# REGRAS
 df_aux <- regras_sim_implau |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)
@@ -110,7 +137,7 @@ regras_sim_incon <- c(fromJSON(file = 'data1/SIM_Inconsistencia_Regras.json'))
 SIM_Incon <- read_csv("data1/SIM_Inconsistencia_v2.csv",show_col_types = FALSE )
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_INCONSISTENTES',replacement = '')
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_',replacement = ' ')
-vars_incon_sim<- unique(SIM_Incon$VARIAVEL)
+
 
 SIM_Incon$CODMUNOCOR  <- as.character(format(SIM_Incon$CODMUNOCOR  , scientific = FALSE))
 SIM_Incon$CODMUNOCOR  <- gsub(' ','',SIM_Incon$CODMUNOCOR)
@@ -135,6 +162,7 @@ SIM_Incon$CODMUNNASC <- SIM_Incon$muni_nm_clean
 SIM_Incon$ESTADO <- SIM_Incon$uf_sigla
 SIM_Incon[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
 SIM_Incon <- SIM_Incon[!(SIM_Incon$VARIAVEL %in% SIM_Incon),]
+vars_incon_sim<- unique(SIM_Incon$VARIAVEL)
 ################# REGRAS
 df_aux <- regras_sim_incon |> as.data.frame() |> t() |> as.data.frame()
 df_aux<-  cbind(row.names(df_aux),df_aux)

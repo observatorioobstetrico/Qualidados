@@ -103,7 +103,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= F
                   width = 10,
                   shiny::div(shiny::tabsetPanel(
                     shiny::tabPanel("Gr\u00e1ficos",
-                             plotly::plotlyOutput(ns("Grafico"))),
+                             plotly::plotlyOutput(ns("Grafico"), height = 'auto')),
                     shiny::tabPanel("Tabelas",
                              shinydashboard::tabBox(
                                width = 24,

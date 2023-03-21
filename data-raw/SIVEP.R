@@ -13,9 +13,13 @@ library(rjson)
 library(kableExtra)
 library(shinyalert)
 #PRIMEIRA IMPORTAÇÃO -----------------------------
+SIVEP_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIVEP")
+usethis::use_data(SIVEP_dic,overwrite = T)
 #Tem que rever essa parte, ela nao parece muito util
+
 jsonfile <- c(fromJSON(file = "data1/data_values.json"))
 fields <- jsonfile$fields
+
 #MOSTRAR NOME MAIS DESCRICAO
 relatorio_df <-  readRDS("data1/dados_relatorio_sivep.rds") %>% data.frame()
 

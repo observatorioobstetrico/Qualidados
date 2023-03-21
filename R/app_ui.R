@@ -4,24 +4,27 @@
 #'     DO NOT REMOVE.
 #' @noRd
 #'
-
+library(markdown)
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     shinyjs::useShinyjs(),
-            shinydashboard::dashboardPage(
-              shinydashboard::dashboardHeader(title = "Qualidados", titleWidth = 160),
+            shinydashboard::dashboardPage(title="Qualidados",
+              shinydashboard::dashboardHeader( title = span(tagList(img(src = "www/qualidadoslogo.png",width = '70'),'Qualidados')), titleWidth = 130),
               shinydashboard::dashboardSidebar(
-                width = 160,
+                width = 174,
                 shinydashboard::sidebarMenu(
-                  style = "position: fixed; overflow: visible;",
+                  style = " overflow: visible;",
+                  shinydashboard::menuItem('Início',
+                    tabName = 'main',
+                    icon = icon('house'),
+                    startExpanded = TRUE),
                   shinydashboard::menuItem(
                     "SIVEP-GRIPE" ,
                     tabname = "sivep",
                     icon = icon("table"),
-                    startExpanded = TRUE,
                     shinydashboard::menuSubItem("Incompletude",
                                 tabName = "incom_sivep"),
                     shinydashboard::menuSubItem("Implausibilidade",
@@ -125,9 +128,13 @@ app_ui <- function(request) {
                             estados = sort(unique(SIM_Incon$ESTADO))),
               mod_Dicionario_ui("dicsivep","dic-sivep"),
               mod_Dicionario_ui("dicsinasc","dic-sinasc"),
-              mod_Dicionario_ui("dicsim",'dic-sim')
-
-              )
+              mod_Dicionario_ui("dicsim",'dic-sim'),
+              shinydashboard::tabItem(tabName = 'main',
+                                      shinyjs::useShinyjs(),
+                                      fluidRow(
+                                      shinydashboard::box(width = 12,
+                                      shiny::includeMarkdown('inicio.md'))))
+            )
                   )
                 )
               )

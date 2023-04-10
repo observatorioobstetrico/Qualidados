@@ -177,10 +177,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
       var_value <- input$vars_select
     if(SIM == FALSE){
         if(indicador == 'incom')dado <- Sinasc_incom
-        if(indicador == 'implau'){
-          dado <- Sinasc_implau
-          var_value <- paste0(var_value,'_IMPLAUSIVEL')
-        }
+        if(indicador == 'implau')dado <- Sinasc_implau
         if(indicador == 'incon'){
           dado <- Sinasc_incon
           var_value <- var_incon_sinasc[var_incon_sinasc == var_value] |>
@@ -274,9 +271,6 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
         if(indicador == 'implau'){
         dados$value <- round((dados$IMPLAUSIVEIS/dados$TOTAIS)*100,2)
         leg <- 'Impalusibilidade'
-          if(SIM == F){
-            dados$VARIAVEL <- dados$VARIAVEL |> gsub(pattern = '_IMPLAUSIVEL',replacement = '')
-          }
         }
         if(indicador == 'incon'){
         dados$value <- round((dados$INCONSISTENTES/dados$TOTAIS)*100,2)

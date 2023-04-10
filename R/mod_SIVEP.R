@@ -438,7 +438,7 @@ mod_SIVEP_server <- function(id, indicador){
         local({
           my_i <- i
           output[[paste('print',i,sep='')]] <- shiny::renderText({
-            if(variaveis_incom_nomes_ori[my_i] %in% input$Graf_Variaveis_Incon){
+            if(variaveis_incom_nomes[my_i] %in% input$Graf_Variaveis_Incon){
               kableExtra::kable(
                 questionr::freq(
                   selectData()[[variaveis_incom[my_i]]],
@@ -447,7 +447,7 @@ mod_SIVEP_server <- function(id, indicador){
                   na.last = FALSE,
                   valid = FALSE
                 ),
-                caption = paste0("Dados faltantes para ",variaveis_incom_nomes_ori[my_i]),
+                caption = paste0("Dados faltantes para ",variaveis_incom_nomes[my_i]),
                 digits = 2
               ) %>%
                 kableExtra::kable_styling()}
@@ -777,7 +777,7 @@ mod_SIVEP_server <- function(id, indicador){
             TRUE ~ as.character(variable)
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
-          motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
+          motivo = purrr::map_chr(variable, function(x) jsonfile_puerp[[x]])
           )
 
         columns <- unique(c("SG_UF", "ID_MUNICIP", input$Graf_Variaveis_Incon, "motivo"))
@@ -904,7 +904,7 @@ mod_SIVEP_server <- function(id, indicador){
             TRUE ~ as.character(variable)
           ),
           variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, "_IMP")[[1]][1]),
-          motivo = purrr::map_chr(variable, function(x) jsonfile_gest[[x]])
+          motivo = purrr::map_chr(variable, function(x) jsonfile_puerp[[x]])
           )  %>%
           dplyr::filter(imps %in% input$Exib_Dados2)
 

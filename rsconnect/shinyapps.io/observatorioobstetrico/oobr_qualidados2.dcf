@@ -5,10 +5,10 @@ account: observatorioobstetrico
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6081533
-bundleId: 6985090
+bundleId: 7057797
 url: https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/
-when: 1679366029.31807
-lastSyncTime: 1679366029.31808
+when: 1680795905.42446
+lastSyncTime: 1680795905.42447
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data-raw/DICIONARIOS.R|data-raw/SIM.R|data-raw/SINASC.R|data-raw/SIVEP.R|dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R|inicio.Rmd|tests/spelling.R|tests/testthat/test-golem-recommended.R|tests/testthat.R
+ignoredFiles: data-raw/DICIONARIOS.R|data-raw/SIM.R|data-raw/SINASC.R|data-raw/SIVEP.R|dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R|tests/spelling.R|tests/testthat/test-golem-recommended.R|tests/testthat.R|data1

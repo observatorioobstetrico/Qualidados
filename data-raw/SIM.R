@@ -71,7 +71,9 @@ var_sim_tirar <- c('CODBAIOCOR',
                    'TPOBITOCOR',
                    'TPRESGINFO')
 SIM_Incom <- SIM_Incom[!(SIM_Incom$VARIAVEL %in% var_sim_tirar),]
+var_aux <- SIM_Incom$VARIAVEL |> unique()
 SIM_Incom <- merge(SIM_Incom, SIM_dic[,c("Codigo Qualidados", "Codigo SIM") ], by.x="VARIAVEL", by.y="Codigo SIM", all=TRUE)
+SIM_Incom <- SIM_Incom[SIM_Incom$VARIAVEL %in% var_aux,]
 SIM_Incom$VARIAVEL <- SIM_Incom$`Codigo Qualidados`
 SIM_Incom$`Codigo Qualidados` <- NULL
 vars_incom_sim<- unique(SIM_Incom$VARIAVEL)
@@ -117,9 +119,11 @@ SIM_Implau$CODMUNNASC <- SIM_Implau$muni_nm_clean
 SIM_Implau$ESTADO <- SIM_Implau$uf_sigla
 SIM_Implau[,c('cod_mun','uf_id','uf_sigla','muni_nm_clean')] <- NULL
 SIM_Implau <- SIM_Implau[!(SIM_Implau$VARIAVEL %in% var_sim_tirar),]
-# SIM_Implau <- merge(SIM_Implau, SIM_dic[,c("Codigo Qualidados", "Codigo SIM") ], by.x="VARIAVEL", by.y="Codigo SIM", all=TRUE)
-# SIM_Implau$VARIAVEL <- SIM_Implau$`Codigo Qualidados`
-# SIM_Implau$`Codigo Qualidados` <- NULL
+var_aux <- SIM_Implau$VARIAVEL |> unique()
+SIM_Implau <- merge(SIM_Implau, SIM_dic[,c("Codigo Qualidados", "Codigo SIM") ], by.x="VARIAVEL", by.y="Codigo SIM", all=TRUE)
+SIM_Implau <- SIM_Implau[SIM_Implau$VARIAVEL %in% var_aux,]
+SIM_Implau$VARIAVEL <- SIM_Implau$`Codigo Qualidados`
+SIM_Implau$`Codigo Qualidados` <- NULL
 vars_implau_sim<- unique(SIM_Implau$VARIAVEL)
 ################# REGRAS
 df_aux <- regras_sim_implau |> as.data.frame() |> t() |> as.data.frame()

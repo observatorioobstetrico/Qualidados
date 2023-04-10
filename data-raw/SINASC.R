@@ -66,7 +66,9 @@ variaveis_sinasc_tirar <- c('CONTADOR' ,
 'ORIGEM',
 'KOTELCHUCK')
 Sinasc_incom <- Sinasc_incom[!(Sinasc_incom$VARIAVEL %in% variaveis_sinasc_tirar),]
+var_aux <- Sinasc_incom$VARIAVEL |> unique()
 Sinasc_incom <- merge(Sinasc_incom, SINASC_dic[,c("Codigo Qualidados", "Codigo SINASC") ], by.x="VARIAVEL", by.y="Codigo SINASC", all=TRUE)
+Sinasc_incom <- Sinasc_incom[Sinasc_incom$VARIAVEL %in% var_aux,]
 Sinasc_incom$VARIAVEL <- Sinasc_incom$`Codigo Qualidados`
 Sinasc_incom$`Codigo Qualidados` <- NULL
 vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
@@ -74,11 +76,8 @@ vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
 Sinasc_implau <- read_csv('data1/SINASC_Implausibilidade_v2.csv',show_col_types = FALSE)
-
-vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
-vars_implau_sinasc <- vars_implau_sinasc |>
-  stringr::str_split("_IMPLAUSIVEL") |> unlist()
-vars_implau_sinasc <- vars_implau_sinasc[vars_implau_sinasc != '']
+Sinasc_implau$VARIAVEL <- Sinasc_implau$VARIAVEL |>
+  gsub(pattern = "_IMPLAUSIVEL", replacement = '')
 
 
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
@@ -113,10 +112,12 @@ regras_sinasc_implau |> row.names() <- NULL
 regras_sinasc_implau |> colnames() <- c('Variável','Regra')
 regras_sinasc_implau$Regra <- regras_sinasc_implau$Regra |> gsub(pattern = 'não',replacement = ' não')
 Sinasc_implau <- Sinasc_implau[!(Sinasc_implau$VARIAVEL %in% variaveis_sinasc_tirar),]
-# Sinasc_implau <- merge(Sinasc_implau, SINASC_dic[,c("Codigo Qualidados", "Codigo SINASC") ], by.x="VARIAVEL", by.y="Codigo SINASC", all=TRUE)
-# Sinasc_implau$VARIAVEL <- Sinasc_implau$`Codigo Qualidados`
-# Sinasc_implau$`Codigo Qualidados` <- NULL
-# vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
+var_aux <- Sinasc_implau$VARIAVEL |> unique()
+Sinasc_implau <- merge(Sinasc_implau, SINASC_dic[,c("Codigo Qualidados", "Codigo SINASC") ], by.x="VARIAVEL", by.y="Codigo SINASC", all=TRUE)
+Sinasc_implau <- Sinasc_implau[Sinasc_implau$VARIAVEL %in% var_aux,]
+Sinasc_implau$VARIAVEL <- Sinasc_implau$`Codigo Qualidados`
+Sinasc_implau$`Codigo Qualidados` <- NULL
+vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")

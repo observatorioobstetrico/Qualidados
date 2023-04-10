@@ -142,13 +142,13 @@ dados_incon <- dados_aux
 #VARIAVEIS DISPONIVEIS PARA INCOMPLETUDE -------------------
 
 variaveis_incom <- names(dados_incom)[stringr::str_detect(names(dados_incom), "^f_")]
-variaveis_incom_nomes <- c('Raça','Escolaridade',"Zona de Residência","Histórico de Viagem",
-                           "SG","Infecção Hospitalar","Contato com aves ou suínos","Vacina",
-                           "Antiviral","Febre","Tosse","Garganta","Dispneia","Desc. Resp.",
-                           "Saturação","Diarreia","Vômito","Dor Abdominal","Fadiga","Perda de Olfato",
-                           "Perda paladar","Cardiopatia","Hematologia","Hepática","Asma","Diabetes",
-                           "Neuro","Pneumopatia","Imunodepressores","Renal","Obesidade","UTI",
-                           "Hospitalização","Suporte\nVentilatório","Evolução")
+variaveis_incom_nomes <- c('RACA','ESCOLARIDADE',"ZONA","HIST_VIAGEM",
+                           "SURTO_SG","SRAG_POS","AVES_SUINOS","VACINA",
+                           "ANTIVIRAL","FEBRE","TOSSE","GARGANTA","DISPENEIA","DESC_RESPIRATORIO",
+                           "SATURAÇÃO","DIARREIA","VOMITO","DOR_ABD","FADIGA","PERDA_OLFT",
+                           "PERDA_PALADAR","CARDIOPATI","HEMATOLOGI","HEPÁTICA","ASMA","DIABETES",
+                           "NEUROLÓGICA","PNEUMOPATIA","IMUNODEPRESSAO","RENAL_CRON","OBESIDADE","UTI",
+                           "INTERNACAO","SUPORT_VENT","EVOLUCAO")
 variaveis_incom_nomes_ori <- c('CS_RACA','CS_ESCOL_N','CS_ZONA','HISTO_VGM','SURTO_SG',
                                'NOSOCOMIAL','AVE_SUINO','VACINA','ANTIVIRAL','FEBRE',
                                'TOSSE','GARGANTA','DISPNEIA','DESC_RESP','SATURACAO','DIARREIA',
@@ -159,7 +159,7 @@ variaveis_incom_nomes_ori <- c('CS_RACA','CS_ESCOL_N','CS_ZONA','HISTO_VGM','SUR
 
 #RELACAO ENTRE OS NOMES CERTOS E OS NOMES NO BD
 
-variaveis_relacao <- variaveis_incom_nomes_ori
+variaveis_relacao <- variaveis_incom_nomes
 names(variaveis_relacao) <- variaveis_incom
 
 #tem que mudar esse nome aqui, por algum motivo nao tava gerando a variavel dentro

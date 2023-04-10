@@ -1,0 +1,8 @@
+{
+    "DTOBITO_e_DTNASC": "Se a data de \u00f3bito for menor que a data de nascimento",
+    "SEXO_e_OBITO": "Se SEXO for diferente de 'M','I' e os campos relativos a \u00f3bitos em mulheres estiverem preenchidos",
+    "OBITO_PUERPERIO_GRAVIDEZ": "Se OBITOPARTO e OBITOPUERP estiver como 3 ou OBITOGRAV estiver como 1;Se OBITOPARTO estiver como 1 ou 2 e OBITOGRAV estiver como 2, ou OBITOPUERP estiver como 1 ou 2;Se OBITOPARTO estiver como 9 e OBITOGRAV estiver como 1 ou 2, ou OBITOPUERP estiver como 1, 2 ou 3",
+    "OBITOGRAV_e_OBITOPUERP": "Se OBITOGRAV estiver como 1 e OBITOPUERP estiver como 1, 2 ou 9",
+    "OBITOPUERP_e_OBITOGRAV": "Se OBITOGRAV estiver como 1 ou 2 e OBITOGRAV estiver como 1 ou 9",
+    "FONTE_E_LOCOCOR": "Se FONTE estiver diferente de 2 e LOCOCOR estiver como 1"
+}

@@ -40,6 +40,15 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       selected = vars_incon[c(1,2)],
                       options = list(`actions-box` = TRUE),
                       multiple = T),
+                    #tempo
+                    shiny::sliderInput(
+                      ns('filtro_tempo'),
+                      'Selecione a janela de tempo:',
+                      min = 2009,
+                      max = 2020,
+                      value = c(2005,2020),
+                      round = T,
+                      sep=''),
                     #FILTRO DE DIAGNOSTICO DE SRAG
                     shiny::checkboxGroupInput(
                       inputId = ns("Graf_DiagonisticoSRAG"),
@@ -52,20 +61,10 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                         "Outro v\u00edrus" = "2",
                         "Outro agente" = "3"),
                       selected = c("5")),
-                    #FILTRO DE CONDICAO
                     tippy::tippy_this(
                       elementId = ns("Graf_DiagonisticoSRAG"),
                       tooltip = "Causa da Sindrome Respirat\u00f3ria Aguda Grave (SRAG).",
                       placement = "right"),
-                    shiny::checkboxGroupInput(
-                      inputId = ns("Graf_Condicao_Incon"),
-                      label = "Filtrar Condi\u00e7\u00e3o",
-                      choices = c(
-                        "Gr\u00e1vidas 1\u00ba Trimestre" = "1tri",
-                        "Gr\u00e1vidas 2\u00ba Trimestre" = "2tri",
-                        "Gr\u00e1vidas 3\u00ba Trimestre" = "3tri",
-                        "Pu\u00e9rperas" = "puerp"),
-                      selected = c("1tri", "2tri", "3tri", "puerp")),
                     #FILTRO DE EXIBICAO OU NAO DE CASOS FINALIZADOS
                     if(indicador=='incom'){
                       shiny::checkboxGroupInput(

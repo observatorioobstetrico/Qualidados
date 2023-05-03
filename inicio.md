@@ -40,9 +40,44 @@ Para maiores informações, perguntas, sugestões ou colaborações científicas
 
 <br><br>
 <br><br>
-<p align="center">
-<img src="inst/app/www/Projetosamuel.png" width = "1420"/>
-</p>
 
+<h2  style="text-align: center;"> <b> Realização </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+<p align="center">
+    <img src="inst/app/www/realizacao/logo_oobr.png" width = '170px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/realizacao/logo_daslab.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_ufes.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_medicina_usp.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_facens.png" width = '170px'/>
+</p>  
+  </div>
+</div>
+ 
+<br><br>
+<br><br>
+<h2  style="text-align: center;"> <b> Financiadores </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+  <p align="center">
+    <img src="inst/app/www/financiadores/logo_cnpq.png" width = '170px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/financiadores/logo_fapes.png" width = '450px'/>
+    <img src="inst/app/www/financiadores/logo_ms.png" width = '450px'/>
+  </p> 
+  </div>
+</div>  
+<br><br>
+<br><br>
+
+<h2  style="text-align: center;"> <b> Apoio </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+  <p align="center">
+    <img src="inst/app/www/apoio/logo_odd.png" width = '150px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/apoio/logo_pcdas.png" width = '150px'/>
+    <img src="inst/app/www/apoio/acontece.png" width = '150px'/>
+  </p>  
+  </div>
+</div>
 
   

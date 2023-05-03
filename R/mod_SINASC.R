@@ -323,17 +323,16 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
       colnames(teste) <- teste[1,]
       teste
     })
-
+    if (SIM == FALSE) {
+      vars_reais <- vars_incom_sinasc
+    } else {
+      vars_reais <- vars_incom_sim
+    }
     # cria uma lista de outputs
     for(i in 1:72) {
       local({
         my_i <- i
         output[[paste('print',i,sep='')]] <- shiny::renderText({
-          if (SIM == FALSE) {
-            vars_reais <- vars_incom_sinasc
-          } else {
-            vars_reais <- vars_incom_sim
-          }
           # verifica se a variável atual está selecionada pelo usuário
           if (vars_reais[my_i] %in% input$vars_select) {
             # filtra a tabela de dados
@@ -375,15 +374,15 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
             teste
         })
 
+        if (SIM == FALSE) {
+          vars_reais <- vars_implau_sinasc
+        } else {
+          vars_reais <- vars_implau_sim
+        }
         for(i in 1:72) {
           local({
             my_i <- i
             output[[paste('print',i,sep='')]]  <- shiny::renderText({
-              if (SIM == FALSE) {
-                vars_reais <- vars_implau_sinasc
-              } else {
-                vars_reais <- vars_implau_sim
-              }
               # verifica se a variável atual está selecionada pelo usuário
               if (vars_reais[my_i] %in% input$vars_select) {
                 # filtra a tabela de dados
@@ -425,7 +424,6 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
       colnames(teste) <- teste[1,]
       teste
     })
-
     for(i in 1:72) {
       local({
         my_i <- i

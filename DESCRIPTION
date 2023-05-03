@@ -27,7 +27,8 @@ Imports:
     magrittr,
     shinydashboard,
     plyr,
-    markdown
+    markdown,
+    highcharter
 Suggests: 
     spelling,
     testthat (>= 3.0.0)

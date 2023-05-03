@@ -71,22 +71,25 @@ app_ui <- function(request) {
               ),
               shinydashboard::dashboardBody(shinydashboard::tabItems(
               mod_SIVEP_ui(id = "SIVEP_incompletude",
-                                        vars_incon = variaveis_incom_nomes,
+                                        vars_incon = sort(var_sivep_incom),
                                         tabname ="incom_sivep",
                                         descricao =  desc_incom ,indicador = 'incom',
-                                        estados = sort(unique(dados_incom$SG_UF))),
+                                        estados = sort(unique(sivep_dados$SG_UF)),
+                                        selecionadas = c('RACA','ESCOLARIDADE')),
 
               mod_SIVEP_ui(id = "SIVEP_implausibilidade",
-                                        vars_incon = var_dados_implau,
+                                        vars_incon = sort(var_sivep_implau),
                                         tabname ="implau_sivep",
                                         descricao = desc_implau,indicador = 'implau',
-                                        estados = sort(unique(dados_implau$SG_UF))),
+                                        estados = sort(unique(sivep_dados$SG_UF)),
+                                        selecionadas = c('IDADE','SEXO')),
 
               mod_SIVEP_ui(id = "SIVEP_inconsistencia",
-                                        vars_incon = unname(vars_incon),
+                                        vars_incon = sort(var_sivep_incon),
                                         tabname ="incons_sivep",
                                         descricao = desc_incon,indicador = 'incon',
-                                        estados = sort(unique(dados_incon$SG_UF))),
+                                        estados = sort(unique(sivep_dados$SG_UF)),
+                                        selecionadas = sort(var_sivep_incon)[c(1,2)]),
               mod_SINASC_ui(id = "SINASC_incompletude",
                                         tabname = "incom_sinasc",
                                         indicador = 'incom',
@@ -133,7 +136,8 @@ app_ui <- function(request) {
                                       shinyjs::useShinyjs(),
                                       fluidRow(
                                       shinydashboard::box(width = 12,
-                                      shiny::includeMarkdown('inicio.md'))))
+                                      shiny::includeMarkdown('inicio.md')
+                                      )))
             )
                   )
                 )

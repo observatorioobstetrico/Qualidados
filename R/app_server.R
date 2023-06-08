@@ -18,10 +18,11 @@ app_server <- function(input, output, session) {
   mod_Dicionario_server("dicsinasc",df=SINASC_dic,regra = regras_sinasc)
   mod_Dicionario_server("dicsim",df=SIM_dic,regra = regras_sim)
   observeEvent(input$help, {
-    # Show a modal when the button is pressed
-    shinyalert::shinyalert("Ajuda",html =T,text = tagList("Funcionamento do Painel",
-      tags$video(type ='video/mp4',src = 'www/hello-there.mp4', width = '100%',
-                                  controls = 'controls')))
+    showModal(modalDialog(title = "Tutorial Uso Qualidados",
+                          HTML('<iframe width="560" height="315" src="https://www.youtube.com/embed/9nRmnLDh128" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>')
+
+    )
+    )
   })
 }
 

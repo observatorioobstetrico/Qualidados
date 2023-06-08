@@ -5,36 +5,48 @@ library(jsonlite)
 library(readxl)
 
 SIVEP_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIVEP")
-usethis::use_data(SIVEP_dic,overwrite = T)
 df <- readRDS("data1/Sivep_2009-2022.rds")
+variaveis_dic <- SIVEP_dic$`Codigo SIVEP`
 
-variaveis_dic <- c('CS_SEXO','NU_IDADE_N','TP_IDADE','CS_RACA','CS_ESCOL_N','CS_ZONA','SURTO_SG','NOSOCOMIAL','AVE_SUINO','FEBRE','TOSSE','GARGANTA','DISPNEIA','DESC_RESP','SATURACAO','DIARREIA',
-               'VOMITO','OUTRO_SIN','FATOR_RISC','CARDIOPATI','HEMATOLOGI','SIND_DOWN','HEPATICA','ASMA','DIABETES','NEUROLOGIC','PNEUMOPATI','IMUNODEPRE','RENAL','OBESIDADE','OUT_MORBI',
-               'MAE_VAC','M_AMAMENTA','ANTIVIRAL','TP_ANTIVIR','HOSPITAL','DT_INTERNA','UTI','SUPORT_VEN','AMOSTRA','DT_COLETA','POS_PCRFLU','POS_PCROUT','EVOLUCAO','HISTO_VGM','DOR_ABD',
-               'FADIGA','PERD_OLFT','PERD_PALA','POS_AN_FLU','POS_AN_OUT','CS_GESTANT','DT_UT_DOSE','DT_VAC_MAE','DT_DOSEUNI','DT_ENTUTI','RAIOX_RES','DT_RAIOX','TOMO_RES','DT_TOMO',
-               'TP_TES_AN','DT_RES_AN','VACINA_COV','VACINA','TP_AM_SOR','PUERPERA')
+#BANCO AUXILIAR PARA CORRECAO DOS MUNICIPIOS
+aux_muni2 <- abjData::muni %>%
+  dplyr::select(uf_id,
+                muni_id,
+                muni_nm_clean,
+                uf_sigla) %>%
+  mutate_at("muni_id", as.character)  %>%
+  mutate(cod_mun = stringr::str_sub(muni_id, 1, 6))
 
-#CRIANDO CLASSIFICACAO DE GESTANTE E PUERP
+#CRIANDO CLASSIFICACAO DE GESTANTE E PUERP E CORRIGINDO OS MUNICIPIOS
 df_gest <- df %>%
+  #CORRECAO MUNICIPIOS
+  left_join(aux_muni2, by = c("ID_MUNICIP" = "cod_mun")) %>%
+  mutate(SG_UF_NOT = ifelse(is.na(muni_nm_clean), SG_UF_NOT, uf_sigla),
+         ID_MUNICIP = ifelse(is.na(muni_nm_clean), ID_MUNICIP, muni_nm_clean)) %>%
   mutate(
-    classi_gesta_puerp = case_when(
-      CS_GESTANT == 1 | CS_GESTANT == 1.0 | CS_GESTANT == '1' | CS_GESTANT == '1.0' ~ "1tri",
-      CS_GESTANT == 2 | CS_GESTANT == 2.0 | CS_GESTANT == '2' | CS_GESTANT == '2.0' ~ "2tri",
-      CS_GESTANT == 3 | CS_GESTANT == 3.0 | CS_GESTANT == '3' | CS_GESTANT == '3.0'  ~ "3tri",
-      CS_GESTANT == 4 | CS_GESTANT == 4.0 | CS_GESTANT == '4' | CS_GESTANT == '4.0' ~ "IG_ig",
-     ( CS_GESTANT == 5  &
-        PUERPERA == 1 )| ( CS_GESTANT == 5.0  &
-                             PUERPERA == 1.0 )| ( CS_GESTANT == '5.0'  &
-                                                    PUERPERA == '1.0' )~ "puerp",
-      (CS_GESTANT == 9 & PUERPERA == 1) |(CS_GESTANT == 9.0 & PUERPERA == 1.0)|(CS_GESTANT == '9.0' & PUERPERA == '1.0')~ "puerp",
-      TRUE ~ "não"
-    ),
+    # #CLASSIFICACAO DE PERIODO GESTACIONAL
+    # classi_gesta_puerp = case_when(
+    #   CS_GESTANT == 1 | CS_GESTANT == 1.0 | CS_GESTANT == '1' | CS_GESTANT == '1.0' ~ "1tri",
+    #   CS_GESTANT == 2 | CS_GESTANT == 2.0 | CS_GESTANT == '2' | CS_GESTANT == '2.0' ~ "2tri",
+    #   CS_GESTANT == 3 | CS_GESTANT == 3.0 | CS_GESTANT == '3' | CS_GESTANT == '3.0'  ~ "3tri",
+    #   CS_GESTANT == 4 | CS_GESTANT == 4.0 | CS_GESTANT == '4' | CS_GESTANT == '4.0' ~ "IG_ig",
+    #  ( CS_GESTANT == 5  &
+    #     PUERPERA == 1 )| ( CS_GESTANT == 5.0  &
+    #                          PUERPERA == 1.0 )| ( CS_GESTANT == '5.0'  &
+    #                                                 PUERPERA == '1.0' )~ "puerp",
+    #   (CS_GESTANT == 9 & PUERPERA == 1) |(CS_GESTANT == 9.0 & PUERPERA == 1.0)|(CS_GESTANT == '9.0' & PUERPERA == '1.0')~ "puerp",
+    #   TRUE ~ "não"
+    # ),
+    #DATA DO PRIMEIRO SINTOMA
     dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
+    #DATA DO NASCIMENTO
     dt_nasc = as.Date(DT_NASC, format = "%d/%m/%Y"),
-    ano = lubridate::year(dt_sint),
-    muni_nm_clean = paste(ID_MUNICIP, "-", SG_UF_NOT)
-  )
-
+    #ANO, BASEADO NA DATA DO PRIMEIRO SINTOMA
+    ANO = lubridate::year(dt_sint),
+    #MUNICIPIO
+    MUNICIPIO = paste(ID_MUNICIP, "-", SG_UF_NOT)
+  ) %>% select(-muni_nm_clean, -uf_sigla)
+# CORRECAO DO ERRO QUE A FALTA DE PADRONIZACAO DOS DADOS OCASIONOU
 df_gest <- df_gest %>% mutate_if(~ !is.character(.), as.character)
 df_gest <- data.frame(lapply(df_gest, function(x) ifelse(x == "1.0", '1',
                                                         ifelse(x == '2.0','2',
@@ -46,44 +58,33 @@ df_gest <- data.frame(lapply(df_gest, function(x) ifelse(x == "1.0", '1',
                                                                                                   ifelse(x == '8.0','8',
                                                                                     ifelse(x == '9.0','9',x)))))))))))
 
-df_gest %>% nrow()
-#filtrando gravidas e puerperas
-df_gest <- df_gest[df_gest$classi_gesta_puerp != 'não',]
-
-# df_gest[df_gest$ano == '2013' & (is.na(df_gest$OBESIDADE) |df_gest$OBESIDADE== '9.0'),'OBESIDADE']
-# df_gest$OBESIDADE %>% unique()
-# df_gest[df_gest$ano == '2013' & (df_gest$OBESIDADE %in% c(3,4,5)),'OBESIDADE']
-# df_gest[df_gest$ano == '2013' & (df_gest$OBESIDADE %in% c('1.0','2.0')),'OBESIDADE']
-# df_gest[df_gest$ano == '2013','OBESIDADE']  %>% length()
-# df_gest[df_gest$ano == '2013','OBESIDADE']  %>% unique()
+df_gest %>% nrow()#CONFERINDO SE VOLTOU TUDO
 
 sivep2 <- df_gest
-# Usando mutate_if para transformar todas as colunas não-char em char
 
 # INCOMPLETUDE ------------------------------------------------------------
 regras_incom <- fromJSON('data1/incompletude_sivep.json')
 
 #VARIAVEIS DO DICIONARIO + VARIAVEIS PARA FILTRAGEM
-df_gest2 <- df_gest[,c(variaveis_dic,'classi_gesta_puerp','ano','muni_nm_clean','SG_UF_NOT','CLASSI_FIN')]
+df_gest2 <- df_gest[,c(variaveis_dic,'ANO','MUNICIPIO','SG_UF_NOT','CLASSI_FIN')]
 
 #VARIAVEIS EM QUE O VALOR 9 E O VALOR IGNORADO:
 variaveis_ign <- c('CS_SEXO','CS_RACA','CS_ESCOL_N','CS_ZONA','NOSOCOMIAL','AVE_SUINO','FEBRE','TOSSE','GARGANTA','DISPNEIA',
                    'DESC_RESP','SATURACAO','DIARREIA','VOMITO','OUTRO_SIN','FATOR_RISC','CARDIOPATI','HEMATOLOGI','SIND_DOWN',
                    'HEPATICA','ASMA','DIABETES','NEUROLOGIC','PNEUMOPATI','IMUNODEPRE','RENAL','OBESIDADE','OUT_MORBI',
                    'MAE_VAC','M_AMAMENTA','ANTIVIRAL','HOSPITAL','UTI','SUPORT_VEN','AMOSTRA','POS_PCRFLU','POS_PCROUT',
-                   'EVOLUCAO','DOR_ABD','FADIGA','PERD_OLFT','PERD_PALA','POS_AN_FLU','POS_AN_OUT','CS_GESTANT','RAIOX_RES',
-                   'TOMO_RES','VACINA_COV','VACINA','PUERPERA','CLASSI_FIN')
+                   'EVOLUCAO','DOR_ABD','FADIGA','PERD_OLFT','PERD_PALA','POS_AN_FLU','POS_AN_OUT','CS_GESTANT',
+                   'TOMO_RES','VACINA_COV','VACINA','PUERPERA','CLASSI_FIN',"RAIOX_RES" )
 setdiff(variaveis_dic,variaveis_ign)
-
 #SUBSTITUIR VALORES NA POR EM BRANCO
 sivep <- replace(df_gest2,is.na(df_gest2) ,"Em Branco")
 
 #SUBSTITUIR VALORES 9 POR IGNORADO
-sivep[, variaveis_ign] <- lapply(sivep[, variaveis_ign], function(x) ifelse(x == '9'|x == '9.0', "Ignorado", x))
+sivep[, variaveis_ign] <- lapply(sivep[, variaveis_ign], function(x) ifelse((x == '9'|x == '9.0'), "Ignorado", x))
 
-# Calcular as porcentagens de valores 'Ignorados' e 'Em branco' por coluna
-ignored_pct <- colMeans(sivep == "Ignorado", na.rm = TRUE) * 100
-blank_pct <- colMeans(sivep == "Em Branco", na.rm = TRUE) * 100
+# Calcular as porcentagens de valores 'Ignorados' e 'Em branco' por coluna so para ver se funcionou
+ colMeans(sivep == "Ignorado", na.rm = TRUE) * 100
+ colMeans(sivep == "Em Branco", na.rm = TRUE) * 100
 
 # IMPLAUSIBILIDADE --------------------------------------------------------
 
@@ -94,7 +95,8 @@ regras_implau2 <- fromJSON('data1/implausibilidade_puerperas.json')
 improvavel <- grep("_IMPROVAVEL", names(regras_implau), value = TRUE)
 impossivel <- grep("_IMPOSSIVEL", names(regras_implau), value = TRUE)
 impossivel2 <- grep("_IMPOSSIVEL", names(regras_implau2), value = TRUE)
-impossivel <- c(impossivel2, setdiff(impossivel, impossivel2))
+impossivel <- c(impossivel2,impossivel) %>% unique()
+
 # Criando um data.frame com as variáveis improváveis
 df_improvavel <- data.frame(
   variavel = gsub(improvavel,pattern = '_IMPROVAVEL',replacement = ''))
@@ -103,7 +105,7 @@ df_improvavel <- data.frame(
 df_impossivel <- data.frame(
   variavel =  gsub(impossivel,pattern = '_IMPOSSIVEL',replacement = ''))
 
-# Trocando regras em string por booleanos
+# Trocando regras em string por booleANOs
 df_impossivel <- df_impossivel %>%
   mutate(condicao = case_when(
     grepl("CS_SEXO", variavel) ~ "CS_SEXO != 'F'",
@@ -159,30 +161,32 @@ df_impossivel <- df_impossivel %>%
     ))
     df_improvavel <- df_improvavel %>%
   mutate(condicao = case_when(
-    grepl("NU_IDADE_N", variavel) ~ "as.integer(NU_IDADE_N) < 10 | as.integer(NU_IDADE_N) > 55"))
+    grepl("NU_IDADE_N", variavel) ~ "(as.integer(NU_IDADE_N) < 10 & as.integer(NU_IDADE_N) >= 0) | (as.integer(NU_IDADE_N) > 55 & as.integer(NU_IDADE_N) <= 90)"))
 
 #Substituindo os valores do banco sivep por improvavel e impossivel
 attach(sivep)
 for(i in 1:nrow(df_impossivel)){
   var <- df_impossivel$variavel[i]
   cond <- df_impossivel$condicao[i]
-  sivep[eval(parse(text = paste0(cond," & ",var," != 'Em Branco'"))),var]<- 'Impossivel'
+  sivep[eval(parse(text = paste0(cond," & (",var," != 'Em Branco')"))),var]<- 'Impossivel'
 }
 for(i in 1:nrow(df_improvavel)){
   var <- df_improvavel$variavel[i]
   cond <- df_improvavel$condicao[i]
   sivep[eval(parse(text = paste0("(",cond,") & (",var," != 'Em branco' &",var," != 'Ignorado') "))),var] <- 'Improvavel'
 }
+detach(sivep)
 sivep_ic_ip <- sivep
 
 # INCONSISTENCIA ----------------------------------------------------------
 
-incon <- fromJSON('data1/SIVEP_Inconsistencias_Regras.json')
-df_gest$POS_AN_FLU %>% unique()
+regras_incon <- fromJSON('data1/SIVEP_Inconsistencias_Regras.json')
+
 # Criando um data.frame com as variáveis improváveis
 df_inconsistencia <- data.frame(
-  variavel = names(incon) %>% gsub(pattern = '_e_', replacement = ' e '))
-# Trocando regras em string por booleanos
+  variavel = names(regras_incon) %>% gsub(pattern = '_e_', replacement = ' e '))
+
+# Trocando regras em string por booleANOs
 df_inconsistencia <- df_inconsistencia %>%
   mutate(condicao = case_when(
     grepl("CS_SEXO e CS_GESTANT", variavel) ~ "(df_gest_aux$CS_SEXO %in% c('M', 'I')) & (df_gest_aux$CS_GESTANT %in% c('1','2','3','4'))",
@@ -203,14 +207,17 @@ df_inconsistencia <- df_inconsistencia %>%
     grepl("CLASSI_FIN_SRAG_OUTROS_VIRUS", variavel) ~ "df_gest_aux$CLASSI_FIN == '1' & df_gest_aux$PCR_OUTRO %in% c('2', '9') & df_gest_aux$AN_OUTRO %in% c('2 ', '9')"
   ))
 df_inconsistencia <- head(df_inconsistencia, -2)
+
 # Criando colunas de inconsistencia no df_gest
 df_gest_aux <- df_gest
+
 #SUBSTITUIR VALORES NA POR EM BRANCO
 df_gest_aux <- data.frame(lapply(df_gest_aux, function(x) ifelse(is.na(x), "Em Branco", x)))
 for(i in 1:nrow(df_inconsistencia)){
   df_gest_aux[[df_inconsistencia$variavel[i]]] <- 'Nao'
 }
-df_gest_aux %>% colnames()
+df_gest_aux %>% colnames() #VENDO SE DEU CERTO
+
 # Verificando a condição de inconsistência para cada variável do Inconsistencias_df
 
 for(i in 1:(nrow(df_inconsistencia))){
@@ -238,26 +245,16 @@ for(i in seq_along(SIVEP_dic$`Codigo SIVEP`)) {
 
 # Atribuindo os novos nomes de colunas ao dataframe
 colnames(sivep) <- nomes_colunas
-sivep_dados <- sivep
-regras_implau
-
-# CRIAR VETOR DE NOME DE VARIAVEIS ----------------------------------------
-var_sivep_incom <- names(sivep_dados)[apply(sivep_dados == "Em Branco" | sivep_dados == 'Ignorado', 2, any)]
-var_sivep_implau <- names(sivep_dados)[apply(sivep_dados == "Impossivel" | sivep_dados == 'Improvavel', 2, any)]
-var_sivep_incon <- names(sivep_dados)[apply(sivep_dados == "Inconsistencia" , 2, any)]
-var_sivep_incom <- var_sivep_incom[(var_sivep_incom  %in% SIVEP_dic$`Codigo Qualidados`)]
-var_sivep_implau <- var_sivep_implau[(var_sivep_implau  %in% SIVEP_dic$`Codigo Qualidados`)]
-
-sivep_dados[apply(sivep_dados == "Inconsistencia" , 2, any)] %>% nrow()
 
 # CRIAR REGRAS DO SIVEP ---------------------------------------------------
 #inconsistencia
-incon <- incon |> as.data.frame() |> t() |> as.data.frame()
-incon <- cbind(incon |> row.names(),incon)
-incon |> row.names() <- NULL
-incon |> colnames() <- c('Variavel','Regra')
-incon$Variavel <- incon$Variavel |> gsub(pattern = '_e_', replacement = ' e ')
-incon$Indicador <- 'Inconsistência'
+regras_incon <- regras_incon |> as.data.frame() |> t() |> as.data.frame()
+regras_incon <- cbind(regras_incon |> row.names(),regras_incon)
+regras_incon |> row.names() <- NULL
+regras_incon |> colnames() <- c('Variavel','Regra')
+regras_incon$Variavel <- regras_incon$Variavel |> gsub(pattern = '_e_', replacement = ' e ')
+regras_incon$Indicador <- 'Inconsistência'
+regras_incon <- regras_incon[-c(17,18),]
 
 #implausibilidade
 regras_implau <- regras_implau |> as.data.frame() |> t() |> as.data.frame()
@@ -268,6 +265,7 @@ regras_implau$Variavel <- regras_implau$Variavel |> gsub(pattern = '_IMPOSSIVEL'
 regras_implau$Regra <- regras_implau$Regra |> gsub(pattern = 'de gestantes ', replacement = '')
 regras_implau$Regra <- regras_implau$Regra |> gsub(pattern = 'Gestantes ', replacement = 'Gestantes e puérperas ')
 regras_implau$Regra[4] <- 'Gestantes e puérperas ao mesmo tempo'
+regras_implau$Indicador <- 'Implausiblidade'
 
 #incompletude
 regras_incom <- regras_incom |> as.data.frame() |> t() |> as.data.frame()
@@ -276,17 +274,65 @@ regras_incom |> row.names() <- NULL
 regras_incom |> colnames() <- c('Variavel','Regra')
 regras_incom$Indicador <- 'Incompletude'
 
+#CORRECAO PARA CODIGO DO QUALIDADOS
+regras_sivep <- rbind(regras_incon,regras_implau,regras_incom)
+for(i in seq_along(SIVEP_dic$`Codigo SIVEP`)) {
+  for(j in 1:ncol(regras_sivep)){
+  regras_sivep[,j] <- gsub(SIVEP_dic$`Codigo SIVEP`[i],
+                           SIVEP_dic$`Codigo Qualidados`[i],
+                       regras_sivep[,j])
+  }
+}
 
-regras_implau$Indicador <- 'Implausiblidade'
-regras_sivep <- rbind(incon,regras_implau,regras_incom)
+regras_sivep$Variavel <- regras_sivep$Variavel %>% gsub(pattern = '_IMPROVAVEL',replacement = '')
+
+#DESCRICAO DOS INDICADORES
 desc_incom <- 'análise das informações que estão faltando na base de dados, seja porque não foram preenchidas (“dados em branco”) ou porque a resposta era desconhecida (“dados ignorados”).'
- desc_implau <- "análise das informações que são improváveis e/ou dificilmente possam ser consideradas aceitáveis dadas as características de sua natureza."
- desc_incon <- "informações que parecem ilógicas e/ou incompatíveis a partir da análise da combinação dos dados informados em dois ou mais campos do formulário."
-usethis::use_data(regras_sivep,overwrite = T)
-usethis::use_data(sivep_dados,overwrite = T)
+desc_implau <- "análise das informações que são improváveis e/ou dificilmente possam ser consideradas aceitáveis dadas as características de sua natureza."
+desc_incon <- "informações que parecem ilógicas e/ou incompatíveis a partir da análise da combinação dos dados informados em dois ou mais campos do formulário."
+
+var_sivep_incon <- regras_sivep[regras_sivep$Indicador=='Inconsistência','Variavel']
+#VARIAVEIS AUXILIARES PARA INCONSISTENCIA
+Var_incon_relacao <- list(
+  c('SEXO','IDADE_GEST'),
+  c('FATOR_RISCO','CARDIOPATI', 'HEMATOLOGI', 'SIND_DOWN', 'HEPÁTICA', 'ASMA', 'DIABETES',
+    'NEUROLÓGICA', 'PNEUMOPATIA', 'IMUNODEPRESSAO', 'RENAL_CRON', 'OBESIDADE',
+    'OBES_IMC', 'OUT_FATOR_RISCO'),
+  c('VACINA','DT_VACINA_GRIPE'),
+  c('MAE_VACINA' ,'DT_VACINA_MAE' ),
+  c('DT_DOSE_UNICA','IDADE'),
+  c('ANTIVIRAL','TIPO_ANTIVIRAL'),
+  c('INTERNACAO','DT_INTERNACAO'),
+  c('UTI' ,'DT_UTI' ,'INTERNACAO'),
+  c('RESULT_RAIOX' ,'DT_RAIOX' ),
+  c('AMOSTRA_DIAG' ,'DT_COLETA_AMO' ),
+  c('HIST_VIAGEM','LO_PS_VGM', 'DT_VGM', 'DT_RT_VGM'),
+  c('RESULT_TOMOGR' ,'DT_TOMOGRAFIA' ),
+  c('RES_AN' ,'TIPO_ANTIGENICO' ,'DT_RES_ANTIGENICO' ),
+  c('VACINA_COVID' ,'DOSE_1_COV' ,'DOSE_2_COV' ),
+  c('CLASSI_FIN' ,'PCR_INFLU' ,'ANTIGENICO_INFLU' ),
+  c('CLASSI_FIN' ,'PCR_OUTRO' ,'AN_OUTRO')
+)
+names(Var_incon_relacao) <- regras_sivep[regras_sivep$Indicador == 'Inconsistência','Variavel']
+Var_incon_relacao <- Var_incon_relacao[var_sivep_incon] %>% unlist() %>% unname()
+Var_incon_relacao <- Var_incon_relacao[Var_incon_relacao %in% colnames(sivep)]
+
+#VARIAVEIS PARA FILTRO
+var_sivep_implau <- regras_sivep$Variavel[regras_sivep$Indicador == 'Implausiblidade'] %>% unique()
+var_sivep_incom <- regras_sivep$Variavel[regras_sivep$Indicador == 'Incompletude'] %>% unique()
+
+#DADOS
+usethis::use_data(sivep,overwrite = T)
+#VARIVEIS PARA FILTRO
+usethis::use_data(Var_incon_relacao,overwrite = T)
 usethis::use_data(var_sivep_incom,overwrite = T)
 usethis::use_data(var_sivep_implau,overwrite = T)
 usethis::use_data(var_sivep_incon,overwrite = T)
-usethis::use_data(desc_incom, overwrite = TRUE)
-usethis::use_data(desc_implau, overwrite = TRUE)
-usethis::use_data(desc_incon, overwrite = TRUE)
+#DESCRICAO
+usethis::use_data(desc_incom, overwrite = T)
+usethis::use_data(desc_implau, overwrite = T)
+usethis::use_data(desc_incon, overwrite = T)
+#DICIONARIO
+usethis::use_data(SIVEP_dic,overwrite = T)
+usethis::use_data(regras_sivep,overwrite = T)
+

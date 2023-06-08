@@ -8,7 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
-                                      indicador,estados,selecionadas){
+                                      indicador,selecionadas){
     ns <- NS(id)
 
     shinyjs::useShinyjs()
@@ -119,7 +119,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       shiny::selectInput(
                         ns("Graf_Estado"),
                         "Selecione o estado",
-                        choices = 'AC')),
+                        choices = sort(unique(sivep$SG_UF_NOT)),
+                        selected = sort(unique(sivep$SG_UF_NOT))[1])),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
                     shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoLocalidade")),
@@ -148,8 +149,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       shiny::selectInput(
                         ns("Graf_CompararEstado"),
                         "Estado de compara\u00e7\u00e3o",
-                        choices = estados,
-                        selected = estados[1]
+                        choices = sort(unique(sivep$SG_UF_NOT)),
+                        selected = sort(unique(sivep$SG_UF_NOT))[1]
                       )),
                     shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoComparar")),
@@ -237,20 +238,18 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                                shiny::tabPanel(shiny::htmlOutput(ns('print58'))),
                                shiny::tabPanel(shiny::htmlOutput(ns('print59'))),
                                shiny::tabPanel(shiny::htmlOutput(ns('print60')))
-                                ))
-                          # ),
-                          # #TABELAS EXPLICATIVAS
-                          # shiny::tabPanel("Microdados",
-                          #           if(indicador == 'incon'){
-                          #             shinyWidgets::pickerInput(
-                          #               inputId = ns("Vars_microdados_incon"),
-                          #               label = "Variaveis",
-                          #               choices = sort(vars_incon),
-                          #               selected = vars_incon[1:3],
-                          #               options = list(`actions-box` = TRUE),
-                          #               multiple = T)
-                          #            },
-                          #        reactable::reactableOutput(ns("table_incom")))
+                                )),
+                          #TABELAS EXPLICATIVAS
+                          shiny::tabPanel("Microdados",
+                                          if(indicador == 'incon'){
+                                            shinyWidgets::pickerInput(
+                                              inputId = ns("var_extra"),
+                                              label = "Vari\u00e1veis para filtragem",
+                                              choices = Var_incon_relacao,
+                                              options = list(`actions-box` = TRUE),
+                                              multiple = T)
+                                          },
+                                 reactable::reactableOutput(ns("table_incom")))
                           )))))
 
     }
@@ -266,8 +265,13 @@ mod_SIVEP_server <- function(id, indicador){
     data_inicio <- shiny::reactive({
       var_value <- input$vars_select
       #BANCO DE DADO
-      dados <- sivep_dados[c(var_value,'muni_nm_clean','CLASSI_FIN','SG_UF_NOT','EVOLUCAO','ano')] %>%
-        dplyr::filter(as.integer(ano) >= input$filtro_tempo[1] & as.integer(ano) <= input$filtro_tempo[2]) %>%
+      if(indicador == 'incon'){
+        aux <- input$var_extra
+        var_value <- c(var_value,aux)
+      }
+
+      dados <- sivep[c(var_value,'MUNICIPIO','CLASSI_FIN','SG_UF_NOT','EVOLUCAO','ANO') %>% unique()] %>%
+        dplyr::filter(as.integer(ANO) >= input$filtro_tempo[1] & as.integer(ANO) <= input$filtro_tempo[2]) %>%
         dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG )
       #FILTRAR POR CASOS FINALIZADOS
       if("cf" %in% input$Exib_Finalizados){
@@ -288,8 +292,8 @@ mod_SIVEP_server <- function(id, indicador){
       dado <- data_inicio()
 
       # Filtra as observações pelos estados selecionados e obtém os municípios únicos
-      muni <- unique(dado$muni_nm_clean [dado$SG_UF_NOT == x])
-      muni_comp <- unique(dado$muni_nm_clean [dado$SG_UF_NOT == y])
+      muni <- unique(dado$MUNICIPIO [dado$SG_UF_NOT == x])
+      muni_comp <- unique(dado$MUNICIPIO [dado$SG_UF_NOT == y])
 
       # Ordena os municípios alfabeticamente
       muni <- sort(muni)
@@ -318,33 +322,34 @@ mod_SIVEP_server <- function(id, indicador){
       #FILTRO DE LOCALIDADE
       if(input$Graf_OpcaoLocalidade != 'br'){
         if(input$Graf_OpcaoLocalidade == 'est'){
-          dados <- dados[dados$SG_UF_NOT == input$Graf_Estado,]
+          dados1 <- dados[dados$SG_UF_NOT == input$Graf_Estado,]
           localidade <- input$Graf_Estado
         }else{
-          dados <- dados[dados$muni_nm_clean == input$Graf_muni,]
+          dados1 <- dados[dados$MUNICIPIO == input$Graf_muni,]
           localidade <-  input$Graf_muni
         }
       } else{
+        dados1 <- dados
         localidade <- 'BR'
       }
-      dados1 <- dados[,c(input$vars_select,'ano')]
+      dados1 <- dados1[,c(input$vars_select,'ANO')]
       # Criar um vetor com os nomes das colunas
       colunas <- colnames(dados1)
 
       # Criar um dataframe vazio para armazenar os resultados
-      resultados <- data.frame(Variavel = character(), Ano = integer(), "x1" = numeric(), "x2" = numeric(), Total = numeric(), stringsAsFactors = FALSE)
+      resultados <- data.frame(Variavel = character(), ANO = integer(), "x1" = numeric(), "x2" = numeric(), Total = numeric(), stringsAsFactors = FALSE)
 
-      # Iterar sobre as colunas e contar os valores em branco ou ignorados por ano
+      # Iterar sobre as colunas e contar os valores em branco ou ignorados por ANO
       for (coluna in colunas) {
-        for (ano in unique(dados1$ano)) {
-          cond1 <- sum(dados1[[coluna]][dados1$ano == ano] == x[1])
-          cond2 <- sum(dados1[[coluna]][dados1$ano == ano] == x[2])
-          total <- sum(dados1$ano == ano)
-          resultados <- rbind(resultados, data.frame(Variavel = coluna, Ano = ano, "x1" = cond1, "x2" = cond2, Total = total, stringsAsFactors = FALSE))
+        for (ANO in unique(dados1$ANO)) {
+          cond1 <- sum(dados1[[coluna]][dados1$ANO == ANO] == x[1])
+          cond2 <- sum(dados1[[coluna]][dados1$ANO == ANO] == x[2])
+          total <- sum(dados1$ANO == ANO)
+          resultados <- rbind(resultados, data.frame(Variavel = coluna, ANO = ANO, "x1" = cond1, "x2" = cond2, Total = total, stringsAsFactors = FALSE))
         }
       }
 
-      # Ordenar os resultados por ano e por variável
+      # Ordenar os resultados por ANO e por variável
       resultados <- resultados %>%
         dplyr::mutate(
           Localidade = localidade,
@@ -358,38 +363,38 @@ mod_SIVEP_server <- function(id, indicador){
           dados2 <- dados[dados2$SG_UF_NOT == input$Graf_CompararEstado,]
           localidade <- input$Graf_CompararEstado
         }else{
-          dados2 <- dados[dados2$muni_nm_clean == input$Graf_CompararMunicipio,]
+          dados2 <- dados2[dados2$MUNICIPIO == input$Graf_CompararMunicipio,]
           localidade <-  input$Graf_CompararMunicipio
         }
-        dados2 <- dados[,input$vars_select]
+        dados2 <- dados2[,c(input$vars_select,"ANO")]
         # Criar um vetor com os nomes das colunas
         colunas <- colnames(dados2 )
 
         # Criar um dataframe vazio para armazenar os resultados
-        resultados2 <- data.frame(Variavel = character(), Ano = integer(), "x1" = numeric(), "x2" = numeric(), Total = numeric(), stringsAsFactors = FALSE)
+        resultados2 <- data.frame(Variavel = character(), ANO = integer(), "x1" = numeric(), "x2" = numeric(), Total = numeric(), stringsAsFactors = FALSE)
 
-        # Iterar sobre as colunas e contar os valores em branco ou ignorados por ano
+        # Iterar sobre as colunas e contar os valores em branco ou ignorados por ANO
         for (coluna in colunas) {
-          for (ano in unique(dados2$ano)) {
-            cond1 <- sum(dados2[[coluna]][dados2$ano == ano] == x[1])
-            cond2 <- sum(dados2[[coluna]][dados2$ano == ano] == x[2])
-            total <- sum(dados2$ano == ano)
-            resultados2 <- rbind(resultados, data.frame(Variavel = coluna, Ano = ano, "x1" = cond1, "x2" = cond2, Total = total, stringsAsFactors = FALSE))
+          for (ANO in unique(dados2$ANO)) {
+            cond1 <- sum(dados2[[coluna]][dados2$ANO == ANO] == x[1])
+            cond2 <- sum(dados2[[coluna]][dados2$ANO == ANO] == x[2])
+            total <- sum(dados2$ANO == ANO)
+            resultados2 <- rbind(resultados2, data.frame(Variavel = coluna, ANO = ANO, "x1" = cond1, "x2" = cond2, Total = total, stringsAsFactors = FALSE))
           }
         }
 
-        # Ordenar os resultados por ano e por variável
+        # Ordenar os resultados por ANO e por variável
         resultados2 <- resultados2 %>%
           dplyr::mutate(
             Localidade = localidade,
-            compara = 1
+            compara = 0
           )
         colnames(resultados2)[c(3,4)] <- c(paste0('Dados ',x[1]),paste0('Dados ',x[2]))
 
-        resultados <- rbind(resultados,resultado2)
+        resultados <- rbind(resultados,resultados2)
       }
-      resultados <- resultados[resultados$Variavel != 'ano',]
-      resultados$Ano <- resultados$Ano %>% as.numeric()
+      resultados <- resultados[resultados$Variavel != 'ANO',]
+      resultados$ANO <- resultados$ANO %>% as.factor()
 
       if((indicador %in% c('implau','incom')) & (length(input$Exib_Dados2) != 2)){
         y <- x[!(x %in% input$Exib_Dados2)]
@@ -419,10 +424,13 @@ mod_SIVEP_server <- function(id, indicador){
         }
       }
      dados <- filtragem()
-     h_plot <- length(input$vars_select) * 150
-
+     if(indicador == 'incon'){
+       h_plot <- length(input$vars_select) * 245
+     }else{
+     h_plot <- length(input$vars_select) * 200}
+    dados$value <- dados$value %>% round(2)
     g <- ggplot2::ggplot(data = dados,
-                           ggplot2::aes(y = value, x = as.factor(Ano), fill = Localidade)) +
+                           ggplot2::aes(y = value, x = ANO, fill = Localidade)) +
         ggplot2::geom_bar(position = "dodge", stat = "identity") +
         ggplot2::facet_grid(rows = ggplot2::vars(dados$Variavel))
 
@@ -464,7 +472,7 @@ mod_SIVEP_server <- function(id, indicador){
               # filtra a tabela de dados
               dados <- filtragem()
               dados1 <- dados[dados$Variavel == vars_reais[my_i] & dados$compara == 1,] %>%
-                dplyr::select(-c(value,Ano,Localidade,Variavel,compara)) %>%
+                dplyr::select(-c(value,ANO,Localidade,Variavel,compara)) %>%
                 dplyr::summarise_at(dplyr::vars(1:3), sum)
               dados1 <- dados1 %>%
                 dplyr::mutate(
@@ -496,7 +504,7 @@ mod_SIVEP_server <- function(id, indicador){
                 # filtra a tabela de dados
                 dados <- filtragem()
                 dados1 <- dados[dados$Variavel == vars_reais[my_i] & dados$compara == 1,] %>%
-                  dplyr::select(-c(value,Ano,Localidade,Variavel,compara,`Dados nada`)) %>%
+                  dplyr::select(-c(value,ANO,Localidade,Variavel,compara,`Dados nada`)) %>%
                   dplyr::summarise_at(dplyr::vars(1:2), sum)
                 dados1 <- dados1 %>%
                   dplyr::mutate(
@@ -515,7 +523,86 @@ mod_SIVEP_server <- function(id, indicador){
             })})
 
     }
-  }
+        }
+    output$table_incom  <- reactable::renderReactable({
+      if(indicador == 'incom'){
+        X <- c('Em Branco','Ignorado')
+        regra <- regras_sivep[regras_sivep$Indicador == 'Incompletude',]
+      }else{
+        if(indicador == 'implau'){
+          regra <- regras_sivep[regras_sivep$Indicador == 'Implausiblidade',]
+          X <- c('Impossivel','Improvavel')
+
+        }else{
+          regra <- regras_sivep[regras_sivep$Indicador == 'Inconsistência',]
+          X <- c('Inconsistencia','NADA')
+        }
+      }
+
+      variaveis_tab <- input$vars_select
+      variaveis_tab <- sort(variaveis_tab)
+
+      Dados_TabelaImplau <- data_inicio()
+      aux <- data.frame(x1 =  Dados_TabelaImplau[,variaveis_tab] %>%
+                          lapply(function(x) ifelse(x == X[1], TRUE, FALSE)),
+                        x2 = Dados_TabelaImplau[,variaveis_tab] %>%
+                          lapply(function(x) ifelse(x == X[2], TRUE, FALSE)))
+
+      colnames(aux) <- gsub(colnames(aux),pattern = 'x1.',replacement = paste0(X[1],'xx_'))
+      colnames(aux) <- gsub(colnames(aux),pattern = 'x2.',replacement = paste0(X[2],'xx_'))
+      Dados_TabelaImplau <- cbind(Dados_TabelaImplau,aux)
+      Dados_TabelaImplau <-
+        Dados_TabelaImplau %>%
+        tidyr::pivot_longer(cols = all_of(colnames(aux)),
+                            names_to = "variable",
+                            values_to = "value")
+      Dados_TabelaImplau <- Dados_TabelaImplau %>% dplyr::filter(value)
+
+      Dados_TabelaImplau <- Dados_TabelaImplau %>%
+        dplyr::mutate(erros = dplyr::case_when(
+          stringr::str_detect(variable, X[1]) ~ X[1],
+          stringr::str_detect(variable, X[2]) ~ X[2],
+          TRUE ~ as.character(variable)
+        ),
+        Variavel = purrr::map_chr(variable, function(x) stringr::str_split(x, 'xx_')[[1]][2])
+        ) %>% dplyr::mutate(
+          Variavel = gsub(Variavel,pattern = '.e.',replacement =' e ')
+        ) %>%
+        dplyr::left_join(regra %>% dplyr::select(Variavel,Regra) , by = 'Variavel')
+      if(indicador != 'incon'){
+        Dados_TabelaImplau <-  Dados_TabelaImplau  %>%
+          dplyr::filter(erros %in% input$Exib_Dados2)
+      }
+
+
+      columns <- unique(c("SG_UF_NOT", "MUNICIPIO",variaveis_tab, "Regra"))
+      Dados_TabelaImplau <- Dados_TabelaImplau %>%
+        dplyr::filter(Variavel %in% columns) %>%
+        dplyr::arrange(SG_UF_NOT )
+      if(indicador == 'incon'){
+        aux <- input$var_extra
+        Dados_TabelaImplau <- Dados_TabelaImplau[, c("SG_UF_NOT", "MUNICIPIO",aux,"Regra") %>% unique()]
+      }else{
+        Dados_TabelaImplau <- Dados_TabelaImplau[, columns]
+      }
+      reactable::reactable(Dados_TabelaImplau, groupBy = c("Regra", "SG_UF_NOT"),
+                           filterable = TRUE,
+                           showSortable = TRUE,
+                           searchable = TRUE,
+                           showPageSizeOptions = TRUE,
+                           pageSizeOptions = c(10, 15, 27),
+                           defaultPageSize = 27,
+                           striped = TRUE,
+                           highlight = TRUE,
+                           theme = reactable::reactableTheme(
+                             color = "#000000",
+                             borderColor = "#dfe2e5",
+                             stripedColor = "#f6f8fa",
+                             highlightColor = "#f0f5f9",
+                             cellPadding = "8px 12px",
+                             style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+                             searchInputStyle = list(width = "100%")))
+    })
 })}
 
 ## To be copied in the UI

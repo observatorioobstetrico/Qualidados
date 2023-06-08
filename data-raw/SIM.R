@@ -4,7 +4,6 @@ library(readr)
 library(dplyr)
 library(readxl)
 SIM_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIM")
-usethis::use_data(SIM_dic,overwrite = T)
 ############## INCOMPLETUDE ################################################
 
 regras_sim_incom <- c(fromJSON(file = 'data1/SIM_Incompletude_Regras.json'))
@@ -182,5 +181,26 @@ usethis::use_data(vars_incon_sim, overwrite = TRUE)
 regras_sim_implau$Indicador <- 'Implausibilidade'
 regras_sim_incom$Indicador <- 'Incompletude'
 regras_sim_incon$Indicador <- 'Inconsistência'
+
+
+
+for(i in seq_along(SIM_dic$`Codigo SIM`)) {
+  for(j in 1:ncol(regras_sim_implau)){
+    regras_sim_implau[,j] <- gsub(SIM_dic$`Codigo SIM`[i],
+                                  SIM_dic$`Codigo Qualidados`[i],
+                             regras_sim_implau[,j])
+  }
+}
+regras_sim_implau <- regras_sim_implau[regras_sim_implau$Variável %in% vars_implau_sim,]
+for(i in seq_along(SIM_dic$`Codigo SIM`)) {
+  for(j in 1:ncol(regras_sim_incom)){
+    regras_sim_incom[,j] <- gsub(SIM_dic$`Codigo SIM`[i],
+                                  SIM_dic$`Codigo Qualidados`[i],
+                                 regras_sim_incom[,j])
+  }
+}
+regras_sim_incom <- regras_sim_incom[regras_sim_incom$Variável %in% vars_incom_sim,]
 regras_sim <- rbind(regras_sim_implau,regras_sim_incom,regras_sim_incon)
 usethis::use_data(regras_sim, overwrite = TRUE)
+SIM_dic<-SIM_dic[SIM_dic$`Codigo Qualidados` %in% c(vars_implau_sim,vars_incom_sim,vars_incon_sim),]
+usethis::use_data(SIM_dic,overwrite = T)

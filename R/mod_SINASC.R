@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= FALSE){
+mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,selecionadas,estados,SIM= FALSE){
   ns <- NS(id)
     shinyjs::useShinyjs()
     shinydashboard::tabItem(tabName = tabname,
@@ -35,7 +35,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= F
                             inputId = ns("vars_select"),
                             label = "Variaveis",
                             choices = vars,
-                            selected = vars[c(1,2)],
+                            selected =selecionadas,
                             options = list(`actions-box` = TRUE),
                             multiple = T),
                           #TEMPO
@@ -61,7 +61,8 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= F
                             shiny::selectInput(
                               ns("filtro_loc_est"),
                               "Selecione o estado",
-                              choices = 'AC')),
+                              choices = estados,
+                              selected = estados[1])),
                           #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
                           shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_loc")),
@@ -89,7 +90,8 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,estados,SIM= F
                             shiny::selectInput(
                               ns("compara_est"),
                               "Estado de compara\u00e7\u00e3o",
-                              choices = 'AC'
+                              choices = estados,
+                              selected = estados[1]
                             )),
                           shiny::conditionalPanel(
                             condition = sprintf("input['%s'] == 'muni'",ns("filtro_compara")),
@@ -173,11 +175,12 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 #BANCO DE DADOS
-  dado_aba <- escolher_banco_dados(SIM, indicador)
+  dado_aba <- escolher_banco_dados(SIM , indicador)
 
 #FILTRO DE TEMPO E VARIAVEL PARA PODER ATUALIZAR O FILTRO DE ESTADO
   data_inicio <- shiny::reactive({
       var_value <- input$vars_select
+
       if(SIM == F & indicador =='incon')var_value <- names(var_incon_sinasc[var_incon_sinasc == var_value])
       # Filtrando a variável e período de tempo
       dados <- dado_aba %>%
@@ -230,12 +233,11 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
 
       # Adicionando dados para comparação
       if(input$filtro_compara != 'br'){
-        dados_compara <- NULL
-
         if(input$filtro_compara == 'muni'){
           dados_compara <- dado[dado$CODMUNNASC == input$compara_muni,]
           dados_compara$LOCALIDADE <- input$compara_muni
         } else {
+
           dados_compara <- dado[dado$ESTADO == input$compara_est,]
           dados_compara$LOCALIDADE <- input$compara_est
         }
@@ -245,7 +247,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
 
         dados_filtrados <- rbind(dados_compara, dados_filtrados)
       }
-
+      dados_filtrados$VARIAVEL %>% unique()
       dados_filtrados
     })
 
@@ -265,7 +267,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
     }
     if(indicador == 'implau') {
       dados$value <- round((dados$IMPLAUSIVEIS/dados$TOTAIS)*100,2)
-      leg <- 'Impalusibilidade'
+      leg <- 'Implausibilidade'
     }
     if(indicador == 'incon') {
       dados$value <- round((dados$INCONSISTENTES/dados$TOTAIS)*100,2)

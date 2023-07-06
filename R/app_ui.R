@@ -21,6 +21,10 @@ app_ui <- function(request) {
                     tabName = 'main',
                     icon = icon('house'),
                     startExpanded = TRUE),
+                  shinydashboard::menuItem('Documentação',
+                                           tabName = 'documentacao',
+                                           icon = icon('book'),
+                                           startExpanded = TRUE),
                   shinydashboard::menuItem(
                     "SIVEP-GRIPE" ,
                     tabname = "sivep",
@@ -140,7 +144,14 @@ app_ui <- function(request) {
                                       fluidRow(
                                       shinydashboard::box(width = 12,
                                       shiny::includeMarkdown('inicio.md')
-                                      )))
+                                      ))),
+
+              shinydashboard::tabItem(tabName = 'documentacao',
+                                      shinyjs::useShinyjs(),
+                                      fluidRow(
+                                        shinydashboard::box(width = 12,
+                                                            shiny::includeMarkdown('inicio.md')
+                                        )))
             )
                   )
                 )

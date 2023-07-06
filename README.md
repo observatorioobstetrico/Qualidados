@@ -3,72 +3,87 @@ Qualidados com Modulos e Golem para melhor otimização do código.
 Segue o modelo de armazenamento do conjunto de arquivos.
 ## O Painel
 O objetivo do painel é apresentar qualidade dos dados para SIVEP-Gripe, SINASC e SIM, onde apresentamos os indicadores de qualidade: incompletude, inconsistência e implausibilidade, de maneira intuitiva e simples ao usuário. Com botões de ajuda e informações a respeito de todos os conjuntos de dados e variáveis disponíveis. O projeto se encontra atualmente em construção, mas está sendo constantemente atualizado via plataforma atual.
-## Estrutura do repositório:
-    
-    
-    ├─Repositório
-      ├─── R 
-         └── app_config.R
-         └── app_server.R
-         └── app_UI.R
-         └── mod_SIVEP_incompletude.R
-         └── mod_SIVEP_fct_importacao.R
-         └── run_app.R
-         └── utils_helpers.R
-         └── fct_informacoes.R
-      ├─── dev
-      ├─── inst
-      ├─── man 
-      ├─── data1
 
-## \R
-Aqui estão presentes todos os arquivos .R alocados com as funções necessárias para funcionamento do ShinyApp. Subdividindo para melhor eficiência de trabalho em Módulos que fazem chamadas a submódulos. Além dos próprios arquivos principais referentes ao server e UI.
-### mod_SIVEP_incompletude.R
-Aqui está presente o modulo que representa a aba de incompletude bem como uma replicação para de implausibilidade, usando o argumento **indicador** para trocar de um indicador para outro. Onde no próprio código fará as alterações necessárias de um para outro.
-#### Parte de incompletude:
--
--
--
--
+<p align="center">
+<img src="inst/app/www/logopreto.png" width = "200"/>
+</p>
 
-#### Parte de implausibilidade:
--
--
--
--
-#### Parte de inconsistência:
--
--
--
--
--
-### mod_SIVEP_fct_importação.R
-Utilizado de forma auxiliar para importação dos bancos de dados necessários, bem como as alterações necessárias em cada um deles e variáveis auxiliáres.
-### utils_helpers.R
-Funções menores auxiliáres utilizadas nos módulos
-### app_server.R
-Server principal onde são feitas as linkagens com os módulos
-### app_ui.R
-Bem como o server.R, esse arquivo tem como função a linkagem da parte do usuário dos módulos bem como padronização do _dashboard_ ao que se refere a _header_ e _sidebar_.
-### fct_informacoes
-Contem informacoes importantes para a filtragem e análise, como nomes disponíveis para as variáveis em cada tipo de indicador, bem como nome dos estados disponiveis no banco de dado. Alem da devida descrição dos indicadores
-## \dev
-## \inst
-## \man
-## \data1
-Armazenamento dos bancos de dados utilizados na produção do _dashboard_ . Usando arquivos .json para descrição das variáveis em estudo para cada um dos indicadores
 
-# Ajustes a serem feitos e discutidos
+# **Qualidados**
 
-## mod_SIVEP_incompletude
+O Qualidados é um painel de visualização dos indicadores de qualidade do SINASC (Sistema de Informações sobre Nascidos Vivos), SIM (Sistema de Informação sobre Mortalidade) e SIVEP-Gripe (Sistema de Vigilância Epidemiológica da Gripe). Para esses dois últimos, são selecionados apenas os casos de gestantes e puérperas. 
 
-- Necessário alteração referente a nome de variáveis para generalização já que agora está sendo utilizado apenas 1 mod para todo SIVEP-Gripe
-- Os filtros para casos finalizados na implausibilidade e na Inconsistencia (pode tirar) OK
-- Discutir a respeito das legendas na aba de inconsistencia (tirar o filtro dado plausivel, e o filtro completo para aba tabelas de implausibilidade) OK
-- Arrumar um jeito de ajustar o tamanho dinamico dos graficos(talvez deixar independente ou usar outra funcao ao inves do facet_grid())
-- arrumar um reactive table para os graficos de forma a consumir menos memoria
-- construção da parte de dicionario de dados com base em um .MD
-- Filtro para exibir dados em graficos OK
-- Verificar banco de dados de inconsistencias, muitas variaveis sem inconsistencia OK
-- Ver como vai ficar a parte de microdados OK
-(colocar micro dados com um filtro de variaveis como coluna e inconsistencia como linha) OK
+Os indicadores são: **incompletude** (porcentagem de observações faltantes, seja porque não foram preenchidas [“dados em branco”] ou porque a resposta era desconhecida [“dados ignorados”]), **implausibilidade** (porcentagem de observações que são improváveis e/ou dificilmente possam ser consideradas aceitáveis dadas as características de sua natureza) e **inconsistência** (porcentagem de informações que parecem ilógicas e/ou incompatíveis a partir da análise da combinação dos dados informados em dois ou mais campos do formulário).
+
+Para cada base de dados, é apresentada uma aba de cada indicador no formato visual de gráficos e tabelas, bem como o dicionário das variáveis e a regra de cálculo para cada um dos indicadores.
+
+Clique no botão de **Ajuda** na aba a esquerda para maiores informações sobre este painel.
+
+# **O Observatório Obstétrico Brasileiro (OOBr)**
+
+Tem como objetivo disponibilizar plataformas interativas de monitoramento e análises de dados públicos cientificamente embasadas e disseminar informações de qualidade e relevantes acerca da área da saúde materno-infantil. 
+
+Conta com **pesquisadores** da Universidade Federal do Espírito Santo (UFES), da Universidade de São Paulo (USP) e da Faculdade de Engenharia de Sorocaba (Facens), com a **parceria** da ODD Studio e da Plataforma de Ciência de Dados Aplicada à Saúde (PCDaS) e com o **financiamento** da Fundação Bill e Melinda Gates, CNPq, DECIT e FAPES.
+
+# **Os dados**
+
+Os dados foram obtidos pelo DATASUS do Ministério da Saúde, consistindo em três bancos de dados aqui utilizados, sendo esses dados previamente tratados pela PCDaS com base no fluxo ETL (Extract, Transform e Load). São os três bancos:
+
+ - O Sistema de Informação da Vigilância Epidemiológica da Gripe (SIVEP-Gripe), sistema gerido pelo Ministério da Saúde/Secretaria da Saúde, em conjunto com as Secretarias Estaduais e Municipais de Saúde. O SIVEP-Gripe foi implantado desde o ano de 2000 para monitoramento do vírus influenza no país, a partir de uma rede de vigilância sentinela da síndrome gripal (SG);
+ 
+ - O Sistema de Informação sobre mortalidade (SIM), consistindo em um grande banco anual composto por todos os registros das declarações de óbitos a partir do ano de 1996;
+
+ - O Sistema de Informações sobre Nascidos Vivos (SINASC) foi implantado oficialmente a partir de 1990, com o objetivo de coletar dados sobre os nascimentos ocorridos em todo o território nacional e fornecer informações sobre natalidade para todos os níveis do Sistema de Saúde.
+
+
+# **Como citar o OOBr Qualidados:**
+
+Observatório Obstétrico Brasileiro. **OOBr Qualidados**: indicadores de qualidade dos dados, 2023. Disponível em https://observatorioobstetrico.shinyapps.io/oobr_qualidados2. DOI: https://doi.org/10.7303/syn51216656
+
+# **Contato**
+
+Para maiores informações, perguntas, sugestões ou colaborações científicas entre em contato pelo nosso e-mail: observatorioobstetricobr@gmail.com
+
+<br><br>
+<br><br>
+
+<h2  style="text-align: center;"> <b> Realização </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+<p align="center">
+    <img src="inst/app/www/realizacao/logo_oobr.png" width = '170px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/realizacao/logo_daslab.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_ufes.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_medicina_usp.png" width = '170px'/>
+    <img src="inst/app/www/realizacao/logo_facens.png" width = '170px'/>
+</p>  
+  </div>
+</div>
+ 
+<br><br>
+<br><br>
+<h2  style="text-align: center;"> <b> Financiadores </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+  <p align="center">
+    <img src="inst/app/www/financiadores/logo_cnpq.png" width = '170px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/financiadores/logo_fapes.png" width = '450px'/>
+    <img src="inst/app/www/financiadores/logo_ms.png" width = '450px'/>
+  </p> 
+  </div>
+</div>  
+<br><br>
+<br><br>
+
+<h2  style="text-align: center;"> <b> Apoio </b> </h2>
+<div class = 'outer'>
+  <div class = 'inner'>
+  <p align="center">
+    <img src="inst/app/www/apoio/logo_odd.png" width = '150px', style = 'margin-right:20px'/>
+    <img src="inst/app/www/apoio/logo_pcdas.png" width = '150px'/>
+    <img src="inst/app/www/apoio/acontece.png" width = '150px'/>
+  </p>  
+  </div>
+</div>
+
+  

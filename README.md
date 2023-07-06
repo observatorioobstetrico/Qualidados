@@ -1,8 +1,6 @@
 # Qualidados em Modulos
 Qualidados com Modulos e Golem para melhor otimização do código.
-Segue o modelo de armazenamento do conjunto de arquivos.
-## O Painel
-O objetivo do painel é apresentar qualidade dos dados para SIVEP-Gripe, SINASC e SIM, onde apresentamos os indicadores de qualidade: incompletude, inconsistência e implausibilidade, de maneira intuitiva e simples ao usuário. Com botões de ajuda e informações a respeito de todos os conjuntos de dados e variáveis disponíveis. O projeto se encontra atualmente em construção, mas está sendo constantemente atualizado via plataforma atual.
+
 
 <p align="center">
 <img src="inst/app/www/logopreto.png" width = "200"/>

@@ -146,12 +146,79 @@ app_ui <- function(request) {
                                       shiny::includeMarkdown('inicio.md')
                                       ))),
 
-              shinydashboard::tabItem(tabName = 'documentacao',
-                                      shinyjs::useShinyjs(),
-                                      fluidRow(
-                                        shinydashboard::box(width = 12,
-                                                            shiny::includeMarkdown('inicio.md')
-                                        )))
+              shinydashboard:: tabItem(
+                tabName = "documentacao",
+                h1(strong("Fontes")),
+                h2(strong(
+                  "Dados SIVEP-GRIPE"
+                )),
+                (
+                  "Utilizamos os registros das notificações de Síndrome Respiratória Aguda Grave (SRAG) na base SIVEP Gripe (Sistema de Informação da Vigilância Epidemiológica da Gripe).
+       "
+                ),
+                br(),
+                br(),
+                (
+                  "A atualização desta base é disponibilizada pelo Ministério da Saúde pelo portal"
+                ),
+                a(" Open Data SUS.", href = "https://opendatasus.saude.gov.br/organization/ministerio-da-saude"),
+                br(),
+                br(),
+                (
+                  "A última atualização foi realizada em 05/06/2023, aqui constam as bases do SIVEP-Gripe de 2009 à 2020."
+                ),
+                br(),
+                br(),
+                p(
+                  "São disponibilizados aqui os indicadores de qualidade para os casos definidos como gestante (qualquer trimestre gestacional ou
+        idade gestacional ignorada) ou puérpera."
+                ),
+                p(
+                  "Para a identificação de gestante, há a variável CS_GESTANT. Essa variável assume os valores: 1-1º Trimestre; 2-2º Trimestre; 3-3º Trimestre; 4-Idade Gestacional Ignorada; 5-Não; 6-Não se aplica; 9-Ignorado.
+        Consideramos aqui como gestante se CS_GESTANT for 1 ou 2 ou 3 ou 4."
+                ),
+                p(
+                  "Para a identificação de puérpera, há a variável PUERPERA, com 1-sim e 2-não.
+        Consideramos como puérpera os casos que PUERPERA=1 e CS_GESTANT=5 ou PUERPERA=1 e CS_GESTANT=9."
+                ),
+                br(),
+                br(),
+                h2(strong('Sistema de Informações sobre Nascidos Vivos (SINASC).')),
+                (
+                  'O SINASC é gerenciado pelo Ministério da Saúde em parceria com as Secretarias Estaduais e Municipais de Saúde. Seu objetivo principal é subsidiar a formulação, implementação e avaliação de políticas públicas relacionadas à saúde materno-infantil.'
+                ),
+                br(),
+                br(),
+                ('São disponibilizados aqui os indicadores de qualidade para os casos definidos como gestante (qualquer trimestre gestacional ou
+        idade gestacional ignorada) ou puérpera.'),
+                br(),
+                br(),
+                ('Os dados são obtidos via API da PCDas, em https://pcdas.icict.fiocruz.br/, uma plataforma de ciência de dados aplicada a saúde proporcionada pela fundação Fiocruz'),
+                br(),
+                br(),
+                ('Os dados aqui apresentados possuem atualização em 05/06/2023 para dados do SINASC de 2009 à 2021.'),
+                br(),
+                br(),
+                h2(strong('Sistema de Informação sobre Mortalidade (SIM) .')),
+                (
+                  'O Sistema de Informação Sobre Mortalidade (SIM), desenvolvido pelo Ministério da Saúde em 1975, é resultado da integração de mais de quarenta modelos de instrumentos utilizados ao longo dos anos para coletar dados sobre mortalidade no país.'
+                ),
+                br(),
+                br(),
+                ('São disponibilizados aqui os indicadores de qualidade para os casos definidos como gestante (qualquer trimestre gestacional ou
+        idade gestacional ignorada) ou puérpera.'),
+                br(),
+                br(),
+                ('Os dados são obtidos via API da PCDas, em https://pcdas.icict.fiocruz.br/, uma plataforma de ciência de dados aplicada a saúde proporcionada pela fundação Fiocruz'),
+                br(),
+                br(),
+                ('Os dados aqui apresentados possuem atualização em 05/06/2023 para dados do SIM de 2009 à 2021.'),
+                br(),
+                br(),
+                actionButton("generate", "Gerar pdf da documentação"),
+                uiOutput("pdfview"),
+                br()
+              )
             )
                   )
                 )

@@ -24,5 +24,10 @@ app_server <- function(input, output, session) {
     )
     )
   })
+  observeEvent(input$generate, {
+    output$pdfview <- renderUI({
+      tags$iframe(style = "height:600px; width:100%", src = "www/doc_qualidados.pdf")
+    })
+  })
 }
 

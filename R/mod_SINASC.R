@@ -254,7 +254,7 @@ mod_SINASC_server <- function(id,indicador,SIM = FALSE){
 
   output$Grafico <- plotly::renderPlotly({
     dados <- data_filtrada()
-
+    dados$ANO <- dados$ANO %>%  as.factor()
     # Definindo a altura do gráfico
     h_plot <- input$vars_select %>% unique() %>% length()
     h_plot <- h_plot * 200

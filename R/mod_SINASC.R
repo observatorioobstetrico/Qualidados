@@ -43,7 +43,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,selecionadas,e
                             ns('filtro_tempo'),
                             'Selecione a janela de tempo:',
                             min = 1996,
-                            max = 2020,
+                            max = 2022,
                             value = c(2000,2018),
                             round = T,
                             sep=''),

@@ -8,7 +8,8 @@ SIM_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIM")
 
 regras_sim_incom <- c(fromJSON(file = 'data1/SIM_Incompletude_Regras.json'))
 SIM_Incom <- read_csv("data1/SIM_Incompletude_v2.csv",show_col_types = FALSE )
-
+S2022 <- read_csv("data1/SIM_Incompletude_2022.csv",show_col_types = FALSE )
+SIM_Incom <- rbind(SIM_Incom,S2022)
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 ####################################################################################
 aux_muni2 <- abjData::muni %>%
@@ -91,6 +92,8 @@ usethis::use_data(vars_incom_sim, overwrite = TRUE)
 
 regras_sim_implau <- c(fromJSON(file = 'data1/SIM_Implausibilidade_Regras.json'))
 SIM_Implau <- read_csv("data1/SIM_Implausibilidade_v2.csv",show_col_types = FALSE )
+S2022 <- read_csv("data1/SIM_Implausibilidade_2022.csv",show_col_types = FALSE )
+SIM_Implau <- rbind(SIM_Implau,S2022)
 SIM_Implau$VARIAVEL <- SIM_Implau$VARIAVEL |> gsub(pattern = '_IMPLAUSIVEL',replacement = '')
 
 
@@ -138,6 +141,8 @@ usethis::use_data(vars_implau_sim, overwrite = TRUE)
 ################################ Inconsistencia
 regras_sim_incon <- c(fromJSON(file = 'data1/SIM_Inconsistencia_Regras.json'))
 SIM_Incon <- read_csv("data1/SIM_Inconsistencia_v2.csv",show_col_types = FALSE )
+S2022 <- read_csv("data1/SIM_Inconsistencia_2022.csv",show_col_types = FALSE )
+SIM_Incon <- rbind(SIM_Incon,S2022)
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_INCONSISTENTES',replacement = '')
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_',replacement = ' ')
 

@@ -9,7 +9,9 @@ usethis::use_data(SINASC_dic,overwrite = T)
 
 regras_sinasc_incom <- c(fromJSON(file = 'data1/SINASC_Incompletude_Regras.json'))
 Sinasc_incom <- read_csv("data1/SINASC_Incompletude_v2.csv",show_col_types = FALSE )
-
+S2021 <- read_csv("data1/SINASC_INCOMPLETUDE_2021.csv",show_col_types = FALSE )
+s2022 <- read_csv("data1/SINASC_2022_incompletude.csv",show_col_types = FALSE )
+Sinasc_incom <- rbind(Sinasc_incom,S2021,s2022)
 #FILTRAR APENAS PARA VARIAVEIS PRESENTES NO DICIONARIO
 vars <- SINASC_dic$`Codigo SINASC` %>% unique()
 Sinasc_incom$VARIAVEL %>% unique() %>% setdiff(vars)
@@ -68,6 +70,12 @@ vars_incom_sinasc <- unique(Sinasc_incom$VARIAVEL)
 
 regras_sinasc_implau <- c(fromJSON(file = 'data1/SINASC_Implausibilidade_Regras.json'))
 Sinasc_implau <- read_csv('data1/SINASC_Implausibilidade_v2.csv',show_col_types = FALSE)
+S2021 <- read_csv("data1/SINASC_Implausibilidade_2021.csv",show_col_types = FALSE )
+S2022 <- read_csv("data1/SINASC_Implausibilidade_2022.csv",show_col_types = FALSE )
+S2021$ESTADO <- NA
+S2022$ESTADO <- NA
+
+Sinasc_implau <- rbind(Sinasc_implau,S2021,S2022)
 Sinasc_implau$VARIAVEL <- Sinasc_implau$VARIAVEL |>
   gsub(pattern = "_IMPLAUSIVEL", replacement = '')
 Sinasc_implau$VARIAVEL %>% unique()
@@ -118,6 +126,10 @@ vars_implau_sinasc <- unique(Sinasc_implau$VARIAVEL)
 ###################################### INCONSISTÊNCIA ###########################
 
 Sinasc_incon<- read_csv("data1/SINASC_Inconsistencia_v2.csv")
+S2021 <- read_csv("data1/SINASC_Inconsistencia_2021.csv",show_col_types = FALSE )
+
+S2022 <- read_csv("data1/SINASC_Inconsistencia_2022.csv",show_col_types = FALSE )
+Sinasc_incon <- rbind(Sinasc_incon,S2021,S2022)
 regras_sinasc_incon <-  c(fromJSON(file = 'data1/SINASC_Inconsistencias_Regras.json'))
 var_incon_sinasc <-Sinasc_incon$VARIAVEL |>
   stringr::str_sub(1,nchar(Sinasc_incon$VARIAVEL)-15) |>

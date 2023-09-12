@@ -1012,7 +1012,7 @@ regras_gerais = { 'LOCNASC':[1,2,3,4,5,9],
                   'ESCMAEAGR1': list(range(1,13)), # 1 a 12,
                 }
 
-# incompletude ###################################################
+# implausibilidade ###################################################
 for f in glob.glob('SINASC_dataset/*.csv'):
     
     df = pd.read_csv(f)

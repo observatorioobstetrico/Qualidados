@@ -7,9 +7,13 @@ SIM_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIM")
 ############## INCOMPLETUDE ################################################
 
 regras_sim_incom <- c(fromJSON(file = 'data1/SIM_Incompletude_Regras.json'))
-SIM_Incom <- read_csv("data1/SIM_Incompletude_v2.csv",show_col_types = FALSE )
-S2022 <- read_csv("data1/SIM_Incompletude_2022.csv",show_col_types = FALSE )
-SIM_Incom <- rbind(SIM_Incom,S2022)
+SIM_Incom <- read_csv("data1/SIM_Incompletude_1996_2020.csv",show_col_types = FALSE )
+S2021 <- read_csv("data1/SIM_Incompletude_2021_2022.csv",show_col_types = FALSE )
+SIM_Incom <- rbind(SIM_Incom,S2021)
+# S2021$VARIAVEL %>% unique()
+# SIM_Incom$VARIAVEL %>%  unique()
+# setdiff(SIM_Incom$VARIAVEL, S2021$VARIAVEL)  %in% SIM_dic$`Codigo SIM`
+
 #ACRESCENTAR A COLUNA DE MUNICIPIOS E MUNICIPIOS
 ####################################################################################
 aux_muni2 <- abjData::muni %>%
@@ -84,15 +88,16 @@ df_aux |> row.names() <- NULL
 df_aux$`row.names(df_aux)` <- df_aux$`row.names(df_aux)` |> gsub(pattern = 'IGNORADOS_', replacement = '')
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_incom <- df_aux
-
-usethis::use_data(SIM_Incom, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Incompletude_1996_2022 <- SIM_Incom
+usethis::use_data(dados_oobr_qualidados_SIM_Incompletude_1996_2022, overwrite = TRUE)
 usethis::use_data(vars_incom_sim, overwrite = TRUE)
 
 ############# IMPLAUSIBILIDADE ####################################################
 
 regras_sim_implau <- c(fromJSON(file = 'data1/SIM_Implausibilidade_Regras.json'))
-SIM_Implau <- read_csv("data1/SIM_Implausibilidade_v2.csv",show_col_types = FALSE )
-S2022 <- read_csv("data1/SIM_Implausibilidade_2022.csv",show_col_types = FALSE )
+SIM_Implau <- read_csv("data1/SIM_Implausibilidade_1996-2020.csv",show_col_types = FALSE )
+S2022 <- read_csv("data1/SIM_Implausibilidade_2021_2022.csv",show_col_types = FALSE )
+
 SIM_Implau <- rbind(SIM_Implau,S2022)
 SIM_Implau$VARIAVEL <- SIM_Implau$VARIAVEL |> gsub(pattern = '_IMPLAUSIVEL',replacement = '')
 
@@ -134,14 +139,14 @@ df_aux |> row.names() <- NULL
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_implau <- df_aux
 
-
-usethis::use_data(SIM_Implau, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Implausibilidade_1996_2022 <- SIM_Implau
+usethis::use_data(dados_oobr_qualidados_SIM_Implausibilidade_1996_2022, overwrite = TRUE)
 usethis::use_data(vars_implau_sim, overwrite = TRUE)
 
 ################################ Inconsistencia
 regras_sim_incon <- c(fromJSON(file = 'data1/SIM_Inconsistencia_Regras.json'))
-SIM_Incon <- read_csv("data1/SIM_Inconsistencia_v2.csv",show_col_types = FALSE )
-S2022 <- read_csv("data1/SIM_Inconsistencia_2022.csv",show_col_types = FALSE )
+SIM_Incon <- read_csv("data1/SIM_Inconsistencia_1996-2020.csv",show_col_types = FALSE )
+S2022 <- read_csv("data1/SIM_Inconsistencia_2021_2022.csv",show_col_types = FALSE )
 SIM_Incon <- rbind(SIM_Incon,S2022)
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_INCONSISTENTES',replacement = '')
 SIM_Incon$VARIAVEL <- SIM_Incon$VARIAVEL |> gsub(pattern = '_',replacement = ' ')
@@ -178,8 +183,8 @@ df_aux |> row.names() <- NULL
 df_aux$`row.names(df_aux)` <- df_aux$`row.names(df_aux)` |> gsub(pattern = '_', replacement = ' ')
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_incon <- df_aux
-
-usethis::use_data(SIM_Incon, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Inconsistencia_1996_2022 <- SIM_Incon
+usethis::use_data(dados_oobr_qualidados_SIM_Inconsistencia_1996_2022, overwrite = TRUE)
 usethis::use_data(vars_incon_sim, overwrite = TRUE)
 
 ########### REGRAS ##############################

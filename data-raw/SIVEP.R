@@ -6,8 +6,12 @@ library(readxl)
 
 SIVEP_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIVEP")
 df <- readRDS("data1/Sivep_2009-2022.rds")
+df1 <- readRDS("data1/Sivep_2020-2023.rds")
 variaveis_dic <- SIVEP_dic$`Codigo SIVEP`
-
+df <- df[!(( as.Date(df$DT_SIN_PRI, format = "%d/%m/%Y") %>%lubridate::year() ) %in% c(2020,2021,2022)),]
+df1 <- df1 %>%
+  mutate_all(as.character)
+df<-bind_rows(df1, df)
 #BANCO AUXILIAR PARA CORRECAO DOS MUNICIPIOS
 aux_muni2 <- abjData::muni %>%
   dplyr::select(uf_id,
@@ -24,19 +28,6 @@ df_gest <- df %>%
   mutate(SG_UF_NOT = ifelse(is.na(muni_nm_clean), SG_UF_NOT, uf_sigla),
          ID_MUNICIP = ifelse(is.na(muni_nm_clean), ID_MUNICIP, muni_nm_clean)) %>%
   mutate(
-    # #CLASSIFICACAO DE PERIODO GESTACIONAL
-    # classi_gesta_puerp = case_when(
-    #   CS_GESTANT == 1 | CS_GESTANT == 1.0 | CS_GESTANT == '1' | CS_GESTANT == '1.0' ~ "1tri",
-    #   CS_GESTANT == 2 | CS_GESTANT == 2.0 | CS_GESTANT == '2' | CS_GESTANT == '2.0' ~ "2tri",
-    #   CS_GESTANT == 3 | CS_GESTANT == 3.0 | CS_GESTANT == '3' | CS_GESTANT == '3.0'  ~ "3tri",
-    #   CS_GESTANT == 4 | CS_GESTANT == 4.0 | CS_GESTANT == '4' | CS_GESTANT == '4.0' ~ "IG_ig",
-    #  ( CS_GESTANT == 5  &
-    #     PUERPERA == 1 )| ( CS_GESTANT == 5.0  &
-    #                          PUERPERA == 1.0 )| ( CS_GESTANT == '5.0'  &
-    #                                                 PUERPERA == '1.0' )~ "puerp",
-    #   (CS_GESTANT == 9 & PUERPERA == 1) |(CS_GESTANT == 9.0 & PUERPERA == 1.0)|(CS_GESTANT == '9.0' & PUERPERA == '1.0')~ "puerp",
-    #   TRUE ~ "não"
-    # ),
     #DATA DO PRIMEIRO SINTOMA
     dt_sint = as.Date(DT_SIN_PRI, format = "%d/%m/%Y"),
     #DATA DO NASCIMENTO
@@ -320,9 +311,9 @@ Var_incon_relacao <- Var_incon_relacao[Var_incon_relacao %in% colnames(sivep)]
 #VARIAVEIS PARA FILTRO
 var_sivep_implau <- regras_sivep$Variavel[regras_sivep$Indicador == 'Implausiblidade'] %>% unique()
 var_sivep_incom <- regras_sivep$Variavel[regras_sivep$Indicador == 'Incompletude'] %>% unique()
-
+dados_oobr_qualidados_SIVEP_2009_2023 <- sivep
 #DADOS
-usethis::use_data(sivep,overwrite = T)
+usethis::use_data(dados_oobr_qualidados_SIVEP_2009_2023,overwrite = T)
 #VARIVEIS PARA FILTRO
 usethis::use_data(Var_incon_relacao,overwrite = T)
 usethis::use_data(var_sivep_incom,overwrite = T)

@@ -45,8 +45,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       ns('filtro_tempo'),
                       'Selecione a janela de tempo:',
                       min = 2009,
-                      max = 2022,
-                      value = c(2005,2022),
+                      max = 2023,
+                      value = c(2005,2023),
                       round = T,
                       sep=''),
                     #FILTRO DE DIAGNOSTICO DE SRAG
@@ -119,8 +119,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       shiny::selectInput(
                         ns("Graf_Estado"),
                         "Selecione o estado",
-                        choices = sort(unique(sivep$SG_UF_NOT)),
-                        selected = sort(unique(sivep$SG_UF_NOT))[1])),
+                        choices = sort(unique(dados_oobr_qualidados_SIVEP_2009_2023$SG_UF_NOT)),
+                        selected = sort(unique(dados_oobr_qualidados_SIVEP_2009_2023$SG_UF_NOT))[1])),
                     #PAINEL CONDICIONADO AO TIPO DE LOCALIDADE POR MUNICIPIO
                     shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoLocalidade")),
@@ -149,8 +149,8 @@ mod_SIVEP_ui <- function(id, tabname, vars_incon , descricao,
                       shiny::selectInput(
                         ns("Graf_CompararEstado"),
                         "Estado de compara\u00e7\u00e3o",
-                        choices = sort(unique(sivep$SG_UF_NOT)),
-                        selected = sort(unique(sivep$SG_UF_NOT))[1]
+                        choices = sort(unique(dados_oobr_qualidados_SIVEP_2009_2023$SG_UF_NOT)),
+                        selected = sort(unique(dados_oobr_qualidados_SIVEP_2009_2023$SG_UF_NOT))[1]
                       )),
                     shiny::conditionalPanel(
                       condition = sprintf("input['%s'] == 'muni'",ns("Graf_OpcaoComparar")),
@@ -270,7 +270,7 @@ mod_SIVEP_server <- function(id, indicador){
         var_value <- c(var_value,aux)
       }
 
-      dados <- sivep[c(var_value,'MUNICIPIO','CLASSI_FIN','SG_UF_NOT','EVOLUCAO','ANO') %>% unique()] %>%
+      dados <- dados_oobr_qualidados_SIVEP_2009_2023[c(var_value,'MUNICIPIO','CLASSI_FIN','SG_UF_NOT','EVOLUCAO','ANO') %>% unique()] %>%
         dplyr::filter(as.integer(ANO) >= input$filtro_tempo[1] & as.integer(ANO) <= input$filtro_tempo[2]) %>%
         dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG )
       #FILTRAR POR CASOS FINALIZADOS

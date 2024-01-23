@@ -1,79 +1,70 @@
-library(tidyverse)
-library(httr)
-library(janitor)
-library(getPass)
-library(repr)
-library(data.table)
-library(dplyr)
-library(coro)
-library(readr)
-
-
-# Token da PCDaS
-token = getPass()
-
-# Função para converter os resultados das consultas para data.frame
-convertRequestToDF <- function(request, column_names = c()){
-  if("RequestError" %in% names(content(request))) stop(content(request)$RequestError)
-  variables = unlist(content(request)$columns)
-  variables = variables[names(variables) == "name"]
-  if (!length(column_names)){
-    column_names <- unname(variables)
+#carregar pacotes
+loadlibrary <- function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = T)
+    if (!require(x, character.only = TRUE))
+      stop("Package not found")
   }
-  values = content(request,)$rows
-  df <- as.data.frame(do.call(rbind,lapply(values,function(r) {
-    row <- r
-    row[sapply(row, is.null)] <- NA
-    rbind(unlist(row))
-  } )))
-  names(df) <- column_names
-  return(df)
 }
 
-query_with_cursor <- generator(function(sql_query, token, nrows){
-  tryCatch({
-    json_api <- paste0('{"token": {"token": "',token,'"}, "sql": {"sql": {"query":"',sql_query,'", "fetch_size":"',nrows,'" }}}')
-    response <- POST(url = "https://bigdata-api.fiocruz.br/sql_query/", body = json_api, encode = "json")
-    df <- convertRequestToDF(response)
-    col_names <- colnames(df)
-    yield(df)
-    while(TRUE){
-      json_api <- paste0('{"token": {"token": "',token,'"}, "sql": {"sql": {"cursor":"',content(response)$cursor,'" }}}')
-      response <- POST(url = "https://bigdata-api.fiocruz.br/sql_query/", body = json_api, encode = "json")
-      if(length(content(response)$rows)>0){
-        yield(convertRequestToDF(response,col_names))
-      }
-      else return(NULL)
-    }
-  }, error=function(cond) message(paste0(cond,"\n",content(response))) )
-})
+packages <-
+  c(
+    "readr",
+    "readxl",
+    "janitor",
+    "dplyr",
+    "forcats",
+    "stringr",
+    "lubridate",
+    "summarytools",
+    "magrittr",
+    "questionr",
+    "knitr",
+    "data.table",
+    "writexl",
+    "modelsummary",
+    'coro',
+    'getPass','httr'
+  )
+lapply(packages, loadlibrary)
+ckanr::ckanr_setup("https://opendatasus.saude.gov.br")
 
-convertColTypeToNum <- function(df, colname){
-  df[,colname] <- as.numeric(as.character(df[,colname]))
-  return(df)
-}
+arqs <- ckanr::package_search("srag 2020")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck, 1, "url")
 
-anos <- c(2009:2022)
-df_total_max3 <- data.frame()
-for(i in anos){
-  query <- paste0('SELECT (*)',
-                  ' FROM \\"datasus-srags\\" WHERE (',
-                  '(CAST(RIGHT(DT_SIN_PRI, 4) AS int) = ',i,') AND ',
-                  '(CS_GESTANT = 1 OR CS_GESTANT = 1.0 OR ',
-                  'CS_GESTANT = 2 OR CS_GESTANT = 2.0 OR ',
-                  'CS_GESTANT = 3 OR CS_GESTANT = 3.0 OR ',
-                  'CS_GESTANT = 4 OR CS_GESTANT = 4.0 OR ',
-                  'PUERPERA = 1 OR PUERPERA = 1.0))')
+arqs2 <- ckanr::package_search("srag 2021")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~.x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck, 2, "url")
 
-  df_total <- data.frame()
-  loop(for (df in query_with_cursor(query, token, nrows=10000)) {
-    print(paste0('Número de registros recuperados a cada iteração: ', nrow(df)))
-    df_total <- rbind(df_total,df)
-  })
-  df_total_max3 <- rbind(df_total,df_total_max3)
+arqs3 <- ckanr::package_search("srag 2021")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~.x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck, 3, "url")
 
-}
+dados_a <- fread(arqs[1], sep = ";")
 
+dados_b <- fread(arqs[2], sep = ";")
 
-write_rds(df_total_max3,file = 'data1/Sivep_2009-2022.rds')
+dados_c <- fread(arqs2[1], sep = ";")
 
+dados_d <- fread(arqs3[1], sep= ";")
+dados_a$FATOR_RISC <- dados_a$FATOR_RISC %>% as.character()
+dados_b$FATOR_RISC <- dados_b$FATOR_RISC %>% as.character()
+dados_c$FATOR_RISC <- dados_c$FATOR_RISC %>% as.character()
+dados_d$FATOR_RISC <- dados_d$FATOR_RISC %>% as.character()
+
+dados_total <- full_join(dados_a, dados_b) %>%
+  full_join(dados_c) %>%
+  full_join(dados_d)
+dados_total <- dados_total %>%
+  filter(
+      (CS_GESTANT == 1 | CS_GESTANT == 1.0 | CS_GESTANT == '1' | CS_GESTANT == '1.0' |
+         CS_GESTANT == 2 | CS_GESTANT == 2.0 |  CS_GESTANT == '2' | CS_GESTANT == '2.0' |
+         CS_GESTANT == 3 | CS_GESTANT == 3.0 |  CS_GESTANT == '3' | CS_GESTANT == '3.0' |
+         CS_GESTANT == 4 | CS_GESTANT == 4.0 |   CS_GESTANT == '4' | CS_GESTANT == '4.0' |
+         PUERPERA == 1 | PUERPERA == 1.0| PUERPERA == '1' | PUERPERA == '1.0')
+  )
+write_rds(dados_total,file = 'data1/Sivep_2020-2023.rds')

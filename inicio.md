@@ -29,6 +29,7 @@ Os dados foram obtidos pelo DATASUS do Ministério da Saúde, consistindo em tr�
 
  - O Sistema de Informações sobre Nascidos Vivos (SINASC) foi implantado oficialmente a partir de 1990, com o objetivo de coletar dados sobre os nascimentos ocorridos em todo o território nacional e fornecer informações sobre natalidade para todos os níveis do Sistema de Saúde.
 
+Os dados podem ser acessados em: Medeiros, S. M.;Paganoti, C. F.;Costa, R. A.;Lochter, J. V.;Francisco, R. P. V.;Rodrigues, A. S. Qualidados [banco de dados], 2023, Observatório Obstétrico Brasileiro (OOBr). Disponível em DOI: https://doi.org/10.7303/syn52537949
 
 # **Como citar o OOBr Qualidados:**
 

@@ -10,12 +10,12 @@ escolher_banco_dados <- function(SIM, indicador) {
 
   # criar uma lista com os dataframes disponíveis
   lista_dados <- list(
-    Sinasc_incom = Sinasc_incom,
-    Sinasc_implau = Sinasc_implau,
-    Sinasc_incon = Sinasc_incon,
-    SIM_Incom = SIM_Incom,
-    SIM_Implau = SIM_Implau,
-    SIM_Incon = SIM_Incon
+    Sinasc_incom = dados_oobr_qualidados_SINASC_Incompletude_1996_2022,
+    Sinasc_implau = dados_oobr_qualidados_SINASC_Implausibilidade_1996_2022,
+    Sinasc_incon = dados_oobr_qualidados_SINASC_Inconsistencia_1996_2022,
+    SIM_Incom = dados_oobr_qualidados_SIM_Incompletude_1996_2022,
+    SIM_Implau = dados_oobr_qualidados_SIM_Implausibilidade_1996_2022,
+    SIM_Incon = dados_oobr_qualidados_SIM_Inconsistencia_1996_2022
   )
 
   # selecionar o dataframe correto usando um switch

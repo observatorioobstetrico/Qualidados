@@ -44,7 +44,7 @@ mod_SINASC_ui <- function(id, tabname, indicador, descricao, vars,selecionadas,e
                             'Selecione a janela de tempo:',
                             min = 1996,
                             max = 2022,
-                            value = c(2000,2018),
+                            value = c(2000,2023),
                             round = T,
                             sep=''),
                           #LOCALIDADE

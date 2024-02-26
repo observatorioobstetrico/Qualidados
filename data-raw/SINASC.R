@@ -1,3 +1,5 @@
+.rs.restartR()
+rm(list=ls())
 #pacotes
 library(rjson)
 library(readr)

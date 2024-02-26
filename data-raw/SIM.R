@@ -1,3 +1,5 @@
+.rs.restartR()
+rm(list=ls())
 ## code to prepare `SIM` dataset goes here
 library(rjson)
 library(readr)

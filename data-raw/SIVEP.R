@@ -37,6 +37,7 @@ df_gest <- df %>%
     #MUNICIPIO
     MUNICIPIO = paste(ID_MUNICIP, "-", SG_UF_NOT)
   ) %>% select(-muni_nm_clean, -uf_sigla)
+
 # CORRECAO DO ERRO QUE A FALTA DE PADRONIZACAO DOS DADOS OCASIONOU
 df_gest <- df_gest %>% mutate_if(~ !is.character(.), as.character)
 df_gest <- data.frame(lapply(df_gest, function(x) ifelse(x == "1.0", '1',
@@ -52,6 +53,13 @@ df_gest <- data.frame(lapply(df_gest, function(x) ifelse(x == "1.0", '1',
 df_gest %>% nrow()#CONFERINDO SE VOLTOU TUDO
 
 sivep2 <- df_gest
+
+#CRIANDO O DICIONARIO DE CONTINUIDADE
+continuidade <- SIVEP_dic |>
+  mutate(
+    `Anos Válidos` = strsplit(`Anos Válidos`,',')
+  ) |>
+  select(`Codigo Qualidados`,`Anos Válidos`)
 
 # INCOMPLETUDE ------------------------------------------------------------
 regras_incom <- fromJSON('data1/incompletude_sivep.json')
@@ -188,7 +196,7 @@ df_inconsistencia <- df_inconsistencia %>%
     grepl("ANTIVIRAL e TP_ANTIVIR", variavel) ~ "df_gest_aux$ANTIVIRAL %in% c('2', '9') & df_gest_aux$TP_ANTIVIR %in% c('1', '2', '3')",
     grepl("HOSPITAL e DT_INTERNA", variavel) ~ "df_gest_aux$HOSPITAL %in% c('2', '9') & (df_gest_aux$DT_INTERNA != 'Em Branco')",
     grepl("UTI e DT_ENTUTI", variavel) ~ "(df_gest_aux$UTI == '2' | df_gest_aux$UTI == '9') & (df_gest_aux$DT_ENTUTI != 'Em Branco') | (df_gest_aux$HOSPITAL == '2' | df_gest_aux$HOSPITAL == '9') & df_gest_aux$UTI == '1'",
-    grepl("RAIOX_RES e DT_RAIOX", variavel) ~ "(df_gest_aux$RAIOX_RES == '6' | df_gest_aux$RAIOX_RES == '9') & (df_gest_aux$DT_RAIOX!= 'Em Branco')",
+    grepl("RAIOX_RES e DT_RAIOX", variavel) ~ "(df_gest_aux$RAIOX_RES == '6' | df_gest_aux$RAIOX_RES == '9') & (df_gest_aux$DT_RAIOX != 'Em Branco')",
     grepl("AMOSTRA e DT_COLETA", variavel) ~ "(df_gest_aux$AMOSTRA == '6' | df_gest_aux$AMOSTRA == '9') & (df_gest_aux$DT_COLETA != 'Em Branco')",
     grepl("HISTO_VGM e Campos_VGMs", variavel) ~ "(df_gest_aux$HISTO_VGM == '2' | df_gest_aux$HISTO_VGM == '9') & (df_gest_aux$LO_PS_VGM != 'Em Branco') & (df_gest_aux$DT_VGM != 'Em Branco') & (df_gest_aux$DT_RT_VGM != 'Em Branco')",
     grepl("TOMO_RES e DT_TOMO", variavel) ~ "(df_gest_aux$TOMO_RES == '6' | df_gest_aux$TOMO_RES == '9') & (df_gest_aux$DT_TOMO != 'Em Branco')",
@@ -198,6 +206,7 @@ df_inconsistencia <- df_inconsistencia %>%
     grepl("CLASSI_FIN_SRAG_OUTROS_VIRUS", variavel) ~ "df_gest_aux$CLASSI_FIN == '1' & df_gest_aux$PCR_OUTRO %in% c('2', '9') & df_gest_aux$AN_OUTRO %in% c('2 ', '9')"
   ))
 df_inconsistencia <- head(df_inconsistencia, -2)
+
 
 # Criando colunas de inconsistencia no df_gest
 df_gest_aux <- df_gest
@@ -312,6 +321,58 @@ Var_incon_relacao <- Var_incon_relacao[Var_incon_relacao %in% colnames(sivep)]
 var_sivep_implau <- regras_sivep$Variavel[regras_sivep$Indicador == 'Implausiblidade'] %>% unique()
 var_sivep_incom <- regras_sivep$Variavel[regras_sivep$Indicador == 'Incompletude'] %>% unique()
 dados_oobr_qualidados_SIVEP_2009_2023 <- sivep
+
+dados_oobr_qualidados_SIVEP_2009_2023
+continuidade[continuidade$`Codigo Qualidados` == 'DT_RAIOX','Anos Válidos'] |> unlist()
+
+dados_oobr_qualidados_SIVEP_2009_2023$`RESULT_RAIOX e DT_RAIOX`[dados_oobr_qualidados_SIVEP_2009_2023$ANO == '2018'] |>
+  unique()
+
+# for(var in continuidade$`Codigo Qualidados`){
+#   anos <- continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` == var] |> unlist()
+#   dados_oobr_qualidados_SIVEP_2009_2023[!(dados_oobr_qualidados_SIVEP_2009_2023$ANO %in% anos)
+#                                           ,var] <- NA
+#}
+aux <-list(
+  "SEXO e IDADE_GEST"  = c('SEXO','IDADE_GEST'),
+  "FATOR_RISCO e COMORBIDADES"   = c('FATOR_RISCO','CARDIOPATI', 'HEMATOLOGI', 'SIND_DOWN', 'HEPÁTICA', 'ASMA', 'DIABETES',
+                                     'NEUROLÓGICA', 'PNEUMOPATIA', 'IMUNODEPRESSAO', 'RENAL_CRON', 'OBESIDADE',
+                                     'OBES_IMC', 'OUT_FATOR_RISCO'),
+  "VACINA e DT_VACINA_GRIPE" = c('VACINA','DT_VACINA_GRIPE'),
+  "MAE_VACINA e DT_VACINA_MAE"= c('MAE_VACINA' ,'DT_VACINA_MAE' ),
+  "DT_DOSE_UNICA e IDADE" =c('DT_DOSE_UNICA','IDADE'),
+  "ANTIVIRAL e TIPO_ANTIVIRAL"=c('ANTIVIRAL','TIPO_ANTIVIRAL'),
+  "INTERNACAO e DT_INTERNACAO" =c('INTERNACAO','DT_INTERNACAO'),
+  "UTI e DT_UTI" =  c('UTI' ,'DT_UTI' ,'INTERNACAO'),
+  "RESULT_RAIOX e DT_RAIOX"  =c('RESULT_RAIOX' ,'DT_RAIOX' ),
+  "AMOSTRA_DIAG e DT_COLETA_AMO" =c('AMOSTRA_DIAG' ,'DT_COLETA_AMO' ),
+  "HIST_VIAGEM e Campos_VGMs"  = c('HIST_VIAGEM','LOCAL_VIAGEM', 'DT_VIAGEM', 'DT_RETORNO_VIAGEM'),
+  "RESULT_TOMOGR e DT_TOMOGRAFIA" = c('RESULT_TOMOGR' ,'DT_TOMOGRAFIA' ),
+  "TIPO_ANTIGENICO e DT_RES_ANTIGENICO"=  c('RESULT_ANT' ,'TIPO_ANTIGENICO' ,'DT_RES_ANTIGENICO' ),
+  "VACINA_COVID e DOSES"= c('VACINA_COVID' ,'DOSE1_COVID' ,'DOSE2_COVID' ),
+  "CLASSI_FIN_SRAG_INFLUENZA" =  c('CLASSI_FIN' ,'PCR_INFLU' ,'ANTIGENICO_INFLU' ),
+  "CLASSI_FIN_SRAG_OUTROS_VIRUS"  =c('CLASSI_FIN' ,'PCR_OUTRO' ,'AN_OUTRO')
+)
+
+dados_oobr_qualidados_SIVEP_2009_2023
+for(var in names(aux)){
+  variaveis <- aux[[var]]
+  if(length(variaveis) > 4){
+    a1 <- continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` == 'FATOR_RISCO']  |> unlist()
+    a2 <-  continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` %in% variaveis] |> unlist()
+    anos <- table(a2)[table(a2) >= 2] |> names()
+    anos <- anos[anos %in% a1]
+  }else{
+    anos <- continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` %in% variaveis] |> unlist()
+    anos <- table(anos)[table(anos) >= length(variaveis)] |> names()
+  }
+  dados_oobr_qualidados_SIVEP_2009_2023[!(dados_oobr_qualidados_SIVEP_2009_2023$ANO %in% anos),var] <- NA
+}
+dados_oobr_qualidados_SIVEP_2009_2023$`HIST_VIAGEM e Campos_VGMs`[dados_oobr_qualidados_SIVEP_2009_2023$ANO == '2018' ] |> table()
+dados_oobr_qualidados_SIVEP_2009_2023$`HIST_VIAGEM e Campos_VGMs`|>
+  table(useNA = 'always')
+
+
 #DADOS
 usethis::use_data(dados_oobr_qualidados_SIVEP_2009_2023,overwrite = T)
 #VARIVEIS PARA FILTRO

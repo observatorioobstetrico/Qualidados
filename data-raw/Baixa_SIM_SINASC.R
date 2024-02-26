@@ -1,4 +1,6 @@
 #carregar pacotes
+.rs.restartR()
+rm(list=ls())
 loadlibrary <- function(x) {
   if (!require(x, character.only = TRUE)) {
     install.packages(x, dependencies = T)
@@ -27,6 +29,7 @@ packages <-
     'getPass','httr'
   )
 lapply(packages, loadlibrary)
+memory.limit(9999999)
 ckanr::ckanr_setup("https://opendatasus.saude.gov.br")
 # SIM -------------------------------------------
 #2022

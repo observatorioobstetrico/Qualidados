@@ -55,10 +55,29 @@ dados_a$FATOR_RISC <- dados_a$FATOR_RISC %>% as.character()
 dados_b$FATOR_RISC <- dados_b$FATOR_RISC %>% as.character()
 dados_c$FATOR_RISC <- dados_c$FATOR_RISC %>% as.character()
 dados_d$FATOR_RISC <- dados_d$FATOR_RISC %>% as.character()
+colunas_comuns <- intersect(colnames(dados_a), colnames(dados_b))
+for (coluna in colunas_comuns) {
+  if (is.numeric(dados_a[[coluna]]) && !(is.numeric(dados_b[[coluna]]))) {
+    dados_b[[coluna]] <- as.numeric(dados_b[[coluna]])
+  }
+}
+colunas_comuns <- intersect(colnames(dados_a), colnames(dados_c))
+for (coluna in colunas_comuns) {
+  if (is.numeric(dados_a[[coluna]]) && !(is.numeric(dados_c[[coluna]]))) {
+    dados_c[[coluna]] <- as.numeric(dados_c[[coluna]])
+  }
+}
+colunas_comuns <- intersect(colnames(dados_a), colnames(dados_d))
+for (coluna in colunas_comuns) {
+  if (is.numeric(dados_a[[coluna]]) && !(is.numeric(dados_d[[coluna]]))) {
+    dados_d[[coluna]] <- as.numeric(dados_d[[coluna]])
+  }
+}
 
 dados_total <- full_join(dados_a, dados_b) %>%
   full_join(dados_c) %>%
   full_join(dados_d)
+
 dados_total <- dados_total %>%
   filter(
       (CS_GESTANT == 1 | CS_GESTANT == 1.0 | CS_GESTANT == '1' | CS_GESTANT == '1.0' |

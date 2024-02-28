@@ -51,7 +51,7 @@ df_gest <- data.frame(lapply(df_gest, function(x) ifelse(x == "1.0", '1',
                                                                                     ifelse(x == '9.0','9',x)))))))))))
 
 df_gest %>% nrow()#CONFERINDO SE VOLTOU TUDO
-
+df_gest$NU_IDADE_N[df_gest$ANO < 2017] |> unique()
 sivep2 <- df_gest
 
 #CRIANDO O DICIONARIO DE CONTINUIDADE
@@ -161,7 +161,7 @@ df_impossivel <- df_impossivel %>%
     df_improvavel <- df_improvavel %>%
   mutate(condicao = case_when(
     grepl("NU_IDADE_N", variavel) ~ "(as.integer(NU_IDADE_N) < 10 & as.integer(NU_IDADE_N) >= 0) | (as.integer(NU_IDADE_N) > 55 & as.integer(NU_IDADE_N) <= 90)"))
-
+    sivep$NU_IDADE_N |> unique()
 #Substituindo os valores do banco sivep por improvavel e impossivel
 attach(sivep)
 for(i in 1:nrow(df_impossivel)){

@@ -165,7 +165,7 @@ app_ui <- function(request) {
                 br(),
                 br(),
                 (
-                  "A última atualização foi realizada em 23/01/2024, aqui constam as bases do SIVEP-Gripe de 2009 à 2024."
+                  "A última atualização foi realizada em 31/01/2024, aqui constam as bases do SIVEP-Gripe de 2009 à 2024."
                 ),
                 br(),
                 br(),
@@ -196,7 +196,7 @@ app_ui <- function(request) {
                 ('Os dados são obtidos via API da PCDas, em https://pcdas.icict.fiocruz.br/, uma plataforma de ciência de dados aplicada a saúde proporcionada pela fundação Fiocruz'),
                 br(),
                 br(),
-                ('Os dados aqui apresentados possuem atualização em 23/01/2024 para dados do SINASC de 2009 a 2021, com os dados preliminares de 2022.'),
+                ('Os dados aqui apresentados possuem atualização em 28/02/2024 para dados do SINASC de 2009 a 2021, com os dados preliminares de 2022.'),
                 br(),
                 br(),
                 h2(strong('Sistema de Informação sobre Mortalidade (SIM) .')),
@@ -212,7 +212,7 @@ app_ui <- function(request) {
                 ('Os dados são obtidos via API da PCDas, em https://pcdas.icict.fiocruz.br/, uma plataforma de ciência de dados aplicada a saúde proporcionada pela fundação Fiocruz'),
                 br(),
                 br(),
-                ('Os dados aqui apresentados possuem atualização em  23/01/2024 para dados do SIM de 2009 a 2021, com os dados preliminares de 2022.'),
+                ('Os dados aqui apresentados possuem atualização em  28/02/2024 para dados do SIM de 2009 a 2021, com os dados preliminares de 2022.'),
                 br(),
                 br(),
                 actionButton("generate", "Gerar pdf da documentação"),

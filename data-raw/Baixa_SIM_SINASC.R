@@ -1,5 +1,4 @@
 #carregar pacotes
-.rs.restartR()
 rm(list=ls())
 loadlibrary <- function(x) {
   if (!require(x, character.only = TRUE)) {

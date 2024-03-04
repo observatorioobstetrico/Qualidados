@@ -269,7 +269,6 @@ mod_SIVEP_server <- function(id, indicador){
         aux <- input$var_extra
         var_value <- c(var_value,aux)
       }
-
       dados <- dados_oobr_qualidados_SIVEP_2009_2023[c(var_value,'MUNICIPIO','CLASSI_FIN','SG_UF_NOT','EVOLUCAO','ANO') %>% unique()] %>%
         dplyr::filter(as.integer(ANO) >= input$filtro_tempo[1] & as.integer(ANO) <= input$filtro_tempo[2]) %>%
         dplyr::filter(CLASSI_FIN %in% input$Graf_DiagonisticoSRAG )
@@ -315,10 +314,13 @@ mod_SIVEP_server <- function(id, indicador){
           x <- c('Em Branco','Ignorado')
         }else{
           leg <- 'Inconsistencia'
-          x <- c('Inconsistencia','nada')
+          x <- c('Inconsistencia','Ano Invalido')
         }
       }
       dados <- data_inicio()
+      if(indicador == 'incon'){
+        dados <- dados |> replace(is.na(dados),'Ano Invalido')
+      }
       #FILTRO DE LOCALIDADE
       if(input$Graf_OpcaoLocalidade != 'br'){
         if(input$Graf_OpcaoLocalidade == 'est'){
@@ -409,6 +411,11 @@ mod_SIVEP_server <- function(id, indicador){
           }
       }
       resultados['value'] <- as.vector(((resultados[,3] + resultados[,4])*100)/resultados['Total']) %>% unlist()
+      if(indicador == "incon"){
+        resultados$Total <- resultados$Total - resultados$`Dados Ano Invalido`
+        resultados['value'] <- as.vector(((resultados[,3] )*100)/resultados['Total']) %>% unlist()
+        resultados$value[is.nan(resultados$value)] <- 0
+      }
       resultados
     })
 
@@ -503,8 +510,9 @@ mod_SIVEP_server <- function(id, indicador){
               if (vars_reais[my_i] %in% input$vars_select) {
                 # filtra a tabela de dados
                 dados <- filtragem()
+
                 dados1 <- dados[dados$Variavel == vars_reais[my_i] & dados$compara == 1,] %>%
-                  dplyr::select(-c(value,ANO,Localidade,Variavel,compara,`Dados nada`)) %>%
+                  dplyr::select(-c(value,ANO,Localidade,Variavel,compara,`Dados Ano Invalido`)) %>%
                   dplyr::summarise_at(dplyr::vars(1:2), sum)
                 dados1 <- dados1 %>%
                   dplyr::mutate(

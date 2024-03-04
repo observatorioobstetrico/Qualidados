@@ -1,3 +1,5 @@
+.rs.restartR()
+rm(list=ls())
 library(readr)
 library(magrittr)
 library(dplyr)
@@ -197,7 +199,7 @@ df_inconsistencia <- df_inconsistencia %>%
     grepl("HOSPITAL e DT_INTERNA", variavel) ~ "df_gest_aux$HOSPITAL %in% c('2', '9') & (df_gest_aux$DT_INTERNA != 'Em Branco')",
     grepl("UTI e DT_ENTUTI", variavel) ~ "(df_gest_aux$UTI == '2' | df_gest_aux$UTI == '9') & (df_gest_aux$DT_ENTUTI != 'Em Branco') | (df_gest_aux$HOSPITAL == '2' | df_gest_aux$HOSPITAL == '9') & df_gest_aux$UTI == '1'",
     grepl("RAIOX_RES e DT_RAIOX", variavel) ~ "(df_gest_aux$RAIOX_RES == '6' | df_gest_aux$RAIOX_RES == '9') & (df_gest_aux$DT_RAIOX != 'Em Branco')",
-    grepl("AMOSTRA e DT_COLETA", variavel) ~ "(df_gest_aux$AMOSTRA == '6' | df_gest_aux$AMOSTRA == '9') & (df_gest_aux$DT_COLETA != 'Em Branco')",
+    grepl("AMOSTRA e DT_COLETA", variavel) ~ "(df_gest_aux$AMOSTRA == '2' | df_gest_aux$AMOSTRA == '9') & (df_gest_aux$DT_COLETA != 'Em Branco')",
     grepl("HISTO_VGM e Campos_VGMs", variavel) ~ "(df_gest_aux$HISTO_VGM == '2' | df_gest_aux$HISTO_VGM == '9') & (df_gest_aux$LO_PS_VGM != 'Em Branco') & (df_gest_aux$DT_VGM != 'Em Branco') & (df_gest_aux$DT_RT_VGM != 'Em Branco')",
     grepl("TOMO_RES e DT_TOMO", variavel) ~ "(df_gest_aux$TOMO_RES == '6' | df_gest_aux$TOMO_RES == '9') & (df_gest_aux$DT_TOMO != 'Em Branco')",
     grepl("TP_TES_AN e DT_RES_AN", variavel) ~ "((df_gest_aux$RES_AN == '4') & (df_gest_aux$TP_TES_AN %in% c('1', '2'))) | ((df_gest_aux$RES_AN == '4') & (df_gest_aux$DT_RES_AN != 'Em Branco'))",

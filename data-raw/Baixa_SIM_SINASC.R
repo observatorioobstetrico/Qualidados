@@ -41,6 +41,11 @@ arqs1 <- ckanr::package_search("SIM")$results %>%
   purrr::map("resources") %>%
   purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
   purrr::map_chr(purrr::pluck,43, "url")
+#2023
+arqs2 <- ckanr::package_search("SIM")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck,45, "url")
 
 #1996 - 2020
 
@@ -70,15 +75,17 @@ dados_a <- fread(arqs, sep = ";")
 
 dados_b <- fread(arqs1, sep = ";")
 
+dados_c <- fread(arqs2, sep = ';')
 
-dados_total <- full_join(dados_a, dados_b)
+dados_total <- full_join(dados_a, dados_b) |>
+  full_join(dados_c)
 dados_total <- dados_total %>%
   filter(
     (OBITOGRAV == 1 | OBITOPUERP == 1 | OBITOPUERP == 2)
   )
 
 dados_total <-as.data.frame(dados_total)
-write.csv(dados_total,file = 'data1/sim2021-2022.csv', row.names = F)
+write.csv(dados_total,file = 'data1/sim2021-2023.csv', row.names = F)
 
 dados_total
 # SINASC -------------------
@@ -91,13 +98,18 @@ arqs1 <- ckanr::package_search("SINASC")$results %>%
   purrr::map("resources") %>%
   purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
   purrr::map_chr(purrr::pluck,3, "url")
-
+arqs2 <- ckanr::package_search("SINASC")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck,1, "url")
 
 dados_a <- fread(arqs, sep = ";")
 
 dados_b <- fread(arqs1, sep = ";")
 
+dados_c <- fread(arqs2, sep = ";")
 
-dados_total <- full_join(dados_a, dados_b)
+dados_total <- full_join(dados_a, dados_b) |>
+  full_join(dados_c)
 
-write.csv(dados_total,file = 'data1/sinasc2021-2022.csv' ,row.names = F)
+write.csv(dados_total, file = 'data1/sinasc2021-2023.csv', row.names = F)

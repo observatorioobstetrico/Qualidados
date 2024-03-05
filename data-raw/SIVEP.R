@@ -75,7 +75,8 @@ variaveis_ign <- c('CS_SEXO','CS_RACA','CS_ESCOL_N','CS_ZONA','NOSOCOMIAL','AVE_
                    'HEPATICA','ASMA','DIABETES','NEUROLOGIC','PNEUMOPATI','IMUNODEPRE','RENAL','OBESIDADE','OUT_MORBI',
                    'MAE_VAC','M_AMAMENTA','ANTIVIRAL','HOSPITAL','UTI','SUPORT_VEN','AMOSTRA','POS_PCRFLU','POS_PCROUT',
                    'EVOLUCAO','DOR_ABD','FADIGA','PERD_OLFT','PERD_PALA','POS_AN_FLU','POS_AN_OUT','CS_GESTANT',
-                   'TOMO_RES','VACINA_COV','VACINA','PUERPERA','CLASSI_FIN',"RAIOX_RES" )
+                   'TOMO_RES','VACINA_COV','VACINA','PUERPERA','CLASSI_FIN',"RAIOX_RES","TP_AM_SOR", "RES_AN",
+                   'SURTO_SG') |> unique()
 setdiff(variaveis_dic,variaveis_ign)
 #SUBSTITUIR VALORES NA POR EM BRANCO
 sivep <- replace(df_gest2,is.na(df_gest2) ,"Em Branco")

@@ -5,8 +5,8 @@ account: observatorioobstetrico
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6081533
-bundleId: 8329151
+bundleId: 8335152
 url: https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R
+ignoredFiles: dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R|SIM_dataset

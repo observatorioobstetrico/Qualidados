@@ -90,8 +90,8 @@ df_aux |> row.names() <- NULL
 df_aux$`row.names(df_aux)` <- df_aux$`row.names(df_aux)` |> gsub(pattern = 'IGNORADOS_', replacement = '')
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_incom <- df_aux
-dados_oobr_qualidados_SIM_Incompletude_1996_2022 <- SIM_Incom
-usethis::use_data(dados_oobr_qualidados_SIM_Incompletude_1996_2022, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Incompletude_1996_2023 <- SIM_Incom
+usethis::use_data(dados_oobr_qualidados_SIM_Incompletude_1996_2023, overwrite = TRUE)
 usethis::use_data(vars_incom_sim, overwrite = TRUE)
 
 ############# IMPLAUSIBILIDADE ####################################################
@@ -141,8 +141,8 @@ df_aux |> row.names() <- NULL
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_implau <- df_aux
 
-dados_oobr_qualidados_SIM_Implausibilidade_1996_2022 <- SIM_Implau
-usethis::use_data(dados_oobr_qualidados_SIM_Implausibilidade_1996_2022, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Implausibilidade_1996_2023 <- SIM_Implau
+usethis::use_data(dados_oobr_qualidados_SIM_Implausibilidade_1996_2023, overwrite = TRUE)
 usethis::use_data(vars_implau_sim, overwrite = TRUE)
 
 ################################ Inconsistencia
@@ -185,8 +185,8 @@ df_aux |> row.names() <- NULL
 df_aux$`row.names(df_aux)` <- df_aux$`row.names(df_aux)` |> gsub(pattern = '_', replacement = ' ')
 colnames(df_aux) <- c('Variável','Regra')
 regras_sim_incon <- df_aux
-dados_oobr_qualidados_SIM_Inconsistencia_1996_2022 <- SIM_Incon
-usethis::use_data(dados_oobr_qualidados_SIM_Inconsistencia_1996_2022, overwrite = TRUE)
+dados_oobr_qualidados_SIM_Inconsistencia_1996_2023 <- SIM_Incon
+usethis::use_data(dados_oobr_qualidados_SIM_Inconsistencia_1996_2023, overwrite = TRUE)
 usethis::use_data(vars_incon_sim, overwrite = TRUE)
 
 ########### REGRAS ##############################

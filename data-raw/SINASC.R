@@ -166,15 +166,15 @@ regras_sinasc_incon |> row.names() <- NULL
 regras_sinasc_incon |> colnames() <- c('Variável','Regra')
 regras_sinasc_incon$Variável <- regras_sinasc_incon$Variável |> gsub(pattern = '_',replacement = ' ')
 
-dados_oobr_qualidados_SINASC_Implausibilidade_1996_2022 <- Sinasc_implau
-dados_oobr_qualidados_SINASC_Incompletude_1996_2022 <- Sinasc_incom
-dados_oobr_qualidados_SINASC_Inconsistencia_1996_2022 <- Sinasc_incon
+dados_oobr_qualidados_SINASC_Implausibilidade_1996_2023 <- Sinasc_implau
+dados_oobr_qualidados_SINASC_Incompletude_1996_2023 <- Sinasc_incom
+dados_oobr_qualidados_SINASC_Inconsistencia_1996_2023 <- Sinasc_incon
 ###############################################  EXPORTACAO ##################
-usethis::use_data(dados_oobr_qualidados_SINASC_Implausibilidade_1996_2022, overwrite = TRUE)
+usethis::use_data(dados_oobr_qualidados_SINASC_Implausibilidade_1996_2023, overwrite = TRUE)
 usethis::use_data(vars_implau_sinasc, overwrite = TRUE)
-usethis::use_data(dados_oobr_qualidados_SINASC_Incompletude_1996_2022, overwrite = TRUE)
+usethis::use_data(dados_oobr_qualidados_SINASC_Incompletude_1996_2023, overwrite = TRUE)
 usethis::use_data(vars_incom_sinasc, overwrite = TRUE)
-usethis::use_data(dados_oobr_qualidados_SINASC_Inconsistencia_1996_2022, overwrite = TRUE)
+usethis::use_data(dados_oobr_qualidados_SINASC_Inconsistencia_1996_2023, overwrite = TRUE)
 usethis::use_data(var_incon_sinasc, overwrite = TRUE)
 
 

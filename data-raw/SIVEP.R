@@ -8,7 +8,7 @@ library(readxl)
 
 SIVEP_dic <- read_excel("data1/dicionarios.xlsx", sheet = "SIVEP")
 df <- readRDS("data1/Sivep_2009-2022.rds")
-df1 <- readRDS("data1/Sivep_2020-2023.rds")
+df1 <- readRDS("data1/Sivep_2020-2024.rds")
 variaveis_dic <- SIVEP_dic$`Codigo SIVEP`
 df <- df[!(( as.Date(df$DT_SIN_PRI, format = "%d/%m/%Y") %>%lubridate::year() ) %in% c(2020,2021,2022)),]
 df1 <- df1 %>%
@@ -323,17 +323,17 @@ Var_incon_relacao <- Var_incon_relacao[Var_incon_relacao %in% colnames(sivep)]
 #VARIAVEIS PARA FILTRO
 var_sivep_implau <- regras_sivep$Variavel[regras_sivep$Indicador == 'Implausiblidade'] %>% unique()
 var_sivep_incom <- regras_sivep$Variavel[regras_sivep$Indicador == 'Incompletude'] %>% unique()
-dados_oobr_qualidados_SIVEP_2009_2023 <- sivep
+dados_oobr_qualidados_SIVEP_2009_2024 <- sivep
 
-dados_oobr_qualidados_SIVEP_2009_2023
+dados_oobr_qualidados_SIVEP_2009_2024
 continuidade[continuidade$`Codigo Qualidados` == 'DT_RAIOX','Anos Válidos'] |> unlist()
 
-dados_oobr_qualidados_SIVEP_2009_2023$`RESULT_RAIOX e DT_RAIOX`[dados_oobr_qualidados_SIVEP_2009_2023$ANO == '2018'] |>
+dados_oobr_qualidados_SIVEP_2009_2024$`RESULT_RAIOX e DT_RAIOX`[dados_oobr_qualidados_SIVEP_2009_2024$ANO == '2018'] |>
   unique()
 
 # for(var in continuidade$`Codigo Qualidados`){
 #   anos <- continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` == var] |> unlist()
-#   dados_oobr_qualidados_SIVEP_2009_2023[!(dados_oobr_qualidados_SIVEP_2009_2023$ANO %in% anos)
+#   dados_oobr_qualidados_SIVEP_2009_2024[!(dados_oobr_qualidados_SIVEP_2009_2024$ANO %in% anos)
 #                                           ,var] <- NA
 #}
 aux <-list(
@@ -357,7 +357,7 @@ aux <-list(
   "CLASSI_FIN_SRAG_OUTROS_VIRUS"  =c('CLASSI_FIN' ,'PCR_OUTRO' ,'AN_OUTRO')
 )
 
-dados_oobr_qualidados_SIVEP_2009_2023
+dados_oobr_qualidados_SIVEP_2009_2024
 for(var in names(aux)){
   variaveis <- aux[[var]]
   if(length(variaveis) > 4){
@@ -369,15 +369,16 @@ for(var in names(aux)){
     anos <- continuidade$`Anos Válidos`[continuidade$`Codigo Qualidados` %in% variaveis] |> unlist()
     anos <- table(anos)[table(anos) >= length(variaveis)] |> names()
   }
-  dados_oobr_qualidados_SIVEP_2009_2023[!(dados_oobr_qualidados_SIVEP_2009_2023$ANO %in% anos),var] <- NA
+  dados_oobr_qualidados_SIVEP_2009_2024[!(dados_oobr_qualidados_SIVEP_2009_2024$ANO %in% anos),var] <- NA
 }
-dados_oobr_qualidados_SIVEP_2009_2023$`HIST_VIAGEM e Campos_VGMs`[dados_oobr_qualidados_SIVEP_2009_2023$ANO == '2018' ] |> table()
-dados_oobr_qualidados_SIVEP_2009_2023$`HIST_VIAGEM e Campos_VGMs`|>
+dados_oobr_qualidados_SIVEP_2009_2024$`HIST_VIAGEM e Campos_VGMs`[dados_oobr_qualidados_SIVEP_2009_2024$ANO == '2018' ] |> table()
+dados_oobr_qualidados_SIVEP_2009_2024$`HIST_VIAGEM e Campos_VGMs`|>
   table(useNA = 'always')
 
 
 #DADOS
-usethis::use_data(dados_oobr_qualidados_SIVEP_2009_2023,overwrite = T)
+#usethis::use_data(dados_oobr_qualidados_SIVEP_2009_2023,overwrite = T)
+usethis::use_data(dados_oobr_qualidados_SIVEP_2009_2024,overwrite = T)
 #VARIVEIS PARA FILTRO
 usethis::use_data(Var_incon_relacao,overwrite = T)
 usethis::use_data(var_sivep_incom,overwrite = T)

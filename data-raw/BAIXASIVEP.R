@@ -1,4 +1,10 @@
-#carregar pacotes
+
+
+# carregar pacotes
+
+
+# Esley - 01/04/2024 # novo
+
 loadlibrary <- function(x) {
   if (!require(x, character.only = TRUE)) {
     install.packages(x, dependencies = T)
@@ -29,6 +35,8 @@ packages <-
 lapply(packages, loadlibrary)
 ckanr::ckanr_setup("https://opendatasus.saude.gov.br")
 
+
+
 arqs <- ckanr::package_search("srag 2020")$results %>%
   purrr::map("resources") %>%
   purrr::map(purrr::keep, ~ .x$mimetype == "text/csv") %>%
@@ -44,6 +52,14 @@ arqs3 <- ckanr::package_search("srag 2021")$results %>%
   purrr::map(purrr::keep, ~.x$mimetype == "text/csv") %>%
   purrr::map_chr(purrr::pluck, 3, "url")
 
+
+# tentando replicar para os dados de 2024
+arqs4 <- ckanr::package_search("srag 2024")$results %>%
+  purrr::map("resources") %>%
+  purrr::map(purrr::keep, ~.x$mimetype == "text/csv") %>%
+  purrr::map_chr(purrr::pluck, 4, "url")
+
+
 dados_a <- fread(arqs[1], sep = ";")
 
 dados_b <- fread(arqs[2], sep = ";")
@@ -51,10 +67,17 @@ dados_b <- fread(arqs[2], sep = ";")
 dados_c <- fread(arqs2[1], sep = ";")
 
 dados_d <- fread(arqs3[1], sep= ";")
+
+dados_e <- fread(arqs4, sep= ";") #novo
+
+class(dados_e$COD_IDADE) = "character"#novo
+
 dados_a$FATOR_RISC <- dados_a$FATOR_RISC %>% as.character()
 dados_b$FATOR_RISC <- dados_b$FATOR_RISC %>% as.character()
 dados_c$FATOR_RISC <- dados_c$FATOR_RISC %>% as.character()
 dados_d$FATOR_RISC <- dados_d$FATOR_RISC %>% as.character()
+dados_e$FATOR_RISC <- dados_e$FATOR_RISC %>% as.character() #novo
+
 colunas_comuns <- intersect(colnames(dados_a), colnames(dados_b))
 for (coluna in colunas_comuns) {
   if (is.numeric(dados_a[[coluna]]) && !(is.numeric(dados_b[[coluna]]))) {
@@ -73,10 +96,17 @@ for (coluna in colunas_comuns) {
     dados_d[[coluna]] <- as.numeric(dados_d[[coluna]])
   }
 }
+colunas_comuns <- intersect(colnames(dados_a), colnames(dados_e)) #novo
+for (coluna in colunas_comuns) {
+  if (is.numeric(dados_a[[coluna]]) && !(is.numeric(dados_e[[coluna]]))) {
+    dados_e[[coluna]] <- as.numeric(dados_e[[coluna]])
+  }
+}
 
 dados_total <- full_join(dados_a, dados_b) %>%
   full_join(dados_c) %>%
-  full_join(dados_d)
+  full_join(dados_d) %>%
+  full_join(dados_e)
 
 dados_total <- dados_total %>%
   filter(
@@ -86,4 +116,5 @@ dados_total <- dados_total %>%
          CS_GESTANT == 4 | CS_GESTANT == 4.0 |   CS_GESTANT == '4' | CS_GESTANT == '4.0' |
          PUERPERA == 1 | PUERPERA == 1.0| PUERPERA == '1' | PUERPERA == '1.0')
   )
-write_rds(dados_total,file = 'data1/Sivep_2020-2023.rds')
+#write_rds(dados_total,file = 'data1/Sivep_2020-2023.rds')
+write_rds(dados_total,file = 'data1/Sivep_2020-2024.rds') #novo

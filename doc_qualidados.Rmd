@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Bases, importações e devidos tratamentos.
 
-A seguir, são carregados os pacotes do R (https://www.r-project.org) utilizados para filtragem e tratamento dos dados considerados no dashboard https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/. Os dados do painel foram atualizados no dia 1/abril/2024.
+A seguir, são carregados os pacotes do R (https://www.r-project.org) utilizados para filtragem e tratamento dos dados considerados no dashboard https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/. Os dados do painel foram atualizados no dia 26/abril/2024.
 
 ```{r pacotes, echo=TRUE, message=FALSE, warning =FALSE,error=FALSE, results='hide'}
 #carregar pacotes
@@ -55,7 +55,7 @@ A vigilância da SRAG no Brasil é realizada pelo Ministério da Saúde (MS), po
 
 ## Extração
 
-Os dados de 2009 a 2019 são extraídos com auxílio da API da Plataforma de Ciência de Dados Aplicada à Saúde (PCDaS) e, em seguida, são tratados com base no fluxo ETL (Extração, Transformação e Carga), os dados para 2020 a 2023 são extraido do próprio Open Datasus. Durante a extração da API, os dados são filtrados utilizando consultas SQL, conforme demonstrado, em que a variável `CS_GESTANT` assume os seguintes valores: 1-1º Trimestre; 2-2º Trimestre; 3-3º Trimestre; 4-Idade Gestacional Ignorada; 5-Não; 6-Não se aplica; 9-Ignorado.
+Os dados de 2009 a 2019 são extraídos com auxílio da API da Plataforma de Ciência de Dados Aplicada à Saúde (PCDaS) e, em seguida, são tratados com base no fluxo ETL (Extração, Transformação e Carga), os dados para 2020 a 2024 são extraido do próprio Open Datasus. Durante a extração da API, os dados são filtrados utilizando consultas SQL, conforme demonstrado, em que a variável `CS_GESTANT` assume os seguintes valores: 1-1º Trimestre; 2-2º Trimestre; 3-3º Trimestre; 4-Idade Gestacional Ignorada; 5-Não; 6-Não se aplica; 9-Ignorado.
 
 ```{r,echo=FALSE, eval=TRUE, message=FALSE,warning =FALSE,error=FALSE,results='hide'}
 memory.limit(9999999)
@@ -219,7 +219,7 @@ write_rds(dados_total,file = 'data1/Sivep_2020-2023.rds')
 
 ```{r include=FALSE}
 df <- readRDS("data1/Sivep_2009-2022.rds")
-df1 <- readRDS("data1/Sivep_2020-2023.rds")
+df1 <- readRDS("data1/Sivep_2020-2024.rds")
 df <- df[!(( as.Date(df$DT_SIN_PRI, format = "%d/%m/%Y") %>%lubridate::year() ) %in% c(2020,2021,2022)),]
 df1 <- df1 %>%
   mutate_all(as.character)
@@ -1739,7 +1739,7 @@ O processo de informatização do SIM teve início em 1979. Doze anos depois, co
 
 ## Extração 
 
-A extração dos dados foi realizada por meio da API da PCDas para o período de 1996 a 2021, utilizando a linguagem Python como suporte, e os dados de 2022 preliminares pelo open datasus. Durante o processo de extração, os dados são tratados para garantir a qualidade e consistência das informações. Assim como foi feito para a base de dados do SINASC, os dados são subdivididos para cada um dos indicadores trabalhados, visando reduzir o tamanho das bases.
+A extração dos dados foi realizada por meio da API da PCDas para o período de 1996 a 2022, utilizando a linguagem Python como suporte, e os dados de 2023 preliminares pelo open datasus. Durante o processo de extração, os dados são tratados para garantir a qualidade e consistência das informações. Assim como foi feito para a base de dados do SINASC, os dados são subdivididos para cada um dos indicadores trabalhados, visando reduzir o tamanho das bases.
 
 As bases finais resultantes apresentam apenas o número de casos dos indicadores e o total de observações, agrupados por Município-UF, Ano e variável. 
 

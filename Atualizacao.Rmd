@@ -1,5 +1,5 @@
 ---
-title: "Atualizacao Qualidados"
+title: "Atualização Qualidados"
 author: "Samuel Martins de Medeiros"
 output: pdf_document
 ---
@@ -11,13 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Atualização das bases
 
-Neste arquivo está contido as informações sobre atualização do painel QUalidados, começando pela base de dados:
+Neste arquivo está contido as informações sobre atualização do painel Qualidados, começando pela base de dados:
 
 ### SIVEP-Gripe
 
 Para atualização da base do Sivep-Gripe siga os passos: 
 
-1. Acesse **data-raw > BAIXASIVEP.R ** e rode o código, ele se baseia no web-scraping do painel SRAG para puxar os dados diretamente do Open DATASUS.
+1. Acesse **data-raw > BAIXASIVEP.R** e rode o código, ele se baseia no web-scraping do painel SRAG para puxar os dados diretamente do Open DATASUS.
 
 2. Ainda na pasta **data-raw**, rode o código **SIVEP.R**, ele é responsável pelo tratamento e transformação da base para se adequar ao painel.
 
@@ -25,40 +25,38 @@ Para atualização da base do Sivep-Gripe siga os passos:
 
 Para as duas bases de dados o processo funciona de forma igual
 
-1. Rode o arquivo **data-raw > Baixa_SIM_SINASC.R**. Esse arquivo realiza um web-scraping no open datasus para baixar as bases recentes de 2021, 2022 e 2023
+1. Rode o arquivo **data-raw > Baixa_SIM_SINASC.R**. Esse arquivo realiza um web-scraping no open datasus para baixar as bases recentes de 2021, 2022 e 2023.
 
-2. Rode os arquivos **data-raw > SIM_Limpeza_e_modificacao.ipynb** e 
- **SINASC_Limpeza_e_modificacao.ipynb**, de preferencia no vscode, não rode no RSTUDIO. Esse arquivo transforma as bases na forma de leitura do qualidados.
+2. Rode os arquivos **data-raw > SIM_Limpeza_e_modificacao.ipynb** e  
+**SINASC_Limpeza_e_modificacao.ipynb**, de preferência no Visual Studio Code (não rode no RStudio). Esse arquivo transforma as bases na forma de leitura do qualidados.
 
-3. Rode os arquivos **data-raw > SINASC.R e SIM.R** são os arquivos de tratamento e concatenação de cada um dos respectivos bancos de dados
-
-
+3. Rode os arquivos **data-raw > SINASC.R e SIM.R** são os arquivos de tratamento e concatenação de cada um dos respectivos bancos de dados.
 
 # Atualização da documentação
 
 Pelo número de processos realizados no qualidados e peso das bases, o arquivo de documentação, diferentemente dos demais paineis, não faz o papel de atualização dos dados, ele apenas mostra os códigos sem necessariamente rodar nenhum deles. Mas ainda sim precisamos atualizar as informações contidas, bem como a data de atualização dos dados. Siga os passos:
 
-1. Abra o arquivo **doc_qualidados.Rmd**, altere a data para data de atualização dos dados.
+1. Abra o arquivo **doc_qualidados.Rmd**, altere a data para data de atualização dos dados
 
 2. De o knitr do arquivo para .pdf
 
-3. Copie o arquivo .pdf para a pasta **inst > app > www **
+3. Copie o arquivo .pdf para a pasta **inst > app > www**
 
-# Atualização do Painel.
+# Atualização do Painel
 
-Agora para finalizar apenas rode o arquivo **dev > run_dev.R ** e republique o painel, desmarque as pastas **data-raw** e **data1**, pois não são precisas para o painel rodar e podem atrapalhar no desempenho e demora para deploy.
-Suba, assim como nos outros paineis, para o github as atualizações feitas, não subindo nenhum arquivo da pasta **data** e **data1** pois as mesmas não são suportadas pelo github pelo tamanho das bases (caso não saiba como usar o github olhe o tutorial e curso feito por samuel e pedro no drive do oobr, caso nao saiba como subir o painel olhe o tutorial de atulizacao do SRAG ou SRAG 1000 dias). As bases que  devem ser postadas no synapse são:
+Agora para finalizar apenas rode o arquivo **dev > run_dev.R** e republique o painel, desmarque as pastas **data-raw** e **data1**, pois não são precisas para o painel rodar e podem atrapalhar no desempenho e demora para deploy.
+Suba, assim como nos outros paineis, para o github as atualizações feitas, não subindo nenhum arquivo da pasta **data** e **data1** pois as mesmas não são suportadas pelo github pelo tamanho das bases (caso não saiba como usar o github olhe o tutorial e curso feito por Samuel e Pedro no drive do OOBr, caso não saiba como subir o painel olhe o tutorial de atualização do SRAG ou SRAG 1000 dias). As bases que  devem ser postadas no synapse são:
 
-- 'data/dados_oobr_qualidados_SIM_Implausibilidade_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SIM_Implausibilidade_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SIM_Inconsistencia_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SIM_Inconsistencia_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SIM_Incompletude_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SIM_Incompletude_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SINASC_Implausibilidade_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SINASC_Implausibilidade_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SINASC_Inconsistencia_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SINASC_Inconsistencia_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SINASC_Incompletude_1996_2022.rda'
+- 'data/dados_oobr_qualidados_SINASC_Incompletude_1996_2023.rda'
 
-- 'data/dados_oobr_qualidados_SIVEP_2009_2023.rda'
+- 'data/dados_oobr_qualidados_SIVEP_2009_2024.rda'

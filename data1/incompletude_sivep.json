@@ -52,7 +52,7 @@
  "CLASSI_FIN":"Se o campo CLASSI_FIN estiver preenchido com [9] (Ignorado) ou [NA] (Em Branco)",
  "NU_IDADE_N":"Se o campo NU_IDADE_N estiver preenchido com [NA] (Em Branco)",
  "TP_IDADE":"Se o campo TP_IDADE estiver preenchido com [NA] (Em Branco)",
- "SURTO_SG":"Se o campo SURTO_SG estiver preenchido com [NA] (Em Branco)",
+ "SURTO_SG":"Se o campo SURTO_SG estiver preenchido com [9] (Ignorado) ou [NA] (Em Branco)",
  "TP_ANTIVIR":"Se o campo TP_ANTIVIR estiver preenchido com [NA] (Em Branco)",
  "DT_INTERNA":"Se o campo DT_INTERNA estiver preenchido com [NA] (Em Branco)",
  "DT_COLETA":"Se o campo DT_COLETA estiver preenchido com [NA] (Em Branco)",
@@ -65,5 +65,11 @@
  "DT_TOMO":"Se o campo DT_TOMO estiver preenchido com [NA] (Em Branco)",
  "TP_TES_AN":"Se o campo TP_TES_AN estiver preenchido com [NA] (Em Branco)",
  "DT_RES_AN":"Se o campo DT_RES_AN estiver preenchido com [NA] (Em Branco)",
- "TP_AM_SOR":"Se o campo TP_AM_SOR estiver preenchido com [NA] (Em Branco)"
+ "TP_AM_SOR":"Se o campo TP_AM_SOR estiver preenchido com [9] (Ignorado) ou [NA] (Em Branco)",
+ "DOSE_1_COV":"Se o campo DOSE_1_COV estiver preenchido com [NA] (Em Branco)",
+ "DOSE_2_COV":"Se o campo DOSE_2_COV estiver preenchido com [NA] (Em Branco)",
+ "LO_PS_VGM":"Se o campo LO_PS_VGM estiver preenchido com [NA] (Em Branco)",
+ "DT_VGM":"Se o campo DT_VGM estiver preenchido com [NA] (Em Branco)",
+ "DT_RT_VGM":"Se o campo DT_RT_VGM estiver preenchido com [NA] (Em Branco)",
+ "RES_AN":"Se o campo RES_AN estiver preenchido com [9] (Ignorado) ou [NA] (Em Branco)"
 }

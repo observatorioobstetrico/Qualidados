@@ -8,7 +8,7 @@
     "HOSPITAL_e_DT_INTERNA": "Se o campo HOSPITAL estiver como 2 ou 9 e o campo DT_INTERNA estiver preenchido",
     "UTI_e_DT_ENTUTI": "Se o campo UTI estiver como 2 ou 9 e o campo DT_ENTUTI estiver preenchido; ou se o campo HOSPITAL estiver como 2 ou 9 e o campo UTI estiver como 1",
     "RAIOX_RES_e_DT_RAIOX": "Se o campo RAIOX_RES estiver como 6 ou 9 e o campo DT_RAIOX estiver preenchido",
-    "AMOSTRA_e_DT_COLETA": "Se o campo AMOSTRA estiver como 6 ou 9 e o campo DT_COLETA estiver preenchido",
+    "AMOSTRA_e_DT_COLETA": "Se o campo AMOSTRA estiver como 2 ou 9 e o campo DT_COLETA estiver preenchido",
     "HISTO_VGM_e_Campos_VGMs": "Se campo HISTO_VGM for 2 ou 9 e os campos LO_PS_VGM, DT_VGM, DT_RT_VGM estiverem preenchidos",
     "TOMO_RES_e_DT_TOMO": "Se o campo TOMO_RES estiver 6 ou 9 e o campo DT_TOMO estiver preenchido",
     "TP_TES_AN_e_DT_RES_AN": "Se campo RES_AN for 4 e o campo TP_TES_AN for 1 ou 2; se campo RES_AN for 4 e o campo DT_RES_AN estiver preenchido",

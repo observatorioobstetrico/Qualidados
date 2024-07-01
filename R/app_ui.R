@@ -165,7 +165,7 @@ app_ui <- function(request) {
                 br(),
                 br(),
                 (
-                  "A última atualização foi realizada em 04/06/2024, aqui constam as bases do SIVEP-Gripe de 2009 à 2024."
+                  "A última atualização foi realizada em 29/06/2024, aqui constam as bases do SIVEP-Gripe de 2009 à 2024."
                 ),
                 br(),
                 br(),

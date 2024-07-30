@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Bases, importações e devidos tratamentos.
 
-A seguir, são carregados os pacotes do R (https://www.r-project.org) utilizados para filtragem e tratamento dos dados considerados no dashboard https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/. Os dados do painel foram atualizados no dia 29/junho/2024.
+A seguir, são carregados os pacotes do R (https://www.r-project.org) utilizados para filtragem e tratamento dos dados considerados no dashboard https://observatorioobstetrico.shinyapps.io/oobr_qualidados2/. Os dados do painel foram atualizados no dia 29/julho/2024.
 
 ```{r pacotes, echo=TRUE, message=FALSE, warning =FALSE,error=FALSE, results='hide'}
 #carregar pacotes
